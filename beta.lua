@@ -297,6 +297,7 @@ CreateScriptButton("Arsenal", "https://raw.githubusercontent.com/Insertl/QuotasH
 CreateScriptButton("Build a Boat for Treasure", "https://raw.githubusercontent.com/catblox1346/BBHscript/main/owo?token=$(date%20+%s)")
 CreateScriptButton("Ring UnAnchored Parts", "https://rawscripts.net/raw/Universal-Script-FE-SUPER-RING-PART-REUPLOADED-22395")
 CreateScriptButton("Infinite Yield", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source")
+CreateScriptButton("Gym Race Simulator", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Gym%20Race%20Simulator%20BETA")
 
 UpdateCanvas()
 
