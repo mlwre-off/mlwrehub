@@ -300,6 +300,7 @@ CreateScriptButton("Infinite Yield", "https://raw.githubusercontent.com/EdgeIY/i
 CreateScriptButton("Gym Race Simulator", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Gym%20Race%20Simulator%20BETA")
 CreateScriptButton("Simple Spy", "https://raw.githubusercontent.com/exxtremestuffs/SimpleSpySource/refs/heads/master/SimpleSpy.lua")
 CreateScriptButton("TPUA", "https://raw.githubusercontent.com/Bac0nHck/Scripts/main/BringFlingPlayers")
+CreateScriptButton("BloxFruits", "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua")
 
 UpdateCanvas()
 
