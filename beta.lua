@@ -298,6 +298,7 @@ CreateScriptButton("Build a Boat for Treasure", "https://raw.githubusercontent.c
 CreateScriptButton("Ring UnAnchored Parts", "https://rawscripts.net/raw/Universal-Script-FE-SUPER-RING-PART-REUPLOADED-22395")
 CreateScriptButton("Infinite Yield", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source")
 CreateScriptButton("Gym Race Simulator", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Gym%20Race%20Simulator%20BETA")
+CreateScriptButton("Simple Spy", "https://raw.githubusercontent.com/exxtremestuffs/SimpleSpySource/refs/heads/master/SimpleSpy.lua")
 
 UpdateCanvas()
 
