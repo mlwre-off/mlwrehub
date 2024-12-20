@@ -1,0 +1,451 @@
+--[[
+    GUI Script for Roblox (LocalScript)
+    Features:
+    - Modern, animated UI with smooth transitions
+    - Draggable main window with rounded corners and gradients
+    - Tabs on the left: "Main" and "Settings"
+    - Auto Farm and Auto Click Race toggles on the Main tab
+    - Toggle the entire GUI with a hotkey (default: LeftControl)
+    - Change the toggle hotkey in Settings
+    - Smooth scale-in/scale-out show/hide animations
+    - Title: "Gym Race Simulator"
+    - Credits: by mlwr.e
+
+    Usage:
+    Insert this script into a LocalScript inside StarterGui.
+    The GUI will be created automatically when the game starts.
+]]
+
+--// Services
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local player = Players.LocalPlayer
+
+--// Variables
+local autoFarmEnabled = false
+local autoClickRaceEnabled = false
+local toggleKey = Enum.KeyCode.LeftControl
+local guiVisible = true
+local changingKey = false
+local dragging = false
+local dragInput, dragStart, startPos
+
+--// Utility Functions
+local function tweenObject(obj, time, properties, easingStyle, easingDirection)
+    local tweenInfo = TweenInfo.new(
+        time,
+        easingStyle or Enum.EasingStyle.Quint,
+        easingDirection or Enum.EasingDirection.Out,
+        0,
+        false,
+        0
+    )
+    local tween = TweenService:Create(obj, tweenInfo, properties)
+    tween:Play()
+end
+
+--// Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "GymRaceSimulatorGUI"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+
+--// Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Parent = screenGui
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+mainFrame.Size = UDim2.new(0, 420, 0, 270)
+mainFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+mainFrame.BorderSizePixel = 0
+mainFrame.Visible = false
+
+--// Rounded Corners
+local uiCorner = Instance.new("UICorner", mainFrame)
+uiCorner.CornerRadius = UDim.new(0, 12)
+
+--// Gradient Background
+local uiGradient = Instance.new("UIGradient", mainFrame)
+uiGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 60)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 35))
+}
+uiGradient.Rotation = 90
+
+--// Title Bar
+local topBarHeight = 35
+local titleBar = Instance.new("Frame")
+titleBar.Name = "TitleBar"
+titleBar.Parent = mainFrame
+titleBar.Size = UDim2.new(1, 0, 0, topBarHeight)
+titleBar.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+titleBar.BorderSizePixel = 0
+
+--// Rounded Corners for Title Bar
+local titleBarUICorner = Instance.new("UICorner", titleBar)
+titleBarUICorner.CornerRadius = UDim.new(0, 12)
+
+--// Title Text
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Parent = titleBar
+title.AnchorPoint = Vector2.new(0.5, 0.5)
+title.Position = UDim2.new(0.5, 0, 0.5, 0)
+title.Size = UDim2.new(1, -20, 1, 0)
+title.BackgroundTransparency = 1
+title.Text = "Gym Race Simulator"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextXAlignment = Enum.TextXAlignment.Center
+
+--// Tabs Frame
+local tabsFrame = Instance.new("Frame")
+tabsFrame.Name = "TabsFrame"
+tabsFrame.Parent = mainFrame
+tabsFrame.Position = UDim2.new(0, 0, 0, topBarHeight)
+tabsFrame.Size = UDim2.new(0, 100, 1, -topBarHeight)
+tabsFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+tabsFrame.BorderSizePixel = 0
+
+--// Rounded Corners for Tabs Frame
+local tabsUICorner = Instance.new("UICorner", tabsFrame)
+tabsUICorner.CornerRadius = UDim.new(0, 12)
+
+--// Active Tab Variable
+local activeTab = "Main"
+
+--// Function to Create Tab Buttons
+local function createTabButton(name, text, yPos)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Parent = tabsFrame
+    button.Size = UDim2.new(1, -20, 0, 40)
+    button.Position = UDim2.new(0, 10, 0, yPos)
+    button.BackgroundColor3 = (name == "MainTabButton") and Color3.fromRGB(70, 70, 80) or Color3.fromRGB(50, 50, 60)
+    button.Font = Enum.Font.GothamSemibold
+    button.TextSize = 14
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Text = text
+    button.AutoButtonColor = false
+
+    --// Rounded Corners for Buttons
+    local buttonCorner = Instance.new("UICorner", button)
+    buttonCorner.CornerRadius = UDim.new(0, 10)
+
+    --// Hover Effects
+    button.MouseEnter:Connect(function()
+        if activeTab ~= text then
+            tweenObject(button, 0.2, {BackgroundColor3 = Color3.fromRGB(60, 60, 70)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+        end
+    end)
+
+    button.MouseLeave:Connect(function()
+        if activeTab ~= text then
+            tweenObject(button, 0.2, {BackgroundColor3 = Color3.fromRGB(50, 50, 60)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+        end
+    end)
+
+    return button
+end
+
+--// Create "Main" and "Settings" Tab Buttons
+local mainTabButton = createTabButton("MainTabButton", "Main", 10)
+local settingsTabButton = createTabButton("SettingsTabButton", "Settings", 60)
+
+--// Pages Container
+local pagesContainer = Instance.new("Frame")
+pagesContainer.Name = "PagesContainer"
+pagesContainer.Parent = mainFrame
+pagesContainer.Position = UDim2.new(0, 100, 0, topBarHeight)
+pagesContainer.Size = UDim2.new(1, -100, 1, -topBarHeight)
+pagesContainer.BackgroundTransparency = 1
+
+--// Main Page
+local mainPage = Instance.new("Frame")
+mainPage.Name = "MainPage"
+mainPage.Parent = pagesContainer
+mainPage.Size = UDim2.new(1, 0, 1, 0)
+mainPage.BackgroundTransparency = 1
+mainPage.Visible = true
+
+--// Function to Create Action Buttons
+local function createActionButton(parent, text, posY)
+    local button = Instance.new("TextButton")
+    button.Parent = parent
+    button.Size = UDim2.new(0, 200, 0, 30)
+    button.Position = UDim2.new(0.5, -100, 0, posY)
+    button.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+    button.Font = Enum.Font.GothamSemibold
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.TextSize = 14
+    button.Text = text
+    button.AutoButtonColor = false
+
+    --// Rounded Corners for Action Buttons
+    local buttonCorner = Instance.new("UICorner", button)
+    buttonCorner.CornerRadius = UDim.new(0, 8)
+
+    --// Hover Effects
+    button.MouseEnter:Connect(function()
+        tweenObject(button, 0.2, {BackgroundColor3 = Color3.fromRGB(60, 60, 70)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    end)
+    button.MouseLeave:Connect(function()
+        tweenObject(button, 0.2, {BackgroundColor3 = Color3.fromRGB(50, 50, 60)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    end)
+    return button
+end
+
+--// Create Auto Farm and Auto Click Race Buttons
+local autoFarmButton = createActionButton(mainPage, "Auto Farm: OFF", 50)
+local autoClickRaceButton = createActionButton(mainPage, "Auto Click Race: OFF", 100)
+
+--// Settings Page
+local settingsPage = Instance.new("Frame")
+settingsPage.Name = "SettingsPage"
+settingsPage.Parent = pagesContainer
+settingsPage.Size = UDim2.new(1, 0, 1, 0)
+settingsPage.BackgroundTransparency = 1
+settingsPage.Visible = false
+
+--// Settings Title
+local settingsTitle = Instance.new("TextLabel")
+settingsTitle.Name = "SettingsTitle"
+settingsTitle.Parent = settingsPage
+settingsTitle.Position = UDim2.new(0, 10, 0, 10)
+settingsTitle.Size = UDim2.new(1, -20, 0, 30)
+settingsTitle.BackgroundTransparency = 1
+settingsTitle.Text = "Settings"
+settingsTitle.Font = Enum.Font.GothamBold
+settingsTitle.TextSize = 16
+settingsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+settingsTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+--// Toggle Key Label
+local keybindLabel = Instance.new("TextLabel")
+keybindLabel.Name = "KeybindLabel"
+keybindLabel.Parent = settingsPage
+keybindLabel.Position = UDim2.new(0, 10, 0, 50)
+keybindLabel.Size = UDim2.new(0.5, 0, 0, 20)
+keybindLabel.BackgroundTransparency = 1
+keybindLabel.Text = "Toggle Key:"
+keybindLabel.Font = Enum.Font.Gotham
+keybindLabel.TextSize = 14
+keybindLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+keybindLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+--// Keybind Button
+local keybindButton = Instance.new("TextButton")
+keybindButton.Name = "KeybindButton"
+keybindButton.Parent = settingsPage
+keybindButton.Size = UDim2.new(0, 120, 0, 30)
+keybindButton.Position = UDim2.new(0, 10, 0, 80)
+keybindButton.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+keybindButton.Font = Enum.Font.GothamSemibold
+keybindButton.TextSize = 14
+keybindButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+keybindButton.Text = toggleKey.Name
+keybindButton.AutoButtonColor = false
+
+--// Rounded Corners for Keybind Button
+local keybindButtonCorner = Instance.new("UICorner", keybindButton)
+keybindButtonCorner.CornerRadius = UDim.new(0, 8)
+
+--// Hover Effects for Keybind Button
+keybindButton.MouseEnter:Connect(function()
+    tweenObject(keybindButton, 0.2, {BackgroundColor3 = Color3.fromRGB(70, 70, 80)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+end)
+keybindButton.MouseLeave:Connect(function()
+    tweenObject(keybindButton, 0.2, {BackgroundColor3 = Color3.fromRGB(60, 60, 70)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+end)
+
+--// Credits
+local credits = Instance.new("TextLabel")
+credits.Name = "Credits"
+credits.Parent = mainFrame
+credits.Size = UDim2.new(1, 0, 0, 20)
+credits.Position = UDim2.new(0, 0, 1, -20)
+credits.BackgroundTransparency = 1
+credits.Text = "by mlwr.e"
+credits.Font = Enum.Font.Gotham
+credits.TextSize = 14
+credits.TextColor3 = Color3.fromRGB(200, 200, 200)
+credits.TextXAlignment = Enum.TextXAlignment.Center
+
+--// Function to Switch Tabs
+local function switchTab(tabName)
+    activeTab = tabName
+    if tabName == "Main" then
+        mainPage.Visible = true
+        settingsPage.Visible = false
+        tweenObject(mainTabButton, 0.2, {BackgroundColor3 = Color3.fromRGB(70, 70, 80)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+        tweenObject(settingsTabButton, 0.2, {BackgroundColor3 = Color3.fromRGB(50, 50, 60)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    else
+        mainPage.Visible = false
+        settingsPage.Visible = true
+        tweenObject(mainTabButton, 0.2, {BackgroundColor3 = Color3.fromRGB(50, 50, 60)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+        tweenObject(settingsTabButton, 0.2, {BackgroundColor3 = Color3.fromRGB(70, 70, 80)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    end
+end
+
+--// Connect Tab Buttons
+mainTabButton.MouseButton1Click:Connect(function()
+    switchTab("Main")
+end)
+
+settingsTabButton.MouseButton1Click:Connect(function()
+    switchTab("Settings")
+end)
+
+--// Action Buttons Functionality
+autoFarmButton.MouseButton1Click:Connect(function()
+    autoFarmEnabled = not autoFarmEnabled
+    autoFarmButton.Text = "Auto Farm: " .. (autoFarmEnabled and "ON" or "OFF")
+    if autoFarmEnabled then
+        tweenObject(autoFarmButton, 0.2, {BackgroundColor3 = Color3.fromRGB(70, 70, 80)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    else
+        tweenObject(autoFarmButton, 0.2, {BackgroundColor3 = Color3.fromRGB(50, 50, 60)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    end
+end)
+
+autoClickRaceButton.MouseButton1Click:Connect(function()
+    autoClickRaceEnabled = not autoClickRaceEnabled
+    autoClickRaceButton.Text = "Auto Click Race: " .. (autoClickRaceEnabled and "ON" or "OFF")
+    if autoClickRaceEnabled then
+        tweenObject(autoClickRaceButton, 0.2, {BackgroundColor3 = Color3.fromRGB(70, 70, 80)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    else
+        tweenObject(autoClickRaceButton, 0.2, {BackgroundColor3 = Color3.fromRGB(50, 50, 60)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    end
+end)
+
+--// Keybind Button Functionality
+keybindButton.MouseButton1Click:Connect(function()
+    if not changingKey then
+        keybindButton.Text = "Press a key..."
+        tweenObject(keybindButton, 0.2, {BackgroundColor3 = Color3.fromRGB(80, 80, 90)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+        changingKey = true
+    end
+end)
+
+--// Draggable Functionality
+titleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+titleBar.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        local newPos = UDim2.new(
+            startPos.X.Scale,
+            math.clamp(startPos.X.Offset + delta.X, -mainFrame.Size.X.Offset / 2, UIS:GetScreenSize().X - mainFrame.Size.X.Offset / 2),
+            startPos.Y.Scale,
+            math.clamp(startPos.Y.Offset + delta.Y, -mainFrame.Size.Y.Offset / 2, UIS:GetScreenSize().Y - mainFrame.Size.Y.Offset / 2)
+        )
+        mainFrame.Position = newPos
+    end
+end)
+
+--// Show/Hide Animations (Scale in/out with Fade)
+local function showGUI()
+    mainFrame.Visible = true
+    mainFrame.Size = UDim2.new(0, 420, 0, 270)
+    mainFrame.BackgroundTransparency = 1
+    tweenObject(mainFrame, 0.3, {BackgroundTransparency = 0}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+end
+
+local function hideGUI()
+    tweenObject(mainFrame, 0.3, {BackgroundTransparency = 1}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    wait(0.3)
+    if mainFrame.BackgroundTransparency == 1 then
+        mainFrame.Visible = false
+    end
+end
+
+local function toggleGUI()
+    guiVisible = not guiVisible
+    if guiVisible then
+        showGUI()
+    else
+        hideGUI()
+    end
+end
+
+--// Hotkey Functionality
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+
+    if changingKey and input.UserInputType == Enum.UserInputType.Keyboard then
+        toggleKey = input.KeyCode
+        keybindButton.Text = input.KeyCode.Name
+        changingKey = false
+        tweenObject(keybindButton, 0.2, {BackgroundColor3 = Color3.fromRGB(60, 60, 70)}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+        return
+    end
+
+    if input.KeyCode == toggleKey then
+        toggleGUI()
+    end
+end)
+
+--// Initial Show GUI with Animation
+showGUI()
+
+--// Auto Farm Loop
+local function autoFarmLoop()
+    while autoFarmEnabled do
+        pcall(function()
+            ReplicatedStorage:WaitForChild("Events"):WaitForChild("DamageIncreaseOnClickEvent"):FireServer()
+        end)
+        wait(0.1) -- Настройте время ожидания по необходимости
+    end
+end
+
+--// Auto Click Race Loop
+local function autoClickRaceLoop()
+    while autoClickRaceEnabled do
+        pcall(function()
+            ReplicatedStorage:WaitForChild("Events"):WaitForChild("RaceEvents"):WaitForChild("ClickedDuringRace"):FireServer()
+        end)
+        wait(0.1) -- Настройте время ожидания по необходимости
+    end
+end
+
+--// Управление Циклами с Помощью Корутин
+coroutine.wrap(function()
+    while true do
+        if autoFarmEnabled then
+            autoFarmLoop()
+        end
+        wait()
+    end
+end)()
+
+coroutine.wrap(function()
+    while true do
+        if autoClickRaceEnabled then
+            autoClickRaceLoop()
+        end
+        wait()
+    end
+end)()
