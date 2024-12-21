@@ -1,0 +1,121 @@
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "AutoPlaceGUI"
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 200, 0, 100)
+MainFrame.Position = UDim2.new(0.5, -100, 0.5, -50) -- центр экрана
+MainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+MainFrame.BorderSizePixel = 0
+MainFrame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 6)
+UICorner.Parent = MainFrame
+
+local ButtonFrame = Instance.new("Frame")
+ButtonFrame.Size = UDim2.new(1, -10, 0, 40)
+ButtonFrame.Position = UDim2.new(0, 5, 0, 30)
+ButtonFrame.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
+ButtonFrame.BorderSizePixel = 0
+ButtonFrame.Parent = MainFrame
+
+local UICorner2 = Instance.new("UICorner")
+UICorner2.CornerRadius = UDim.new(0, 4)
+UICorner2.Parent = ButtonFrame
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Name = "Title"
+TitleLabel.Size = UDim2.new(1, 0, 0, 30)
+TitleLabel.Position = UDim2.new(0, 0, 0, 0)
+TitleLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+TitleLabel.BorderSizePixel = 0
+TitleLabel.Text = "by mlwr.e"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextScaled = true
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.Parent = MainFrame
+
+local UICorner3 = Instance.new("UICorner")
+UICorner3.CornerRadius = UDim.new(0, 4)
+UICorner3.Parent = TitleLabel
+
+local AutoPlaceButton = Instance.new("TextButton")
+AutoPlaceButton.Name = "AutoPlaceButton"
+AutoPlaceButton.Size = UDim2.new(1, 0, 1, 0)
+AutoPlaceButton.Position = UDim2.new(0, 0, 0, 0)
+AutoPlaceButton.BackgroundColor3 = Color3.fromRGB(85, 170, 85)
+AutoPlaceButton.BorderSizePixel = 0
+AutoPlaceButton.Text = "Auto Place: OFF"
+AutoPlaceButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+AutoPlaceButton.TextScaled = true
+AutoPlaceButton.Font = Enum.Font.SourceSansBold
+AutoPlaceButton.Parent = ButtonFrame
+
+local UICorner4 = Instance.new("UICorner")
+UICorner4.CornerRadius = UDim.new(0, 4)
+UICorner4.Parent = AutoPlaceButton
+
+local UserInputService = game:GetService("UserInputService")
+
+local function makeFrameDraggable(frame, dragHandle)
+    local dragging = false
+    local dragStart, startPos
+
+    dragHandle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    dragHandle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            -- Отслеживаем движение мыши
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+end
+
+makeFrameDraggable(MainFrame, TitleLabel)
+
+local autoPlaceEnabled = false
+
+AutoPlaceButton.MouseButton1Click:Connect(function()
+    autoPlaceEnabled = not autoPlaceEnabled
+    if autoPlaceEnabled then
+        AutoPlaceButton.Text = "Auto Place: ON"
+        AutoPlaceButton.BackgroundColor3 = Color3.fromRGB(170, 85, 85)
+    else
+        AutoPlaceButton.Text = "Auto Place: OFF"
+        AutoPlaceButton.BackgroundColor3 = Color3.fromRGB(85, 170, 85)
+    end
+end)
+
+spawn(function()
+    while true do
+        if autoPlaceEnabled then
+            game:GetService("ReplicatedStorage").Remotes.PlaceBlock:FireServer()
+        end
+        wait() 
+    end
+end)
