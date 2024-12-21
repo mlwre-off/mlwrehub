@@ -301,6 +301,7 @@ CreateScriptButton("Gym Race Simulator", "https://raw.githubusercontent.com/mlwr
 CreateScriptButton("Simple Spy", "https://raw.githubusercontent.com/exxtremestuffs/SimpleSpySource/refs/heads/master/SimpleSpy.lua")
 CreateScriptButton("TPUA", "https://raw.githubusercontent.com/Bac0nHck/Scripts/main/BringFlingPlayers")
 CreateScriptButton("BloxFruits", "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua")
+CreateScriptButton("+1 Block Every Second", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/%2B1%20Block%20Every%20Second")
 
 UpdateCanvas()
 
