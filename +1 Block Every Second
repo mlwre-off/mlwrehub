@@ -158,6 +158,6 @@ spawn(function()
             }
             game:GetService("ReplicatedStorage").Remotes.BuyGemShopItem:FireServer(unpack(args))
         end
-        wait(0.2)
+        wait(0.09)
     end
 end)
