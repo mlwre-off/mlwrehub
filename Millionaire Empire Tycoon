@@ -85,7 +85,7 @@ local function startFarming()
     farmLoop = coroutine.wrap(function()
         while farming do
             local args = {
-                [1] = 9999999999
+                [1] = 9999999999999
             }
             game:GetService("ReplicatedStorage").fewjnfejwb3:FireServer(unpack(args))
             wait()
