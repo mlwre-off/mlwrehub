@@ -1,79 +1,80 @@
+-- Создание ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "AutoPlaceGUI"
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
+-- Создание MainFrame
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 200, 0, 140)
-MainFrame.Position = UDim2.new(0.5, -100, 0.5, -70) -- Центр экрана
+MainFrame.Size = UDim2.new(0, 200, 0, 180) -- Увеличен размер для трёх кнопок
+MainFrame.Position = UDim2.new(0.5, -100, 0.5, -90) -- Центр экрана
 MainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 MainFrame.BorderSizePixel = 0
 MainFrame.Parent = ScreenGui
 
+-- Добавление UICorner для MainFrame
 local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 6)
 UICorner.Parent = MainFrame
 
-local ButtonFrame = Instance.new("Frame")
-ButtonFrame.Size = UDim2.new(1, -10, 0, 40)
-ButtonFrame.Position = UDim2.new(0, 5, 0, 30)
-ButtonFrame.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
-ButtonFrame.BorderSizePixel = 0
-ButtonFrame.Parent = MainFrame
-
-local UICorner2 = Instance.new("UICorner")
-UICorner2.CornerRadius = UDim.new(0, 4)
-UICorner2.Parent = ButtonFrame
-
+-- Создание TitleLabel
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Name = "Title"
 TitleLabel.Size = UDim2.new(1, 0, 0, 30)
 TitleLabel.Position = UDim2.new(0, 0, 0, 0)
 TitleLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 TitleLabel.BorderSizePixel = 0
-TitleLabel.Text = "by mlwr.e"
+TitleLabel.Text = "by mlwr.e and vzdmgeg"
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleLabel.TextScaled = true
 TitleLabel.Font = Enum.Font.SourceSansBold
 TitleLabel.Parent = MainFrame
 
+-- Добавление UICorner для TitleLabel
 local UICorner3 = Instance.new("UICorner")
 UICorner3.CornerRadius = UDim.new(0, 4)
 UICorner3.Parent = TitleLabel
 
-local AutoPlaceButton = Instance.new("TextButton")
-AutoPlaceButton.Name = "AutoPlaceButton"
-AutoPlaceButton.Size = UDim2.new(1, 0, 1, 0)
-AutoPlaceButton.Position = UDim2.new(0, 0, 0, 0)
-AutoPlaceButton.BackgroundColor3 = Color3.fromRGB(85, 170, 85)
-AutoPlaceButton.BorderSizePixel = 0
-AutoPlaceButton.Text = "Auto Place: OFF"
-AutoPlaceButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-AutoPlaceButton.TextScaled = true
-AutoPlaceButton.Font = Enum.Font.SourceSansBold
-AutoPlaceButton.Parent = ButtonFrame
+-- Создание Frame для кнопок
+local ButtonFrame = Instance.new("Frame")
+ButtonFrame.Size = UDim2.new(1, -10, 1, -10)
+ButtonFrame.Position = UDim2.new(0, 5, 0, 35)
+ButtonFrame.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
+ButtonFrame.BorderSizePixel = 0
+ButtonFrame.Parent = MainFrame
 
-local UICorner4 = Instance.new("UICorner")
-UICorner4.CornerRadius = UDim.new(0, 4)
-UICorner4.Parent = AutoPlaceButton
+-- Добавление UICorner для ButtonFrame
+local UICorner2 = Instance.new("UICorner")
+UICorner2.CornerRadius = UDim.new(0, 4)
+UICorner2.Parent = ButtonFrame
 
--- Новая кнопка Auto Buy Gem Egg
-local AutoBuyButton = Instance.new("TextButton")
-AutoBuyButton.Name = "AutoBuyButton"
-AutoBuyButton.Size = UDim2.new(1, -10, 0, 40)
-AutoBuyButton.Position = UDim2.new(0, 5, 0, 80)
-AutoBuyButton.BackgroundColor3 = Color3.fromRGB(85, 170, 85)
-AutoBuyButton.BorderSizePixel = 0
-AutoBuyButton.Text = "Auto Buy Gem Egg: OFF"
-AutoBuyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-AutoBuyButton.TextScaled = true
-AutoBuyButton.Font = Enum.Font.SourceSansBold
-AutoBuyButton.Parent = MainFrame
+-- Функция для создания кнопки
+local function createButton(name, text, position)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Size = UDim2.new(1, -10, 0, 40)
+    button.Position = position
+    button.BackgroundColor3 = Color3.fromRGB(85, 170, 85)
+    button.BorderSizePixel = 0
+    button.Text = text
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.TextScaled = true
+    button.Font = Enum.Font.SourceSansBold
+    button.Parent = ButtonFrame
 
-local UICorner5 = Instance.new("UICorner")
-UICorner5.CornerRadius = UDim.new(0, 4)
-UICorner5.Parent = AutoBuyButton
+    local UICornerBtn = Instance.new("UICorner")
+    UICornerBtn.CornerRadius = UDim.new(0, 4)
+    UICornerBtn.Parent = button
 
+    return button
+end
+
+-- Создание кнопок
+local AutoPlaceButton = createButton("AutoPlaceButton", "Auto Place: OFF", UDim2.new(0, 5, 0, 0))
+local AutoBuyButton = createButton("AutoBuyButton", "Auto Buy Gem Egg: OFF", UDim2.new(0, 5, 0, 50))
+local AutoRebirthButton = createButton("AutoRebirthButton", "Auto Rebirth: OFF", UDim2.new(0, 5, 0, 100))
+
+-- Подключение UserInputService для перетаскивания GUI
 local UserInputService = game:GetService("UserInputService")
 
 local function makeFrameDraggable(frame, dragHandle)
@@ -94,12 +95,6 @@ local function makeFrameDraggable(frame, dragHandle)
         end
     end)
 
-    dragHandle.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
-            -- Отслеживаем движение мыши
-        end
-    end)
-
     UserInputService.InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local delta = input.Position - dragStart
@@ -115,6 +110,7 @@ end
 
 makeFrameDraggable(MainFrame, TitleLabel)
 
+-- Функциональность Auto Place
 local autoPlaceEnabled = false
 
 AutoPlaceButton.MouseButton1Click:Connect(function()
@@ -137,6 +133,7 @@ spawn(function()
     end
 end)
 
+-- Функциональность Auto Buy Gem Egg
 local autoBuyEnabled = false
 
 AutoBuyButton.MouseButton1Click:Connect(function()
@@ -159,5 +156,36 @@ spawn(function()
             game:GetService("ReplicatedStorage").Remotes.BuyGemShopItem:FireServer(unpack(args))
         end
         wait(0.09)
+    end
+end)
+
+-- Функциональность Auto Rebirth
+local isAutoRebirthEnabled = false
+local autoRebirthCoroutine = nil
+
+AutoRebirthButton.MouseButton1Click:Connect(function()
+    isAutoRebirthEnabled = not isAutoRebirthEnabled
+    if isAutoRebirthEnabled then
+        AutoRebirthButton.Text = "Auto Rebirth: ON"
+        AutoRebirthButton.BackgroundColor3 = Color3.fromRGB(170, 85, 85)
+        -- Запуск корутины
+        autoRebirthCoroutine = coroutine.create(function()
+            while isAutoRebirthEnabled do
+                wait(0.1)
+                -- Выполнение скрипта Auto Rebirth
+                local args = {
+                    [1] = "RebirthShop"
+                }
+                pcall(function()
+                    game:GetService("ReplicatedStorage").Remotes.Rebirth:InvokeServer(unpack(args))
+                end)
+            end
+        end)
+        coroutine.resume(autoRebirthCoroutine)
+    else
+        AutoRebirthButton.Text = "Auto Rebirth: OFF"
+        AutoRebirthButton.BackgroundColor3 = Color3.fromRGB(85, 170, 85)
+        -- Остановка корутины
+        isAutoRebirthEnabled = false
     end
 end)
