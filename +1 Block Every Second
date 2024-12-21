@@ -4,8 +4,8 @@ ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 200, 0, 100)
-MainFrame.Position = UDim2.new(0.5, -100, 0.5, -50) -- центр экрана
+MainFrame.Size = UDim2.new(0, 200, 0, 140)
+MainFrame.Position = UDim2.new(0.5, -100, 0.5, -70) -- Центр экрана
 MainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 MainFrame.BorderSizePixel = 0
 MainFrame.Parent = ScreenGui
@@ -56,6 +56,23 @@ AutoPlaceButton.Parent = ButtonFrame
 local UICorner4 = Instance.new("UICorner")
 UICorner4.CornerRadius = UDim.new(0, 4)
 UICorner4.Parent = AutoPlaceButton
+
+-- Новая кнопка Auto Buy Gem Egg
+local AutoBuyButton = Instance.new("TextButton")
+AutoBuyButton.Name = "AutoBuyButton"
+AutoBuyButton.Size = UDim2.new(1, -10, 0, 40)
+AutoBuyButton.Position = UDim2.new(0, 5, 0, 80)
+AutoBuyButton.BackgroundColor3 = Color3.fromRGB(85, 170, 85)
+AutoBuyButton.BorderSizePixel = 0
+AutoBuyButton.Text = "Auto Buy Gem Egg: OFF"
+AutoBuyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+AutoBuyButton.TextScaled = true
+AutoBuyButton.Font = Enum.Font.SourceSansBold
+AutoBuyButton.Parent = MainFrame
+
+local UICorner5 = Instance.new("UICorner")
+UICorner5.CornerRadius = UDim.new(0, 4)
+UICorner5.Parent = AutoBuyButton
 
 local UserInputService = game:GetService("UserInputService")
 
@@ -116,6 +133,31 @@ spawn(function()
         if autoPlaceEnabled then
             game:GetService("ReplicatedStorage").Remotes.PlaceBlock:FireServer()
         end
-        wait() 
+        wait()
+    end
+end)
+
+local autoBuyEnabled = false
+
+AutoBuyButton.MouseButton1Click:Connect(function()
+    autoBuyEnabled = not autoBuyEnabled
+    if autoBuyEnabled then
+        AutoBuyButton.Text = "Auto Buy Gem Egg: ON"
+        AutoBuyButton.BackgroundColor3 = Color3.fromRGB(170, 85, 85)
+    else
+        AutoBuyButton.Text = "Auto Buy Gem Egg: OFF"
+        AutoBuyButton.BackgroundColor3 = Color3.fromRGB(85, 170, 85)
+    end
+end)
+
+spawn(function()
+    while true do
+        if autoBuyEnabled then
+            local args = {
+                [1] = "GemEgg"
+            }
+            game:GetService("ReplicatedStorage").Remotes.BuyGemShopItem:FireServer(unpack(args))
+        end
+        wait(1)
     end
 end)
