@@ -6,8 +6,8 @@ ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 -- Создание MainFrame
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 200, 0, 180) -- Увеличен размер для трёх кнопок
-MainFrame.Position = UDim2.new(0.5, -100, 0.5, -90) -- Центр экрана
+MainFrame.Size = UDim2.new(0, 200, 0, 220) -- Увеличен размер для четырёх кнопок
+MainFrame.Position = UDim2.new(0.5, -100, 0.5, -110) -- Центр экрана
 MainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 MainFrame.BorderSizePixel = 0
 MainFrame.Parent = ScreenGui
@@ -24,7 +24,7 @@ TitleLabel.Size = UDim2.new(1, 0, 0, 30)
 TitleLabel.Position = UDim2.new(0, 0, 0, 0)
 TitleLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 TitleLabel.BorderSizePixel = 0
-TitleLabel.Text = "by mlwr.e and vzdmgeg"
+TitleLabel.Text = "by mlwr.e"
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleLabel.TextScaled = true
 TitleLabel.Font = Enum.Font.SourceSansBold
@@ -73,6 +73,7 @@ end
 local AutoPlaceButton = createButton("AutoPlaceButton", "Auto Place: OFF", UDim2.new(0, 5, 0, 0))
 local AutoBuyButton = createButton("AutoBuyButton", "Auto Buy Gem Egg: OFF", UDim2.new(0, 5, 0, 50))
 local AutoRebirthButton = createButton("AutoRebirthButton", "Auto Rebirth: OFF", UDim2.new(0, 5, 0, 100))
+local AutoEquipBestPetButton = createButton("AutoEquipBestPetButton", "Auto Equip Best Pet: OFF", UDim2.new(0, 5, 0, 150))
 
 -- Подключение UserInputService для перетаскивания GUI
 local UserInputService = game:GetService("UserInputService")
@@ -187,5 +188,36 @@ AutoRebirthButton.MouseButton1Click:Connect(function()
         AutoRebirthButton.BackgroundColor3 = Color3.fromRGB(85, 170, 85)
         -- Остановка корутины
         isAutoRebirthEnabled = false
+    end
+end)
+
+-- Функциональность Auto Equip Best Pet
+local isAutoEquipBestPetEnabled = false
+local autoEquipBestPetCoroutine = nil
+
+AutoEquipBestPetButton.MouseButton1Click:Connect(function()
+    isAutoEquipBestPetEnabled = not isAutoEquipBestPetEnabled
+    if isAutoEquipBestPetEnabled then
+        AutoEquipBestPetButton.Text = "Auto Equip Best Pet: ON"
+        AutoEquipBestPetButton.BackgroundColor3 = Color3.fromRGB(170, 85, 85)
+        -- Запуск корутины
+        autoEquipBestPetCoroutine = coroutine.create(function()
+            while isAutoEquipBestPetEnabled do
+                wait(1) -- Выполнять каждую секунду
+                -- Выполнение скрипта Auto Equip Best Pet
+                local args = {
+                    [1] = "Equip Best"
+                }
+                pcall(function()
+                    game:GetService("ReplicatedStorage").RemoteEvents.PetActionRequest:InvokeServer(unpack(args))
+                end)
+            end
+        end)
+        coroutine.resume(autoEquipBestPetCoroutine)
+    else
+        AutoEquipBestPetButton.Text = "Auto Equip Best Pet: OFF"
+        AutoEquipBestPetButton.BackgroundColor3 = Color3.fromRGB(85, 170, 85)
+        -- Остановка корутины
+        isAutoEquipBestPetEnabled = false
     end
 end)
