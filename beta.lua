@@ -303,6 +303,7 @@ CreateScriptButton("TPUA", "https://raw.githubusercontent.com/Bac0nHck/Scripts/m
 CreateScriptButton("BloxFruits", "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua")
 CreateScriptButton("+1 Block Every Second", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/%2B1%20Block%20Every%20Second")
 CreateScriptButton("Millionaire Empire Tycoon", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Millionaire%20Empire%20Tycoon")
+CreateScriptButton("Murder Mystery 2", "loadstring(game:HttpGet('https://raw.githubusercontent.com/vertex-peak/vertex/refs/heads/main/loadstring")
 
 UpdateCanvas()
 
