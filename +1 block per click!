@@ -1,0 +1,211 @@
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Utility Functions
+local function CreateTween(object, properties, time, style, direction)
+    local tweenInfo = TweenInfo.new(time or 0.3, style or Enum.EasingStyle.Quad, direction or Enum.EasingDirection.Out)
+    local tween = TweenService:Create(object, tweenInfo, properties)
+    return tween
+end
+
+-- GUI Creation
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "UtilityGUI"
+ScreenGui.Parent = playerGui
+ScreenGui.ResetOnSpawn = false
+
+-- Main Frame
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+MainFrame.Size = UDim2.new(0, 450, 0, 350)
+MainFrame.Position = UDim2.new(0.5, -225, 0.5, -175)
+MainFrame.Active = true
+MainFrame.BorderSizePixel = 0
+MainFrame.ClipsDescendants = true
+
+-- Gradient Background
+local UIGradient = Instance.new("UIGradient")
+UIGradient.Parent = MainFrame
+UIGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 35)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 45))
+})
+UIGradient.Rotation = 45
+
+-- Top Bar
+local TopBar = Instance.new("Frame")
+TopBar.Name = "TopBar"
+TopBar.Parent = MainFrame
+TopBar.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+TopBar.Size = UDim2.new(1, 0, 0, 50)
+TopBar.BorderSizePixel = 0
+
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Parent = TopBar
+Title.BackgroundTransparency = 1
+Title.Size = UDim2.new(1, -100, 1, 0)
+Title.Position = UDim2.new(0, 50, 0, 0)
+Title.Text = "by vzdmgeg, mlwr.e"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 20
+
+-- Minimize Button
+local MinimizeButton = Instance.new("ImageButton")
+MinimizeButton.Name = "MinimizeButton"
+MinimizeButton.Parent = TopBar
+MinimizeButton.BackgroundTransparency = 1
+MinimizeButton.Position = UDim2.new(1, -40, 0, 10)
+MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
+MinimizeButton.Image = "rbxassetid://7072719338"
+MinimizeButton.ImageColor3 = Color3.fromRGB(200, 200, 200)
+
+-- Content Container
+local ContentContainer = Instance.new("Frame")
+ContentContainer.Name = "ContentContainer"
+ContentContainer.Parent = MainFrame
+ContentContainer.BackgroundTransparency = 1
+ContentContainer.Position = UDim2.new(0, 0, 0, 50)
+ContentContainer.Size = UDim2.new(1, 0, 1, -50)
+
+-- Create Button Function
+local function CreateButton(name, position)
+    local Button = Instance.new("TextButton")
+    Button.Name = name
+    Button.Parent = ContentContainer
+    Button.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+    Button.Size = UDim2.new(0, 400, 0, 60)
+    Button.Position = position
+    Button.Text = "Enable " .. name
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.Font = Enum.Font.GothamBold
+    Button.TextSize = 20
+    Button.AutoButtonColor = false
+
+    -- Button Effects
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 10)
+    UICorner.Parent = Button
+
+    local UIStroke = Instance.new("UIStroke")
+    UIStroke.Parent = Button
+    UIStroke.Thickness = 2
+    UIStroke.Color = Color3.fromRGB(60, 60, 70)
+
+    -- Hover Animation
+    Button.MouseEnter:Connect(function()
+        CreateTween(Button, {BackgroundColor3 = Color3.fromRGB(55, 55, 65)}):Play()
+    end)
+
+    Button.MouseLeave:Connect(function()
+        CreateTween(Button, {BackgroundColor3 = Color3.fromRGB(45, 45, 55)}):Play()
+    end)
+
+    return Button
+end
+
+-- Create Buttons
+local AutoRebirthButton = CreateButton("AutoRebirth", UDim2.new(0.5, -200, 0, 30))
+local AutoFarmButton = CreateButton("AutoFarm", UDim2.new(0.5, -200, 0, 110))
+
+-- Minimize Animation
+local MinimizedSize = UDim2.new(0, 450, 0, 50)
+local ExpandedSize = UDim2.new(0, 450, 0, 350)
+local IsMinimized = false
+
+MinimizeButton.MouseButton1Click:Connect(function()
+    IsMinimized = not IsMinimized
+    local targetSize = IsMinimized and MinimizedSize or ExpandedSize
+    local rotation = IsMinimized and 180 or 0
+    
+    CreateTween(MainFrame, {Size = targetSize}, 0.5, Enum.EasingStyle.Quart):Play()
+    CreateTween(MinimizeButton, {Rotation = rotation}, 0.5, Enum.EasingStyle.Quart):Play()
+end)
+
+-- Dragging Logic
+local Dragging = false
+local DragInput, DragStart, StartPosition
+
+TopBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        Dragging = true
+        DragStart = input.Position
+        StartPosition = MainFrame.Position
+    end
+end)
+
+TopBar.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        Dragging = false
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if Dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local Delta = input.Position - DragStart
+        local TargetPosition = UDim2.new(
+            StartPosition.X.Scale,
+            StartPosition.X.Offset + Delta.X,
+            StartPosition.Y.Scale,
+            StartPosition.Y.Offset + Delta.Y
+        )
+        CreateTween(MainFrame, {Position = TargetPosition}, 0.1, Enum.EasingStyle.Linear):Play()
+    end
+end)
+
+-- AutoRebirth Logic
+local AutoRebirthEnabled = false
+
+local function AutoRebirth()
+    while AutoRebirthEnabled do
+        ReplicatedStorage.Remotes.Server.Rebirth:FireServer()
+        wait(1)
+    end
+end
+
+AutoRebirthButton.MouseButton1Click:Connect(function()
+    AutoRebirthEnabled = not AutoRebirthEnabled
+    if AutoRebirthEnabled then
+        AutoRebirthButton.Text = "Disable AutoRebirth"
+        CreateTween(AutoRebirthButton, {BackgroundColor3 = Color3.fromRGB(180, 60, 60)}):Play()
+    else
+        AutoRebirthButton.Text = "Enable AutoRebirth"
+        CreateTween(AutoRebirthButton, {BackgroundColor3 = Color3.fromRGB(45, 45, 55)}):Play()
+    end
+    coroutine.wrap(AutoRebirth)()
+end)
+
+-- AutoFarm Logic
+local AutoFarmEnabled = false
+
+local function AutoFarm()
+    while AutoFarmEnabled do
+        local args = {
+            [1] = "Train",
+            [2] = "1"
+        }
+        ReplicatedStorage.Remotes.Server.Action:FireServer(unpack(args))
+        wait(0.1)
+    end
+end
+
+AutoFarmButton.MouseButton1Click:Connect(function()
+    AutoFarmEnabled = not AutoFarmEnabled
+    if AutoFarmEnabled then
+        AutoFarmButton.Text = "Disable AutoFarm"
+        CreateTween(AutoFarmButton, {BackgroundColor3 = Color3.fromRGB(180, 60, 60)}):Play()
+    else
+        AutoFarmButton.Text = "Enable AutoFarm"
+        CreateTween(AutoFarmButton, {BackgroundColor3 = Color3.fromRGB(45, 45, 55)}):Play()
+    end
+    coroutine.wrap(AutoFarm)()
+end)
