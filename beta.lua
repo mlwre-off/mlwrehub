@@ -306,6 +306,8 @@ CreateScriptButton("Millionaire Empire Tycoon", "https://raw.githubusercontent.c
 CreateScriptButton("+1 block per click!", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/%2B1%20block%20per%20click!")
 CreateScriptButton("Energize GUI by illremember", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Energize%20GUI%20by%20illremember")
 CreateScriptButton("Hat Spin", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Hat%20Spin%20%5BNOT%20MINE%5D")
+CreateScriptButton("SCRIPTER TOOLS by mlwr.e", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/SCIPTER%20TOOLS%20by%20mlwr.e")
+CreateScriptButton("Dex V5", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Dex%20V5%20%5BNOT%20MINE%5D")
 
 UpdateCanvas()
 
