@@ -304,6 +304,8 @@ CreateScriptButton("BloxFruits", "https://raw.githubusercontent.com/AhmadV99/Spe
 CreateScriptButton("+1 Block Every Second", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/%2B1%20Block%20Every%20Second")
 CreateScriptButton("Millionaire Empire Tycoon", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Millionaire%20Empire%20Tycoon")
 CreateScriptButton("+1 block per click!", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/%2B1%20block%20per%20click!")
+CreateScriptButton("Energize GUI by illremember", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Energize%20GUI%20by%20illremember")
+CreateScriptButton("Hat Spin", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Hat%20Spin%20%5BNOT%20MINE%5D")
 
 UpdateCanvas()
 
