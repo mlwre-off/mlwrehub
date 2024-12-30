@@ -295,7 +295,7 @@ end
 CreateScriptButton("Nameless Admin", "https://raw.githubusercontent.com/FilteringEnabled/NamelessAdmin/main/Source")
 CreateScriptButton("Arsenal", "https://raw.githubusercontent.com/Insertl/QuotasHub/main/BETAv1.3")
 CreateScriptButton("Build a Boat for Treasure", "https://raw.githubusercontent.com/catblox1346/BBHscript/main/owo?token=$(date%20+%s)")
-CreateScriptButton("Ring UnAnchored Parts", "https://rawscripts.net/raw/Universal-Script-FE-SUPER-RING-PART-REUPLOADED-22395")
+CreateScriptButton("Ring UnAnchored Parts V4", "https://raw.githubusercontent.com/Lukashub-coder/super-ring/refs/heads/main/Super%20ring!!")
 CreateScriptButton("Infinite Yield", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source")
 CreateScriptButton("Gym Race Simulator", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Gym%20Race%20Simulator%20BETA")
 CreateScriptButton("Simple Spy", "https://raw.githubusercontent.com/exxtremestuffs/SimpleSpySource/refs/heads/master/SimpleSpy.lua")
@@ -305,7 +305,7 @@ CreateScriptButton("+1 Block Every Second", "https://raw.githubusercontent.com/m
 CreateScriptButton("Millionaire Empire Tycoon", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Millionaire%20Empire%20Tycoon")
 CreateScriptButton("+1 block per click!", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/%2B1%20block%20per%20click!")
 CreateScriptButton("Energize GUI by illremember", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Energize%20GUI%20by%20illremember")
-CreateScriptButton("Hat Spin", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Hat%20Spin%20%5BNOT%20MINE%5D")
+CreateScriptButton("Hat Spin (VISUAL)", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Hat%20Spin%20%5BNOT%20MINE%5D")
 CreateScriptButton("SCRIPTER TOOLS by mlwr.e", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/SCIPTER%20TOOLS%20by%20mlwr.e")
 CreateScriptButton("Dex V5", "https://raw.githubusercontent.com/mlwre-off/mlwrehub/refs/heads/main/Dex%20V5%20%5BNOT%20MINE%5D")
 
