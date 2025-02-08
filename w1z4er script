@@ -1,0 +1,116 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+local settings_tbl = {
+    ESP_Enabled = true,
+    ESP_TeamCheck = false,
+    Chams = true,
+    Chams_Color = Color3.fromRGB(0, 0, 255),
+    Chams_Transparency = 0.1,
+    Chams_Glow_Color = Color3.fromRGB(255, 0, 0)
+}
+
+local function destroy_chams(char)
+    for _, v in ipairs(char:GetChildren()) do
+        if v:IsA("BasePart") and v.Transparency ~= 1 then
+            if v:FindFirstChild("Glow") and v:FindFirstChild("Chams") then
+                v.Glow:Destroy()
+                v.Chams:Destroy()
+            end
+        end
+    end
+end
+
+RunService.Heartbeat:Connect(function()
+    if settings_tbl.ESP_Enabled then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer then
+                if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and 
+                    player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
+                    if not settings_tbl.ESP_TeamCheck or player.Team ~= LocalPlayer.Team then
+                        local char = player.Character
+                        for _, part in ipairs(char:GetChildren()) do
+                            if part:IsA("BasePart") and part.Transparency ~= 1 then
+                                if settings_tbl.Chams then
+                                    if not part:FindFirstChild("Glow") and not part:FindFirstChild("Chams") then
+                                        local chams_box = Instance.new("BoxHandleAdornment", part)
+                                        chams_box.Name = "Chams"
+                                        chams_box.AlwaysOnTop = true
+                                        chams_box.ZIndex = 4
+                                        chams_box.Adornee = part
+                                        chams_box.Color3 = settings_tbl.Chams_Color
+                                        chams_box.Transparency = settings_tbl.Chams_Transparency
+                                        chams_box.Size = part.Size + Vector3.new(0.02, 0.02, 0.02)
+
+                                        local glow_box = Instance.new("BoxHandleAdornment", part)
+                                        glow_box.Name = "Glow"
+                                        glow_box.AlwaysOnTop = false
+                                        glow_box.ZIndex = 3
+                                        glow_box.Adornee = part
+                                        glow_box.Color3 = settings_tbl.Chams_Glow_Color
+                                        glow_box.Size = chams_box.Size + Vector3.new(0.13, 0.13, 0.13)
+                                    end
+                                else
+                                    destroy_chams(char)
+                                end
+                            end
+                        end
+                    else
+                        destroy_chams(player.Character)
+                    end
+                else
+                    destroy_chams(player.Character)
+                end
+            end
+        end
+    else
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and 
+                player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") then
+                destroy_chams(player.Character)
+            end
+        end
+    end
+end)
+
+local screenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+local frame = Instance.new("Frame", screenGui)
+frame.Size = UDim2.new(0.3, 0, 0.4, 0)
+frame.Position = UDim2.new(0.35, 0, 0.3, 0)
+frame.BackgroundColor3 = Color3.new(0, 0, 0)
+frame.BackgroundTransparency = 0.5
+frame.Active = true
+frame.Draggable = true
+local espToggleButton = Instance.new("TextButton", frame)
+espToggleButton.Size = UDim2.new(1, 0, 0.2, 0)
+espToggleButton.Position = UDim2.new(0, 0, 0, 0)
+espToggleButton.Text = "Toggle ESP"
+espToggleButton.BackgroundColor3 = Color3.new(0, 0, 1)
+local teamCheckToggleButton = Instance.new("TextButton", frame)
+teamCheckToggleButton.Size = UDim2.new(1, 0, 0.2, 0)
+teamCheckToggleButton.Position = UDim2.new(0, 0, 0.25, 0)
+teamCheckToggleButton.Text = "Toggle Team Check"
+teamCheckToggleButton.BackgroundColor3 = Color3.new(0, 1, 0)
+
+local chamsColorButton = Instance.new("TextButton", frame)
+chamsColorButton.Size = UDim2.new(1, 0, 0.2, 0)
+chamsColorButton.Position = UDim2.new(0, 0, 0.5, 0)
+chamsColorButton.Text = "Change Chams Color"
+chamsColorButton.BackgroundColor3 = Color3.new(1, 1, 0)
+
+espToggleButton.MouseButton1Click:Connect(function()
+    settings_tbl.ESP_Enabled = not settings_tbl.ESP_Enabled
+    espToggleButton.Text = settings_tbl.ESP_Enabled and "Disable ESP" or "Enable ESP"
+end)
+
+teamCheckToggleButton.MouseButton1Click:Connect(function()
+    settings_tbl.ESP_TeamCheck = not settings_tbl.ESP_TeamCheck
+    teamCheckToggleButton.Text = settings_tbl.ESP_TeamCheck and "Disable Team Check" or "Enable Team Check"
+end)
+
+chamsColorButton.MouseButton1Click:Connect(function()
+    local newColor = Color3.new(math.random(), math.random(), math.random())
+    settings_tbl.Chams_Color = newColor
+    chamsColorButton.BackgroundColor3 = newColor
+end)
