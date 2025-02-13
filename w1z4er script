@@ -1,116 +1,396 @@
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
-local settings_tbl = {
-    ESP_Enabled = true,
-    ESP_TeamCheck = false,
-    Chams = true,
-    Chams_Color = Color3.fromRGB(0, 0, 255),
-    Chams_Transparency = 0.1,
-    Chams_Glow_Color = Color3.fromRGB(255, 0, 0)
+local player = Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.ResetOnSpawn = false
+
+local COLORS = {
+	background = Color3.fromRGB(20, 20, 20),
+	panelBackground = Color3.fromRGB(30, 30, 30),
+	text = Color3.fromRGB(240, 240, 240),
+	button = Color3.fromRGB(50, 50, 50),
+	buttonHover = Color3.fromRGB(70, 70, 70),
+	accent = Color3.fromRGB(0, 122, 255)
 }
 
-local function destroy_chams(char)
-    for _, v in ipairs(char:GetChildren()) do
-        if v:IsA("BasePart") and v.Transparency ~= 1 then
-            if v:FindFirstChild("Glow") and v:FindFirstChild("Chams") then
-                v.Glow:Destroy()
-                v.Chams:Destroy()
-            end
-        end
-    end
+local function makeDraggable(gui, onDragEnd)
+	local dragging = false
+	local dragInput, dragStart, startPos
+	gui.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragStart = input.Position
+			startPos = gui.Position
+			local conn
+			conn = input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragging = false
+					if onDragEnd then
+						onDragEnd(gui)
+					end
+					conn:Disconnect()
+				end
+			end)
+		end
+	end)
+	gui.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			dragInput = input
+		end
+	end)
+	UserInputService.InputChanged:Connect(function(input)
+		if dragging and input == dragInput then
+			local delta = input.Position - dragStart
+			gui.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		end
+	end)
 end
 
+local mobileButton = Instance.new("Frame")
+mobileButton.Size = UDim2.new(0, 50, 0, 50)
+mobileButton.Position = UDim2.new(0.05, 0, 0.5, -25)
+mobileButton.BackgroundColor3 = COLORS.panelBackground
+mobileButton.BorderSizePixel = 0
+mobileButton.Parent = screenGui
+
+local mobileCorner = Instance.new("UICorner")
+mobileCorner.CornerRadius = UDim.new(1, 0)
+mobileCorner.Parent = mobileButton
+
+local mobileIcon = Instance.new("TextLabel")
+mobileIcon.Size = UDim2.new(1, 0, 1, 0)
+mobileIcon.Text = "≡"
+mobileIcon.TextColor3 = COLORS.accent
+mobileIcon.BackgroundTransparency = 1
+mobileIcon.Font = Enum.Font.Gotham
+mobileIcon.TextSize = 28
+mobileIcon.Parent = mobileButton
+
+local mobileStroke = Instance.new("UIStroke")
+mobileStroke.Thickness = 2
+mobileStroke.Color = COLORS.buttonHover
+mobileStroke.Parent = mobileButton
+
+makeDraggable(mobileButton)
+
+local isDraggingButton = false
+local dragStartPos = nil
+local dragThreshold = 5
+
+mobileButton.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragStartPos = input.Position
+		isDraggingButton = false
+	end
+end)
+
+mobileButton.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		if dragStartPos and (input.Position - dragStartPos).Magnitude > dragThreshold then
+			isDraggingButton = true
+		end
+	end
+end)
+
+local togglePanel
+mobileButton.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		if not isDraggingButton then
+			togglePanel()
+		end
+		dragStartPos = nil
+		isDraggingButton = false
+	end
+end)
+
+local loadingFrame = Instance.new("Frame")
+loadingFrame.Size = UDim2.new(0, 300, 0, 120)
+loadingFrame.Position = UDim2.new(0.5, -150, 0.5, -60)
+loadingFrame.BackgroundColor3 = COLORS.panelBackground
+loadingFrame.BorderSizePixel = 0
+loadingFrame.Parent = screenGui
+
+local loadingCorner = Instance.new("UICorner")
+loadingCorner.CornerRadius = UDim.new(0, 10)
+loadingCorner.Parent = loadingFrame
+
+local loadingText = Instance.new("TextLabel")
+loadingText.Size = UDim2.new(1, 0, 0.5, 0)
+loadingText.Position = UDim2.new(0, 0, 0.15, 0)
+loadingText.Text = "Loading..."
+loadingText.TextColor3 = COLORS.text
+loadingText.BackgroundTransparency = 1
+loadingText.Font = Enum.Font.Gotham
+loadingText.TextSize = 24
+loadingText.TextScaled = true
+loadingText.Parent = loadingFrame
+
+local authorText = Instance.new("TextLabel")
+authorText.Size = UDim2.new(1, 0, 0.25, 0)
+authorText.Position = UDim2.new(0, 0, 0.65, 0)
+authorText.Text = "by w1z4er, @chelik_XDD, mlwdev"
+authorText.TextColor3 = COLORS.accent
+authorText.BackgroundTransparency = 1
+authorText.Font = Enum.Font.Gotham
+authorText.TextSize = 16
+authorText.TextScaled = true
+authorText.TextXAlignment = Enum.TextXAlignment.Center
+authorText.Parent = loadingFrame
+
+local loadingInTween = TweenService:Create(loadingFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0})
+loadingFrame.BackgroundTransparency = 0.3
+loadingInTween:Play()
+task.wait(2)
+local loadingOutTween = TweenService:Create(loadingFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Position = UDim2.new(0.5, -150, 0.4, -60), BackgroundTransparency = 1})
+loadingOutTween:Play()
+loadingOutTween.Completed:Wait()
+loadingFrame:Destroy()
+
+local panel = Instance.new("Frame")
+panel.Size = UDim2.new(0, 350, 0, 400)
+local savedPanelPosition = UDim2.new(0.5, -175, 0.5, -200)
+panel.Position = savedPanelPosition
+panel.BackgroundColor3 = COLORS.panelBackground
+panel.BorderSizePixel = 0
+panel.Visible = false
+panel.Parent = screenGui
+
+local panelCorner = Instance.new("UICorner")
+panelCorner.CornerRadius = UDim.new(0, 10)
+panelCorner.Parent = panel
+
+local panelPadding = Instance.new("UIPadding")
+panelPadding.PaddingTop = UDim.new(0, 20)
+panelPadding.PaddingBottom = UDim.new(0, 20)
+panelPadding.PaddingLeft = UDim.new(0, 20)
+panelPadding.PaddingRight = UDim.new(0, 20)
+panelPadding.Parent = panel
+
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0, 40)
+titleBar.BackgroundTransparency = 1
+titleBar.Parent = panel
+
+local titleText = Instance.new("TextLabel")
+titleText.Size = UDim2.new(1, -40, 1, 0)
+titleText.Position = UDim2.new(0, 20, 0, 0)
+titleText.Text = "Menu"
+titleText.TextColor3 = COLORS.text
+titleText.BackgroundTransparency = 1
+titleText.Font = Enum.Font.Gotham
+titleText.TextSize = 24
+titleText.TextXAlignment = Enum.TextXAlignment.Left
+titleText.Parent = titleBar
+
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -20, 0, 5)
+closeButton.Text = "×"
+closeButton.TextColor3 = COLORS.text
+closeButton.BackgroundTransparency = 1
+closeButton.Font = Enum.Font.Gotham
+closeButton.TextSize = 24
+closeButton.Parent = titleBar
+
+local panelStroke = Instance.new("UIStroke")
+panelStroke.Thickness = 2
+panelStroke.Color = COLORS.buttonHover
+panelStroke.Parent = panel
+
+local function createButton(text, yPos)
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(1, 0, 0, 50)
+	button.Position = UDim2.new(0, 0, 0, yPos)
+	button.Text = text
+	button.BackgroundColor3 = COLORS.button
+	button.TextColor3 = COLORS.text
+	button.Font = Enum.Font.Gotham
+	button.TextSize = 18
+	button.BorderSizePixel = 0
+	button.AutoButtonColor = false
+	local buttonCorner = Instance.new("UICorner")
+	buttonCorner.CornerRadius = UDim.new(0, 8)
+	buttonCorner.Parent = button
+	local buttonStroke = Instance.new("UIStroke")
+	buttonStroke.Thickness = 1
+	buttonStroke.Color = COLORS.buttonHover
+	buttonStroke.Parent = button
+	button.MouseEnter:Connect(function()
+		TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = COLORS.buttonHover}):Play()
+	end)
+	button.MouseLeave:Connect(function()
+		TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = COLORS.button}):Play()
+	end)
+	button.Parent = panel
+	return button
+end
+
+local function createSlider(text, yPos, defaultValue)
+	local container = Instance.new("Frame")
+	container.Size = UDim2.new(1, 0, 0, 50)
+	container.Position = UDim2.new(0, 0, 0, yPos)
+	container.BackgroundColor3 = COLORS.button
+	container.BorderSizePixel = 0
+	container.Parent = panel
+
+	local containerCorner = Instance.new("UICorner")
+	containerCorner.CornerRadius = UDim.new(0, 8)
+	containerCorner.Parent = container
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, -20, 0.5, 0)
+	label.Position = UDim2.new(0, 10, 0, 0)
+	label.Text = text
+	label.TextColor3 = COLORS.text
+	label.BackgroundTransparency = 1
+	label.Font = Enum.Font.Gotham
+	label.TextSize = 16
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Parent = container
+
+	local valueBox = Instance.new("TextBox")
+	valueBox.Size = UDim2.new(0.3, 0, 0.4, 0)
+	valueBox.Position = UDim2.new(0.65, 0, 0.55, 0)
+	valueBox.Text = tostring(defaultValue)
+	valueBox.TextColor3 = COLORS.text
+	valueBox.BackgroundColor3 = COLORS.panelBackground
+	valueBox.Font = Enum.Font.Gotham
+	valueBox.TextSize = 16
+	valueBox.BorderSizePixel = 0
+	valueBox.ClearTextOnFocus = false
+	valueBox.Parent = container
+
+	local valueCorner = Instance.new("UICorner")
+	valueCorner.CornerRadius = UDim.new(0, 4)
+	valueCorner.Parent = valueBox
+
+	return valueBox
+end
+
+local espButton = createButton("Toggle ESP", 80)
+local colorButton = createButton("Change ESP Color", 150)
+local speedSlider = createSlider("Speed", 220, 16)
+local jumpSlider = createSlider("Jump Power", 290, 50)
+
+makeDraggable(panel, function(gui)
+	savedPanelPosition = gui.Position
+end)
+
+togglePanel = function()
+	if panel.Visible then
+		local hiddenPosition = UDim2.new(savedPanelPosition.X.Scale, savedPanelPosition.X.Offset, savedPanelPosition.Y.Scale + 0.2, savedPanelPosition.Y.Offset)
+		local closeTween = TweenService:Create(panel, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = hiddenPosition})
+		closeTween:Play()
+		closeTween.Completed:Wait()
+		panel.Visible = false
+	else
+		panel.Visible = true
+		local hiddenPosition = UDim2.new(savedPanelPosition.X.Scale, savedPanelPosition.X.Offset, savedPanelPosition.Y.Scale + 0.2, savedPanelPosition.Y.Offset)
+		panel.Position = hiddenPosition
+		local openTween = TweenService:Create(panel, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = savedPanelPosition})
+		openTween:Play()
+	end
+end
+
+closeButton.MouseButton1Click:Connect(togglePanel)
+
+local isESPEnabled = true
+local colorIndex = 1
+local speedValue = 16
+local jumpValue = 50
+
+espButton.MouseButton1Click:Connect(function()
+	isESPEnabled = not isESPEnabled
+	if not isESPEnabled then
+		for _, v in pairs(Players:GetPlayers()) do
+			if v ~= player and v.Character then
+				for _, part in pairs(v.Character:GetChildren()) do
+					if part:IsA("BasePart") then
+						local chams = part:FindFirstChild("Chams")
+						if chams then
+							chams:Destroy()
+						end
+					end
+				end
+			end
+		end
+	end
+end)
+
+local espColors = {
+	Color3.fromRGB(255, 0, 0),
+	Color3.fromRGB(0, 255, 0),
+	Color3.fromRGB(0, 0, 255),
+	Color3.fromRGB(255, 255, 0)
+}
+
+colorButton.MouseButton1Click:Connect(function()
+	colorIndex = (colorIndex % #espColors) + 1
+	local pressTween = TweenService:Create(colorButton, TweenInfo.new(0.1), {BackgroundColor3 = COLORS.accent})
+	pressTween:Play()
+	task.wait(0.1)
+	TweenService:Create(colorButton, TweenInfo.new(0.1), {BackgroundColor3 = COLORS.button}):Play()
+end)
+
+speedSlider.FocusLost:Connect(function()
+	local num = tonumber(speedSlider.Text)
+	if num and num >= 1 and num <= 200 then
+		speedValue = num
+	else
+		speedSlider.Text = tostring(speedValue)
+	end
+	local flashTween = TweenService:Create(speedSlider, TweenInfo.new(0.2), {TextColor3 = COLORS.accent})
+	flashTween:Play()
+	flashTween.Completed:Wait()
+	TweenService:Create(speedSlider, TweenInfo.new(0.2), {TextColor3 = COLORS.text}):Play()
+end)
+
+jumpSlider.FocusLost:Connect(function()
+	local num = tonumber(jumpSlider.Text)
+	if num and num >= 1 and num <= 200 then
+		jumpValue = num
+	else
+		jumpSlider.Text = tostring(jumpValue)
+	end
+	local flashTween = TweenService:Create(jumpSlider, TweenInfo.new(0.2), {TextColor3 = COLORS.accent})
+	flashTween:Play()
+	flashTween.Completed:Wait()
+	TweenService:Create(jumpSlider, TweenInfo.new(0.2), {TextColor3 = COLORS.text}):Play()
+end)
+
 RunService.Heartbeat:Connect(function()
-    if settings_tbl.ESP_Enabled then
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer then
-                if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and 
-                    player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
-                    if not settings_tbl.ESP_TeamCheck or player.Team ~= LocalPlayer.Team then
-                        local char = player.Character
-                        for _, part in ipairs(char:GetChildren()) do
-                            if part:IsA("BasePart") and part.Transparency ~= 1 then
-                                if settings_tbl.Chams then
-                                    if not part:FindFirstChild("Glow") and not part:FindFirstChild("Chams") then
-                                        local chams_box = Instance.new("BoxHandleAdornment", part)
-                                        chams_box.Name = "Chams"
-                                        chams_box.AlwaysOnTop = true
-                                        chams_box.ZIndex = 4
-                                        chams_box.Adornee = part
-                                        chams_box.Color3 = settings_tbl.Chams_Color
-                                        chams_box.Transparency = settings_tbl.Chams_Transparency
-                                        chams_box.Size = part.Size + Vector3.new(0.02, 0.02, 0.02)
-
-                                        local glow_box = Instance.new("BoxHandleAdornment", part)
-                                        glow_box.Name = "Glow"
-                                        glow_box.AlwaysOnTop = false
-                                        glow_box.ZIndex = 3
-                                        glow_box.Adornee = part
-                                        glow_box.Color3 = settings_tbl.Chams_Glow_Color
-                                        glow_box.Size = chams_box.Size + Vector3.new(0.13, 0.13, 0.13)
-                                    end
-                                else
-                                    destroy_chams(char)
-                                end
-                            end
-                        end
-                    else
-                        destroy_chams(player.Character)
-                    end
-                else
-                    destroy_chams(player.Character)
-                end
-            end
-        end
-    else
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character and 
-                player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") then
-                destroy_chams(player.Character)
-            end
-        end
-    end
+	if player.Character and player.Character:FindFirstChild("Humanoid") then
+		player.Character.Humanoid.WalkSpeed = speedValue
+		player.Character.Humanoid.JumpPower = jumpValue
+	end
 end)
 
-local screenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-local frame = Instance.new("Frame", screenGui)
-frame.Size = UDim2.new(0.3, 0, 0.4, 0)
-frame.Position = UDim2.new(0.35, 0, 0.3, 0)
-frame.BackgroundColor3 = Color3.new(0, 0, 0)
-frame.BackgroundTransparency = 0.5
-frame.Active = true
-frame.Draggable = true
-local espToggleButton = Instance.new("TextButton", frame)
-espToggleButton.Size = UDim2.new(1, 0, 0.2, 0)
-espToggleButton.Position = UDim2.new(0, 0, 0, 0)
-espToggleButton.Text = "Toggle ESP"
-espToggleButton.BackgroundColor3 = Color3.new(0, 0, 1)
-local teamCheckToggleButton = Instance.new("TextButton", frame)
-teamCheckToggleButton.Size = UDim2.new(1, 0, 0.2, 0)
-teamCheckToggleButton.Position = UDim2.new(0, 0, 0.25, 0)
-teamCheckToggleButton.Text = "Toggle Team Check"
-teamCheckToggleButton.BackgroundColor3 = Color3.new(0, 1, 0)
-
-local chamsColorButton = Instance.new("TextButton", frame)
-chamsColorButton.Size = UDim2.new(1, 0, 0.2, 0)
-chamsColorButton.Position = UDim2.new(0, 0, 0.5, 0)
-chamsColorButton.Text = "Change Chams Color"
-chamsColorButton.BackgroundColor3 = Color3.new(1, 1, 0)
-
-espToggleButton.MouseButton1Click:Connect(function()
-    settings_tbl.ESP_Enabled = not settings_tbl.ESP_Enabled
-    espToggleButton.Text = settings_tbl.ESP_Enabled and "Disable ESP" or "Enable ESP"
-end)
-
-teamCheckToggleButton.MouseButton1Click:Connect(function()
-    settings_tbl.ESP_TeamCheck = not settings_tbl.ESP_TeamCheck
-    teamCheckToggleButton.Text = settings_tbl.ESP_TeamCheck and "Disable Team Check" or "Enable Team Check"
-end)
-
-chamsColorButton.MouseButton1Click:Connect(function()
-    local newColor = Color3.new(math.random(), math.random(), math.random())
-    settings_tbl.Chams_Color = newColor
-    chamsColorButton.BackgroundColor3 = newColor
+RunService.Heartbeat:Connect(function()
+	if isESPEnabled then
+		for _, v in pairs(Players:GetPlayers()) do
+			if v ~= player and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+				for _, part in pairs(v.Character:GetChildren()) do
+					if part:IsA("BasePart") then
+						local chams = part:FindFirstChild("Chams")
+						if not chams then
+							chams = Instance.new("BoxHandleAdornment")
+							chams.Name = "Chams"
+							chams.Adornee = part
+							chams.AlwaysOnTop = true
+							chams.ZIndex = 4
+							chams.Size = part.Size + Vector3.new(0.02, 0.02, 0.02)
+							chams.Transparency = 1
+							chams.Parent = part
+							TweenService:Create(chams, TweenInfo.new(0.3), {Transparency = 0.5}):Play()
+						end
+						chams.Color3 = espColors[colorIndex]
+					end
+				end
+			end
+		end
+	end
 end)
