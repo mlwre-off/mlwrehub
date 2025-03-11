@@ -35,12 +35,12 @@ frame.Name = "MainFrame"
 frame.Size = UDim2.fromScale(2, 2)
 frame.Position = UDim2.fromScale(-0.5, -0.5)
 frame.BackgroundColor3 = THEME.BACKGROUND
-frame.BackgroundTransparency = 0.7 -- Увеличил прозрачность фона для более выраженного блюра
+frame.BackgroundTransparency = 0.6 -- Немного уменьшил прозрачность фона для лучшей контрастности текста
 frame.BorderSizePixel = 0
 frame.ZIndex = 1
 frame.Parent = screenGui
 
--- Добавление градиентного наложения на фон (немного изменил цвета для темной темы)
+-- Добавление градиентного наложения на фон
 local gradient = Instance.new("UIGradient")
 gradient.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.fromRGB(10, 10, 15)),
@@ -50,11 +50,11 @@ gradient.Color = ColorSequence.new({
 gradient.Rotation = 45
 gradient.Parent = frame
 
--- Создание частиц для фонового эффекта (цвет частиц немного темнее)
+-- Создание частиц для фонового эффекта
 local function createParticles(count)
     for i = 1, count do
         local particle = Instance.new("Frame")
-        particle.BackgroundColor3 = Color3.fromRGB(200, 200, 200) -- Частицы немного темнее белого
+        particle.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
         particle.BackgroundTransparency = math.random(70, 90) / 100
         particle.BorderSizePixel = 0
 
@@ -99,13 +99,13 @@ local mainPanel = Instance.new("Frame")
 mainPanel.Name = "MainPanel"
 mainPanel.Size = UDim2.new(0, 450, 0, 500)
 mainPanel.Position = UDim2.new(0.5, -225, 0.5, -250)
-mainPanel.BackgroundColor3 = THEME.SECONDARY -- Используем более светлый вторичный цвет
-mainPanel.BackgroundTransparency = 0.4 -- Увеличил прозрачность панели для легкости
+mainPanel.BackgroundColor3 = THEME.SECONDARY
+mainPanel.BackgroundTransparency = 0.3 -- Немного уменьшил прозрачность панели
 mainPanel.BorderSizePixel = 0
 mainPanel.ZIndex = 2
 mainPanel.Parent = screenGui
 
--- Добавление тени к панели (цвет тени немного темнее)
+-- Добавление тени к панели
 local shadow = Instance.new("ImageLabel")
 shadow.Name = "Shadow"
 shadow.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -114,8 +114,8 @@ shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
 shadow.Size = UDim2.new(1, 40, 1, 40)
 shadow.ZIndex = 1
 shadow.Image = "rbxassetid://6014261993"
-shadow.ImageColor3 = Color3.fromRGB(10, 10, 10) -- Темнее тень
-shadow.ImageTransparency = 0.6 -- Увеличил прозрачность тени
+shadow.ImageColor3 = Color3.fromRGB(10, 10, 10)
+shadow.ImageTransparency = 0.6
 shadow.ScaleType = Enum.ScaleType.Slice
 shadow.SliceCenter = Rect.new(49, 49, 450, 450)
 shadow.Parent = mainPanel
@@ -125,11 +125,11 @@ local cornerRadius = Instance.new("UICorner")
 cornerRadius.CornerRadius = UDim.new(0, 16)
 cornerRadius.Parent = mainPanel
 
--- Добавление градиента к панели (изменил цвета градиента под темную тему)
+-- Добавление градиента к панели
 local panelGradient = Instance.new("UIGradient")
 panelGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 40)), -- Немного светлее
-    ColorSequenceKeypoint.new(1, THEME.SECONDARY) -- Используем вторичный цвет
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 40)),
+    ColorSequenceKeypoint.new(1, THEME.SECONDARY)
 })
 panelGradient.Rotation = 90
 panelGradient.Parent = mainPanel
@@ -177,7 +177,7 @@ local logoImage = Instance.new("ImageLabel")
 logoImage.Name = "Logo"
 logoImage.Size = UDim2.new(1, 0, 1, 0)
 logoImage.BackgroundTransparency = 1
-logoImage.Image = "rbxassetid://117511501336791" -- Используем ту же иконку, что и в плавающей кнопке
+logoImage.Image = "rbxassetid://117511501336791"
 logoImage.ImageColor3 = THEME.PRIMARY
 logoImage.Parent = logoContainer
 
@@ -197,15 +197,16 @@ titleLabel.Name = "TitleLabel"
 titleLabel.Text = "QUEST X"
 titleLabel.Font = Enum.Font.GothamBold
 titleLabel.TextSize = 42
-titleLabel.TextColor3 = THEME.TEXT_PRIMARY -- Белый текст
+titleLabel.TextColor3 = THEME.TEXT_PRIMARY
 titleLabel.BackgroundTransparency = 1
+titleLabel.TextTransparency = 0 -- Установил прозрачность текста в 0
 titleLabel.Size = UDim2.new(1, 0, 0, 50)
 titleLabel.Position = UDim2.new(0, 0, 0, 140)
 titleLabel.Parent = contentContainer
 
--- Добавление эффекта свечения к тексту (цвет свечения немного темнее)
+-- Добавление эффекта свечения к тексту
 local textGlow = Instance.new("UIStroke")
-textGlow.Color = THEME.PRIMARY_DARK -- Темнее свечение
+textGlow.Color = THEME.PRIMARY_DARK
 textGlow.Thickness = 1
 textGlow.Transparency = 0.8
 textGlow.Parent = titleLabel
@@ -216,8 +217,9 @@ subtitleLabel.Name = "SubtitleLabel"
 subtitleLabel.Text = "KEY AUTHENTICATION"
 subtitleLabel.Font = Enum.Font.Gotham
 subtitleLabel.TextSize = 18
-subtitleLabel.TextColor3 = THEME.TEXT_SECONDARY -- Светло-серый текст
+subtitleLabel.TextColor3 = THEME.TEXT_SECONDARY
 subtitleLabel.BackgroundTransparency = 1
+subtitleLabel.TextTransparency = 0 -- Установил прозрачность текста в 0
 subtitleLabel.Size = UDim2.new(1, 0, 0, 30)
 subtitleLabel.Position = UDim2.new(0, 0, 0, 190)
 subtitleLabel.Parent = contentContainer
@@ -236,19 +238,20 @@ inputLabel.Name = "InputLabel"
 inputLabel.Text = "Enter your key:"
 inputLabel.Font = Enum.Font.GothamSemibold
 inputLabel.TextSize = 16
-inputLabel.TextColor3 = THEME.TEXT_PRIMARY -- Белый текст
+inputLabel.TextColor3 = THEME.TEXT_PRIMARY
 inputLabel.TextXAlignment = Enum.TextXAlignment.Left
 inputLabel.BackgroundTransparency = 1
+inputLabel.TextTransparency = 0 -- Установил прозрачность текста в 0
 inputLabel.Size = UDim2.new(1, 0, 0, 20)
 inputLabel.Position = UDim2.new(0, 0, 0, 0)
 inputLabel.Parent = formContainer
 
--- Создание поля ввода с улучшенным дизайном (цвет фона поля ввода немного светлее)
+-- Создание поля ввода с улучшенным дизайном
 local inputBackground = Instance.new("Frame")
 inputBackground.Name = "InputBackground"
 inputBackground.Size = UDim2.new(1, 0, 0, 50)
 inputBackground.Position = UDim2.new(0, 0, 0, 30)
-inputBackground.BackgroundColor3 = Color3.fromRGB(35, 35, 40) -- Светлее фон поля ввода
+inputBackground.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
 inputBackground.BorderSizePixel = 0
 inputBackground.Parent = formContainer
 
@@ -257,9 +260,9 @@ local inputCorner = Instance.new("UICorner")
 inputCorner.CornerRadius = UDim.new(0, 10)
 inputCorner.Parent = inputBackground
 
--- Акцентная рамка для поля ввода (цвет рамки немного светлее)
+-- Акцентная рамка для поля ввода
 local inputStroke = Instance.new("UIStroke")
-inputStroke.Color = Color3.fromRGB(70, 70, 80) -- Светлее рамка
+inputStroke.Color = Color3.fromRGB(70, 70, 80)
 inputStroke.Thickness = 1
 inputStroke.Parent = inputBackground
 
@@ -270,37 +273,37 @@ keyInput.PlaceholderText = "Enter your key here..."
 keyInput.Text = ""
 keyInput.Font = Enum.Font.Gotham
 keyInput.TextSize = 18
-keyInput.TextColor3 = THEME.TEXT_PRIMARY -- Белый текст
-keyInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 160) -- Светлее placeholder
+keyInput.TextColor3 = THEME.TEXT_PRIMARY
+keyInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 160)
 keyInput.BackgroundTransparency = 1
 keyInput.Size = UDim2.new(1, -20, 1, 0)
 keyInput.Position = UDim2.new(0, 10, 0, 0)
 keyInput.Parent = inputBackground
 keyInput.ClearTextOnFocus = false
 
--- Иконка для поля ввода (цвет иконки немного светлее)
+-- Иконка для поля ввода
 local keyIcon = Instance.new("ImageLabel")
 keyIcon.Name = "KeyIcon"
 keyIcon.Size = UDim2.new(0, 24, 0, 24)
 keyIcon.Position = UDim2.new(0, 15, 0.5, -12)
 keyIcon.BackgroundTransparency = 1
-keyIcon.Image = "rbxassetid://7733715400" -- Иконка ключа
-keyIcon.ImageColor3 = Color3.fromRGB(150, 150, 160) -- Светлее иконка
-keyIcon.Visible = false -- Скроем пока, если нужно - можно использовать
+keyIcon.Image = "rbxassetid://7733715400"
+keyIcon.ImageColor3 = Color3.fromRGB(150, 150, 160)
+keyIcon.Visible = false
 keyIcon.Parent = inputBackground
 
--- Кнопка проверки ключа (цвет кнопки немного темнее)
+-- Кнопка проверки ключа
 local verifyButton = Instance.new("TextButton")
 verifyButton.Name = "VerifyButton"
 verifyButton.Text = "VERIFY KEY"
 verifyButton.Font = Enum.Font.GothamBold
 verifyButton.TextSize = 18
-verifyButton.TextColor3 = THEME.TEXT_PRIMARY -- Белый текст
-verifyButton.BackgroundColor3 = THEME.PRIMARY -- Используем основной цвет
+verifyButton.TextColor3 = THEME.TEXT_PRIMARY
+verifyButton.BackgroundColor3 = THEME.PRIMARY
 verifyButton.Size = UDim2.new(1, 0, 0, 50)
 verifyButton.Position = UDim2.new(0, 0, 0, 100)
 verifyButton.BorderSizePixel = 0
-verifyButton.AutoButtonColor = false -- Отключаем стандартный эффект нажатия, будем делать свой
+verifyButton.AutoButtonColor = false
 verifyButton.Parent = formContainer
 
 -- Скругление углов для кнопки
@@ -308,7 +311,7 @@ local buttonCorner = Instance.new("UICorner")
 buttonCorner.CornerRadius = UDim.new(0, 10)
 buttonCorner.Parent = verifyButton
 
--- Градиент для кнопки (изменил цвета градиента под темную тему)
+-- Градиент для кнопки
 local buttonGradient = Instance.new("UIGradient")
 buttonGradient.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, THEME.PRIMARY),
@@ -317,12 +320,12 @@ buttonGradient.Color = ColorSequence.new({
 buttonGradient.Rotation = 90
 buttonGradient.Parent = verifyButton
 
--- Создание эффекта свечения для кнопки (цвет свечения немного темнее)
+-- Создание эффекта свечения для кнопки
 local glow = Instance.new("ImageLabel")
 glow.Name = "Glow"
 glow.BackgroundTransparency = 1
 glow.Image = "rbxassetid://6014261993"
-glow.ImageColor3 = THEME.PRIMARY -- Используем основной цвет
+glow.ImageColor3 = THEME.PRIMARY
 glow.ImageTransparency = 0.7
 glow.Size = UDim2.new(1, 20, 1, 20)
 glow.Position = UDim2.new(0, -10, 0, -10)
@@ -331,14 +334,14 @@ glow.SliceCenter = Rect.new(49, 49, 450, 450)
 glow.ZIndex = 1
 glow.Parent = verifyButton
 
--- Кнопка "Get Key" (цвет кнопки немного светлее)
+-- Кнопка "Get Key"
 local getKeyButton = Instance.new("TextButton")
 getKeyButton.Name = "GetKeyButton"
 getKeyButton.Text = "GET KEY"
 getKeyButton.Font = Enum.Font.GothamBold
 getKeyButton.TextSize = 16
-getKeyButton.TextColor3 = THEME.TEXT_PRIMARY -- Белый текст
-getKeyButton.BackgroundColor3 = Color3.fromRGB(50, 50, 60) -- Светлее цвет кнопки
+getKeyButton.TextColor3 = THEME.TEXT_PRIMARY
+getKeyButton.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
 getKeyButton.Size = UDim2.new(0.48, 0, 0, 40)
 getKeyButton.Position = UDim2.new(0, 0, 0, 170)
 getKeyButton.BorderSizePixel = 0
@@ -350,14 +353,14 @@ local getKeyCorner = Instance.new("UICorner")
 getKeyCorner.CornerRadius = UDim.new(0, 8)
 getKeyCorner.Parent = getKeyButton
 
--- Кнопка "Discord" (цвет кнопки немного светлее)
+-- Кнопка "Discord"
 local discordButton = Instance.new("TextButton")
 discordButton.Name = "DiscordButton"
 discordButton.Text = "DISCORD"
 discordButton.Font = Enum.Font.GothamBold
 discordButton.TextSize = 16
-discordButton.TextColor3 = THEME.TEXT_PRIMARY -- Белый текст
-discordButton.BackgroundColor3 = Color3.fromRGB(134, 157, 238) -- Светлее цвет Discord
+discordButton.TextColor3 = THEME.TEXT_PRIMARY
+discordButton.BackgroundColor3 = Color3.fromRGB(134, 157, 238)
 discordButton.Size = UDim2.new(0.48, 0, 0, 40)
 discordButton.Position = UDim2.new(0.52, 0, 0, 170)
 discordButton.BorderSizePixel = 0
@@ -369,14 +372,15 @@ local discordCorner = Instance.new("UICorner")
 discordCorner.CornerRadius = UDim.new(0, 8)
 discordCorner.Parent = discordButton
 
--- Статус-сообщение (цвет текста статуса белый)
+-- Статус-сообщение
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Name = "StatusLabel"
 statusLabel.Text = ""
 statusLabel.Font = Enum.Font.Gotham
 statusLabel.TextSize = 16
-statusLabel.TextColor3 = THEME.TEXT_PRIMARY -- Белый текст
+statusLabel.TextColor3 = THEME.TEXT_PRIMARY
 statusLabel.BackgroundTransparency = 1
+statusLabel.TextTransparency = 0 -- Установил прозрачность текста в 0
 statusLabel.Size = UDim2.new(1, 0, 0, 20)
 statusLabel.Position = UDim2.new(0, 0, 0, 440)
 statusLabel.Parent = contentContainer
@@ -417,9 +421,10 @@ local function createProgressItem(text, index)
     textLabel.Text = text
     textLabel.Font = Enum.Font.Gotham
     textLabel.TextSize = 16
-    textLabel.TextColor3 = THEME.TEXT_SECONDARY -- Светло-серый текст для процесса
+    textLabel.TextColor3 = THEME.TEXT_SECONDARY
     textLabel.TextXAlignment = Enum.TextXAlignment.Left
     textLabel.BackgroundTransparency = 1
+    textLabel.TextTransparency = 0 -- Установил прозрачность текста в 0
     textLabel.Size = UDim2.new(1, -40, 1, 0)
     textLabel.Position = UDim2.new(0, 40, 0, 0)
     textLabel.Parent = itemContainer
@@ -477,7 +482,7 @@ local function updateProgressItem(item, status, message)
         end
 
         item.icon.BackgroundColor3 = THEME.SUCCESS
-        item.text.TextColor3 = THEME.TEXT_PRIMARY -- Белый текст при успехе
+        item.text.TextColor3 = THEME.TEXT_PRIMARY
 
         -- Добавляем галочку
         local checkmark = Instance.new("ImageLabel")
@@ -485,7 +490,7 @@ local function updateProgressItem(item, status, message)
         checkmark.Size = UDim2.new(0.7, 0, 0.7, 0)
         checkmark.Position = UDim2.new(0.15, 0, 0.15, 0)
         checkmark.BackgroundTransparency = 1
-        checkmark.Image = "rbxassetid://7733658133" -- Галочка
+        checkmark.Image = "rbxassetid://7733658133"
         checkmark.ImageColor3 = Color3.fromRGB(255, 255, 255)
         checkmark.Parent = item.icon
 
@@ -513,7 +518,7 @@ local function updateProgressItem(item, status, message)
         cross.Size = UDim2.new(0.7, 0, 0.7, 0)
         cross.Position = UDim2.new(0.15, 0, 0.15, 0)
         cross.BackgroundTransparency = 1
-        cross.Image = "rbxassetid://7733715400" -- Крестик (замените на правильный ID)
+        cross.Image = "rbxassetid://7733715400"
         cross.ImageColor3 = Color3.fromRGB(255, 255, 255)
         cross.Parent = item.icon
     end
@@ -524,22 +529,22 @@ local function updateProgressItem(item, status, message)
     end
 end
 
--- Кнопка закрытия (цвет иконки немного светлее)
+-- Кнопка закрытия
 local closeButton = Instance.new("ImageButton")
 closeButton.Name = "CloseButton"
 closeButton.Size = UDim2.new(0, 30, 0, 30)
 closeButton.Position = UDim2.new(1, -40, 0, 15)
 closeButton.BackgroundTransparency = 1
-closeButton.Image = "rbxassetid://7733715400" -- ID иконки Х
-closeButton.ImageColor3 = THEME.TEXT_SECONDARY -- Светло-серая иконка
+closeButton.Image = "rbxassetid://7733715400"
+closeButton.ImageColor3 = THEME.TEXT_SECONDARY
 closeButton.Parent = mainPanel
 
--- Плавающая иконка (цвет фона немного светлее)
+-- Плавающая иконка
 local floatingIcon = Instance.new("ImageButton")
 floatingIcon.Name = "FloatingIcon"
 floatingIcon.Size = UDim2.new(0, 50, 0, 50)
 floatingIcon.Position = UDim2.new(0.05, 0, 0.1, 0)
-floatingIcon.BackgroundColor3 = THEME.SECONDARY -- Используем вторичный цвет
+floatingIcon.BackgroundColor3 = THEME.SECONDARY
 floatingIcon.Image = "rbxassetid://117511501336791"
 floatingIcon.ImageColor3 = THEME.PRIMARY
 floatingIcon.ImageTransparency = 0
@@ -552,7 +557,7 @@ local floatingCorner = Instance.new("UICorner")
 floatingCorner.CornerRadius = UDim.new(1, 0)
 floatingCorner.Parent = floatingIcon
 
--- Тень для плавающей иконки (цвет тени немного темнее)
+-- Тень для плавающей иконки
 local floatingShadow = Instance.new("ImageLabel")
 floatingShadow.Name = "Shadow"
 floatingShadow.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -561,8 +566,8 @@ floatingShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
 floatingShadow.Size = UDim2.new(1, 20, 1, 20)
 floatingShadow.ZIndex = -1
 floatingShadow.Image = "rbxassetid://6014261993"
-floatingShadow.ImageColor3 = Color3.fromRGB(10, 10, 10) -- Темнее тень
-floatingShadow.ImageTransparency = 0.6 -- Увеличил прозрачность тени
+floatingShadow.ImageColor3 = Color3.fromRGB(10, 10, 10)
+floatingShadow.ImageTransparency = 0.6
 floatingShadow.ScaleType = Enum.ScaleType.Slice
 floatingShadow.SliceCenter = Rect.new(49, 49, 450, 450)
 floatingShadow.Parent = floatingIcon
@@ -582,7 +587,7 @@ end)
 
 -- Функции для интерактивности
 
--- Эффект наведения на кнопки (цвета наведения немного светлее)
+-- Эффект наведения на кнопки
 local function setupButtonHoverEffect(button, baseColor, hoverColor)
     button.MouseEnter:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.3), {BackgroundColor3 = hoverColor}):Play()
@@ -607,17 +612,17 @@ end
 
 setupButtonHoverEffect(verifyButton, THEME.PRIMARY, Color3.fromRGB(255, 50, 50))
 setupButtonHoverEffect(getKeyButton, Color3.fromRGB(50, 50, 60), Color3.fromRGB(60, 60, 70))
-setupButtonHoverEffect(discordButton, Color3.fromRGB(134, 157, 238), Color3.fromRGB(154, 177, 258)) -- Светлее цвет наведения Discord
+setupButtonHoverEffect(discordButton, Color3.fromRGB(134, 157, 238), Color3.fromRGB(154, 177, 258))
 
--- Эффект фокуса на текстовое поле (цвета фокуса немного светлее)
+-- Эффект фокуса на текстовое поле
 keyInput.Focused:Connect(function()
     TweenService:Create(inputStroke, TweenInfo.new(0.3), {Color = THEME.PRIMARY}):Play()
-    TweenService:Create(inputBackground, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(40, 40, 45)}):Play() -- Светлее фон фокуса
+    TweenService:Create(inputBackground, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(40, 40, 45)}):Play()
 end)
 
 keyInput.FocusLost:Connect(function()
-    TweenService:Create(inputStroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(70, 70, 80)}):Play() -- Светлее рамка после фокуса
-    TweenService:Create(inputBackground, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(35, 35, 40)}):Play() -- Светлее фон после фокуса
+    TweenService:Create(inputStroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(70, 70, 80)}):Play()
+    TweenService:Create(inputBackground, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(35, 35, 40)}):Play()
 end)
 
 -- Анимация появления интерфейса
@@ -644,7 +649,7 @@ local function showInterface()
     local frameTween = TweenService:Create(
         frame,
         TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-        {BackgroundTransparency = 0.7} -- Прозрачность фона как в начале
+        {BackgroundTransparency = 0.6} -- Прозрачность фона как в начале, чуть уменьшена для контраста
     )
 
     panelTween:Play()
@@ -681,7 +686,7 @@ local function showInterface()
     end
 end
 
--- Анимации появления подкомпонентов с задержкой (не используется, можно удалить, если не нужен)
+-- Анимации появления подкомпонентов с задержкой
 local function animateWithDelay(object, delay, properties)
     object.BackgroundTransparency = 1
     if object:IsA("TextLabel") or object:IsA("TextButton") then
