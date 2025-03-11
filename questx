@@ -338,7 +338,7 @@ end
 local infoContainer = Instance.new("Frame")
 infoContainer.Name = "InfoContainer"
 infoContainer.Size = UDim2.new(0, adaptiveSize.centerWidth * 0.7, 0, adaptiveSize.centerHeight * 0.3)
-infoContainer.Position = UDim2.new(0.5, -adaptiveSize.centerWidth * 0.7/2, 0.67, -20 * adaptiveSize.scale)
+infoContainer.Position = UDim2.new(0.5, -adaptiveSize.centerWidth * 0.7/2, 0.67, -50 * adaptiveSize.scale)
 infoContainer.BackgroundTransparency = 1
 infoContainer.ZIndex = 3
 infoContainer.Parent = centerFrame
