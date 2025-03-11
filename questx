@@ -17,7 +17,6 @@ local function readValidKeyFromFile()
     local success, key = pcall(function()
         return readfile("keyguard.txt")
     end)
-
     if success then
         return key
     else
@@ -30,41 +29,32 @@ local function checkKey(key)
     if premiumResponse == trueData then
         return true, "premium"
     end
-
     local defaultResponse = KeyGuardLibrary.validateDefaultKey(key)
     if defaultResponse == trueData then
         return true, "default"
     end
-
     return false, nil
 end
 
 local function onValidKey()
     makefolder("Questxscript")
-
     if _G.is_deltaandroid_loaded then
         print("already running")
         return
     end
-
     _G.is_deltaandroid_loaded = true
-
-    local G2L = {};
-
-    G2L["1"] = Instance.new("ScreenGui", gethui());
-    G2L["1"]["Name"] = [[DeltaGui]];
-    G2L["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
-
-    G2L["2"] = Instance.new("Folder", G2L["1"]);
-    G2L["2"]["Name"] = [[KeySystem]];
-
-    G2L["3"] = Instance.new("Frame", G2L["2"]);
-    G2L["3"]["BackgroundColor3"] = Color3.fromRGB(25, 25, 30);
-    G2L["3"]["Size"] = UDim2.new(0.76389479637146, 0, 0.4519544541835785, 0);
-    G2L["3"]["Position"] = UDim2.new(0.11660274863243103, 0, 0.275360107421875, 0);
-    G2L["3"]["Visible"] = false;
-    G2L["3"]["Name"] = [[MainKeyFrame]];
-
+    local G2L = {}
+    G2L["1"] = Instance.new("ScreenGui", gethui())
+    G2L["1"]["Name"] = "DeltaGui"
+    G2L["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling
+    G2L["2"] = Instance.new("Folder", G2L["1"])
+    G2L["2"]["Name"] = "KeySystem"
+    G2L["3"] = Instance.new("Frame", G2L["2"])
+    G2L["3"]["BackgroundColor3"] = Color3.fromRGB(25, 25, 30)
+    G2L["3"]["Size"] = UDim2.new(0.76389479637146, 0, 0.4519544541835785, 0)
+    G2L["3"]["Position"] = UDim2.new(0.11660274863243103, 0, 0.275360107421875, 0)
+    G2L["3"]["Visible"] = false
+    G2L["3"]["Name"] = "MainKeyFrame"
     local UIGradient = Instance.new("UIGradient")
     UIGradient.Color = ColorSequence.new{
         ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 60)),
@@ -72,7 +62,6 @@ local function onValidKey()
     }
     UIGradient.Rotation = 45
     UIGradient.Parent = G2L["3"]
-
     local DropShadow = Instance.new("ImageLabel")
     DropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
     DropShadow.BackgroundTransparency = 1
@@ -85,37 +74,31 @@ local function onValidKey()
     DropShadow.ScaleType = Enum.ScaleType.Slice
     DropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
     DropShadow.Parent = G2L["3"]
-
-    G2L["4"] = Instance.new("Frame", G2L["3"]);
-    G2L["4"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-    G2L["4"]["BackgroundTransparency"] = 1;
-    G2L["4"]["Size"] = UDim2.new(0.11645293235778809, 0, 1.0000001192092896, 0);
-    G2L["4"]["Name"] = [[SideFrame]];
-
-    G2L["5"] = Instance.new("ImageLabel", G2L["4"]);
-    G2L["5"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-    G2L["5"]["Image"] = [[rbxassetid://117511501336791]];
-    G2L["5"]["Size"] = UDim2.new(1.0185703039169312, 0, 0.3629874587059021, 0);
-    G2L["5"]["Name"] = [[Logo]];
-    G2L["5"]["BackgroundTransparency"] = 1;
-    G2L["5"]["Position"] = UDim2.new(-0.018570121377706528, 0, 0.06093369424343109, 0);
-
+    G2L["4"] = Instance.new("Frame", G2L["3"])
+    G2L["4"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255)
+    G2L["4"]["BackgroundTransparency"] = 1
+    G2L["4"]["Size"] = UDim2.new(0.11645293235778809, 0, 1.0000001192092896, 0)
+    G2L["4"]["Name"] = "SideFrame"
+    G2L["5"] = Instance.new("ImageLabel", G2L["4"])
+    G2L["5"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255)
+    G2L["5"]["Image"] = "rbxassetid://117511501336791"
+    G2L["5"]["Size"] = UDim2.new(1.0185703039169312, 0, 0.3629874587059021, 0)
+    G2L["5"]["Name"] = "Logo"
+    G2L["5"]["BackgroundTransparency"] = 1
+    G2L["5"]["Position"] = UDim2.new(-0.018570121377706528, 0, 0.06093369424343109, 0)
     local logoTween = game:GetService("TweenService"):Create(
         G2L["5"],
         TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
         {ImageTransparency = 0.1}
     )
     logoTween:Play()
-
-    G2L["6"] = Instance.new("UIAspectRatioConstraint", G2L["5"]);
-    G2L["6"]["AspectRatio"] = 0.9946909546852112;
-
-    G2L["7"] = Instance.new("Frame", G2L["4"]);
-    G2L["7"]["BackgroundColor3"] = Color3.fromRGB(100, 100, 150);
-    G2L["7"]["Size"] = UDim2.new(0, 2, 0.9890000224113464, 0);
-    G2L["7"]["BorderColor3"] = Color3.fromRGB(72, 72, 72);
-    G2L["7"]["Position"] = UDim2.new(1, 0, 0.004999999888241291, 0);
-
+    G2L["6"] = Instance.new("UIAspectRatioConstraint", G2L["5"])
+    G2L["6"]["AspectRatio"] = 0.9946909546852112
+    G2L["7"] = Instance.new("Frame", G2L["4"])
+    G2L["7"]["BackgroundColor3"] = Color3.fromRGB(100, 100, 150)
+    G2L["7"]["Size"] = UDim2.new(0, 2, 0.9890000224113464, 0)
+    G2L["7"]["BorderColor3"] = Color3.fromRGB(72, 72, 72)
+    G2L["7"]["Position"] = UDim2.new(1, 0, 0.004999999888241291, 0)
     local lineGradient = Instance.new("UIGradient")
     lineGradient.Color = ColorSequence.new{
         ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 60, 120)),
@@ -123,25 +106,21 @@ local function onValidKey()
         ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 120))
     }
     lineGradient.Parent = G2L["7"]
-
     local lineAnimation = game:GetService("TweenService"):Create(
         lineGradient,
         TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1),
         {Offset = Vector2.new(1, 0)}
     )
     lineAnimation:Play()
-
-    G2L["8"] = Instance.new("UICorner", G2L["7"]);
-    G2L["8"]["CornerRadius"] = UDim.new(0.09000000357627869, 0);
-
-    G2L["9"] = Instance.new("Frame", G2L["3"]);
-    G2L["9"]["BackgroundColor3"] = Color3.fromRGB(15, 15, 20);
-    G2L["9"]["BackgroundTransparency"] = 0.15;
-    G2L["9"]["Size"] = UDim2.new(0.8421385884284973, 0, 0.5559701919555664, 0);
-    G2L["9"]["BorderColor3"] = Color3.fromRGB(16, 16, 16);
-    G2L["9"]["Position"] = UDim2.new(0.13729187846183777, 0, 0.11194030940532684, 0);
-    G2L["9"]["Name"] = [[SideTextbox]];
-
+    G2L["8"] = Instance.new("UICorner", G2L["7"])
+    G2L["8"]["CornerRadius"] = UDim.new(0.09000000357627869, 0)
+    G2L["9"] = Instance.new("Frame", G2L["3"])
+    G2L["9"]["BackgroundColor3"] = Color3.fromRGB(15, 15, 20)
+    G2L["9"]["BackgroundTransparency"] = 0.15
+    G2L["9"]["Size"] = UDim2.new(0.8421385884284973, 0, 0.5559701919555664, 0)
+    G2L["9"]["BorderColor3"] = Color3.fromRGB(16, 16, 16)
+    G2L["9"]["Position"] = UDim2.new(0.13729187846183777, 0, 0.11194030940532684, 0)
+    G2L["9"]["Name"] = "SideTextbox"
     local textboxGlow = Instance.new("ImageLabel")
     textboxGlow.BackgroundTransparency = 1
     textboxGlow.Position = UDim2.new(0, -5, 0, -5)
@@ -153,61 +132,52 @@ local function onValidKey()
     textboxGlow.ScaleType = Enum.ScaleType.Slice
     textboxGlow.SliceCenter = Rect.new(49, 49, 450, 450)
     textboxGlow.Parent = G2L["9"]
-
-    G2L["a"] = Instance.new("TextBox", G2L["9"]);
-    G2L["a"]["TextSize"] = 14;
-    G2L["a"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-    G2L["a"]["TextYAlignment"] = Enum.TextYAlignment.Top;
-    G2L["a"]["BackgroundColor3"] = Color3.fromRGB(16, 16, 16);
-    G2L["a"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-    G2L["a"]["FontFace"] = Font.new([[rbxasset://fonts/families/Gotham.json]], Enum.FontWeight.Medium, Enum.FontStyle.Normal);
-    G2L["a"]["BackgroundTransparency"] = 1;
-    G2L["a"]["PlaceholderText"] = [[Введите ваш ключ доступа...]];
-    G2L["a"]["PlaceholderColor3"] = Color3.fromRGB(180, 180, 220);
-    G2L["a"]["Size"] = UDim2.new(0.9665210843086243, 0, 0.8322147727012634, 0);
-    G2L["a"]["BorderColor3"] = Color3.fromRGB(16, 16, 16);
-    G2L["a"]["Text"] = [[]];
-    G2L["a"]["Position"] = UDim2.new(0.020378457382321358, 0, 0.08053690940141678, 0);
-    G2L["a"]["Name"] = [[MainTextBox]];
-    G2L["a"]["ClearTextOnFocus"] = false;
-
-    G2L["b"] = Instance.new("UICorner", G2L["a"]);
-    G2L["b"]["CornerRadius"] = UDim.new(0.09000000357627869, 0);
-
-    G2L["c"] = Instance.new("UICorner", G2L["9"]);
-    G2L["c"]["CornerRadius"] = UDim.new(0.09000000357627869, 0);
-
-    G2L["d"] = Instance.new("UICorner", G2L["3"]);
-    G2L["d"]["CornerRadius"] = UDim.new(0.09000000357627869, 0);
-
-    G2L["e"] = Instance.new("UIAspectRatioConstraint", G2L["3"]);
-    G2L["e"]["AspectRatio"] = 3.0439562797546387;
-
-    G2L["f"] = Instance.new("Frame", G2L["3"]);
-    G2L["f"]["BackgroundColor3"] = Color3.fromRGB(60, 80, 180);
-    G2L["f"]["Size"] = UDim2.new(0.19932664930820465, 0, 0.1760299652814865, 0);
-    G2L["f"]["Position"] = UDim2.new(0.13534526526927948, 0, 0.7490636706352234, 0);
-    G2L["f"]["Name"] = [[Continue]];
-
+    G2L["a"] = Instance.new("TextBox", G2L["9"])
+    G2L["a"]["TextSize"] = 14
+    G2L["a"]["TextXAlignment"] = Enum.TextXAlignment.Left
+    G2L["a"]["TextYAlignment"] = Enum.TextYAlignment.Top
+    G2L["a"]["BackgroundColor3"] = Color3.fromRGB(16, 16, 16)
+    G2L["a"]["TextColor3"] = Color3.fromRGB(255, 255, 255)
+    G2L["a"]["FontFace"] = Font.new("rbxasset://fonts/families/Gotham.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal)
+    G2L["a"]["BackgroundTransparency"] = 1
+    G2L["a"]["PlaceholderText"] = "Введите ваш ключ доступа..."
+    G2L["a"]["PlaceholderColor3"] = Color3.fromRGB(180, 180, 220)
+    G2L["a"]["Size"] = UDim2.new(0.9665210843086243, 0, 0.8322147727012634, 0)
+    G2L["a"]["BorderColor3"] = Color3.fromRGB(16, 16, 16)
+    G2L["a"]["Text"] = ""
+    G2L["a"]["Position"] = UDim2.new(0.020378457382321358, 0, 0.08053690940141678, 0)
+    G2L["a"]["Name"] = "MainTextBox"
+    G2L["a"]["ClearTextOnFocus"] = false
+    G2L["b"] = Instance.new("UICorner", G2L["a"])
+    G2L["b"]["CornerRadius"] = UDim.new(0.09000000357627869, 0)
+    G2L["c"] = Instance.new("UICorner", G2L["9"])
+    G2L["c"]["CornerRadius"] = UDim.new(0.09000000357627869, 0)
+    G2L["d"] = Instance.new("UICorner", G2L["3"])
+    G2L["d"]["CornerRadius"] = UDim.new(0.09000000357627869, 0)
+    G2L["e"] = Instance.new("UIAspectRatioConstraint", G2L["3"])
+    G2L["e"]["AspectRatio"] = 3.0439562797546387
+    G2L["f"] = Instance.new("Frame", G2L["3"])
+    G2L["f"]["BackgroundColor3"] = Color3.fromRGB(60, 80, 180)
+    G2L["f"]["Size"] = UDim2.new(0.19932664930820465, 0, 0.1760299652814865, 0)
+    G2L["f"]["Position"] = UDim2.new(0.13534526526927948, 0, 0.7490636706352234, 0)
+    G2L["f"]["Name"] = "Continue"
     local continueGradient = Instance.new("UIGradient")
     continueGradient.Color = ColorSequence.new{
         ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 90, 210)),
         ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 70, 170))
     }
     continueGradient.Parent = G2L["f"]
-
-    G2L["10"] = Instance.new("TextButton", G2L["f"]);
-    G2L["10"]["TextWrapped"] = true;
-    G2L["10"]["TextScaled"] = true;
-    G2L["10"]["BackgroundColor3"] = Color3.fromRGB(60, 80, 180);
-    G2L["10"]["TextSize"] = 14;
-    G2L["10"]["FontFace"] = Font.new([[rbxasset://fonts/families/Gotham.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-    G2L["10"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-    G2L["10"]["Size"] = UDim2.new(0.8136826753616333, 0, 1, 0);
-    G2L["10"]["Text"] = [[Продолжить]];
-    G2L["10"]["Position"] = UDim2.new(-0.004637444857507944, 0, 0, 0);
-    G2L["10"]["BackgroundTransparency"] = 1;
-
+    G2L["10"] = Instance.new("TextButton", G2L["f"])
+    G2L["10"]["TextWrapped"] = true
+    G2L["10"]["TextScaled"] = true
+    G2L["10"]["BackgroundColor3"] = Color3.fromRGB(60, 80, 180)
+    G2L["10"]["TextSize"] = 14
+    G2L["10"]["FontFace"] = Font.new("rbxasset://fonts/families/Gotham.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+    G2L["10"]["TextColor3"] = Color3.fromRGB(255, 255, 255)
+    G2L["10"]["Size"] = UDim2.new(0.8136826753616333, 0, 1, 0)
+    G2L["10"]["Text"] = "Продолжить"
+    G2L["10"]["Position"] = UDim2.new(-0.004637444857507944, 0, 0, 0)
+    G2L["10"]["BackgroundTransparency"] = 1
     G2L["10"].MouseEnter:Connect(function()
         game:GetService("TweenService"):Create(
             G2L["f"],
@@ -215,7 +185,6 @@ local function onValidKey()
             {BackgroundColor3 = Color3.fromRGB(80, 100, 220)}
         ):Play()
     end)
-
     G2L["10"].MouseLeave:Connect(function()
         game:GetService("TweenService"):Create(
             G2L["f"],
@@ -223,7 +192,6 @@ local function onValidKey()
             {BackgroundColor3 = Color3.fromRGB(60, 80, 180)}
         ):Play()
     end)
-
     G2L["10"].MouseButton1Down:Connect(function()
         game:GetService("TweenService"):Create(
             G2L["f"],
@@ -231,7 +199,6 @@ local function onValidKey()
             {Size = UDim2.new(0.19932664930820465 * 0.95, 0, 0.1760299652814865 * 0.95, 0)}
         ):Play()
     end)
-
     G2L["10"].MouseButton1Up:Connect(function()
         game:GetService("TweenService"):Create(
             G2L["f"],
@@ -239,38 +206,30 @@ local function onValidKey()
             {Size = UDim2.new(0.19932664930820465, 0, 0.1760299652814865, 0)}
         ):Play()
     end)
-
-    G2L["11"] = Instance.new("UICorner", G2L["10"]);
-    G2L["11"]["CornerRadius"] = UDim.new(0.4300000071525574, 0);
-
-    G2L["12"] = Instance.new("LocalScript", G2L["10"]);
-
-    G2L["13"] = Instance.new("UITextSizeConstraint", G2L["10"]);
-    G2L["13"]["MaxTextSize"] = 14;
-
-    G2L["14"] = Instance.new("UICorner", G2L["f"]);
-    G2L["14"]["CornerRadius"] = UDim.new(0.4300000071525574, 0);
-
-    G2L["15"] = Instance.new("ImageLabel", G2L["f"]);
-    G2L["15"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-    G2L["15"]["Image"] = [[rbxassetid://125787475899820]];
-    G2L["15"]["Size"] = UDim2.new(0.1541670262813568, 0, 0.5313842296600342, 0);
-    G2L["15"]["BackgroundTransparency"] = 1;
-    G2L["15"]["Position"] = UDim2.new(0.6577792763710022, 0, 0.2479792982339859, 0);
-
-    G2L["16"] = Instance.new("Frame", G2L["3"]);
-    G2L["16"]["BackgroundColor3"] = Color3.fromRGB(60, 160, 120);
-    G2L["16"]["Size"] = UDim2.new(0.19932664930820465, 0, 0.1760299652814865, 0);
-    G2L["16"]["Position"] = UDim2.new(0.34697607159614563, 0, 0.7490636706352234, 0);
-    G2L["16"]["Name"] = [[GetKey]];
-
+    G2L["11"] = Instance.new("UICorner", G2L["10"])
+    G2L["11"]["CornerRadius"] = UDim.new(0.4300000071525574, 0)
+    G2L["12"] = Instance.new("LocalScript", G2L["10"])
+    G2L["13"] = Instance.new("UITextSizeConstraint", G2L["10"])
+    G2L["13"]["MaxTextSize"] = 14
+    G2L["14"] = Instance.new("UICorner", G2L["f"])
+    G2L["14"]["CornerRadius"] = UDim.new(0.4300000071525574, 0)
+    G2L["15"] = Instance.new("ImageLabel", G2L["f"])
+    G2L["15"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255)
+    G2L["15"]["Image"] = "rbxassetid://125787475899820"
+    G2L["15"]["Size"] = UDim2.new(0.1541670262813568, 0, 0.5313842296600342, 0)
+    G2L["15"]["BackgroundTransparency"] = 1
+    G2L["15"]["Position"] = UDim2.new(0.6577792763710022, 0, 0.2479792982339859, 0)
+    G2L["16"] = Instance.new("Frame", G2L["3"])
+    G2L["16"]["BackgroundColor3"] = Color3.fromRGB(60, 160, 120)
+    G2L["16"]["Size"] = UDim2.new(0.19932664930820465, 0, 0.1760299652814865, 0)
+    G2L["16"]["Position"] = UDim2.new(0.34697607159614563, 0, 0.7490636706352234, 0)
+    G2L["16"]["Name"] = "GetKey"
     local getKeyGradient = Instance.new("UIGradient")
     getKeyGradient.Color = ColorSequence.new{
         ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 180, 140)),
         ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 150, 120))
     }
     getKeyGradient.Parent = G2L["16"]
-
     local function setupTabAnimation(tabButton, tabFrame)
         tabButton.MouseButton1Click:Connect(function()
             for _, tab in pairs(G2L["46"]:GetChildren()) do
@@ -284,11 +243,9 @@ local function onValidKey()
                     tab.Visible = false
                 end
             end
-
             tabFrame.Position = UDim2.new(0.11490308493375778, 0, 1, 0)
             tabFrame.BackgroundTransparency = 1
             tabFrame.Visible = true
-
             game:GetService("TweenService"):Create(
                 tabFrame,
                 TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
@@ -296,7 +253,8 @@ local function onValidKey()
             ):Play()
         end)
     end
-
+    G2L["25"] = Instance.new("Frame", G2L["1"])
+    G2L["25"]["Visible"] = false
     local function createParticleEffect(parent)
         local particleContainer = Instance.new("Frame")
         particleContainer.Name = "ParticleEffect"
@@ -304,7 +262,6 @@ local function onValidKey()
         particleContainer.Size = UDim2.new(1, 0, 1, 0)
         particleContainer.ZIndex = 0
         particleContainer.Parent = parent
-
         for i = 1, 15 do
             local particle = Instance.new("Frame")
             particle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -313,40 +270,32 @@ local function onValidKey()
             particle.Size = UDim2.new(0, math.random(2, 5), 0, math.random(2, 5))
             particle.BorderSizePixel = 0
             particle.ZIndex = 0
-
             local grad = Instance.new("UIGradient")
             grad.Color = ColorSequence.new{
                 ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 120, 255)),
                 ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 160, 255))
             }
             grad.Parent = particle
-
             local corner = Instance.new("UICorner")
             corner.CornerRadius = UDim.new(1, 0)
             corner.Parent = particle
-
             particle.Parent = particleContainer
-
             spawn(function()
                 while true do
                     local duration = math.random(3, 8)
                     local targetX = math.random()
                     local targetY = math.random()
-
                     game:GetService("TweenService"):Create(
                         particle,
                         TweenInfo.new(duration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
                         {Position = UDim2.new(targetX, 0, targetY, 0)}
                     ):Play()
-
                     wait(duration - 0.1)
                 end
             end)
         end
     end
-
     createParticleEffect(G2L["25"])
-
     local function createLoadingAnimation(parent)
         local loadingContainer = Instance.new("Frame")
         loadingContainer.Name = "LoadingAnimation"
@@ -354,14 +303,12 @@ local function onValidKey()
         loadingContainer.Size = UDim2.new(1, 0, 1, 0)
         loadingContainer.ZIndex = 10
         loadingContainer.Parent = parent
-
         local loadingBackground = Instance.new("Frame")
         loadingBackground.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
         loadingBackground.BackgroundTransparency = 0.7
         loadingBackground.Size = UDim2.new(1, 0, 1, 0)
         loadingBackground.ZIndex = 10
         loadingBackground.Parent = loadingContainer
-
         local spinner = Instance.new("ImageLabel")
         spinner.BackgroundTransparency = 1
         spinner.Position = UDim2.new(0.5, -50, 0.5, -50)
@@ -369,7 +316,6 @@ local function onValidKey()
         spinner.Image = "rbxassetid://4965945816"
         spinner.ZIndex = 11
         spinner.Parent = loadingContainer
-
         local loadingText = Instance.new("TextLabel")
         loadingText.BackgroundTransparency = 1
         loadingText.Position = UDim2.new(0.5, -100, 0.6, 0)
@@ -380,7 +326,6 @@ local function onValidKey()
         loadingText.TextSize = 18
         loadingText.ZIndex = 11
         loadingText.Parent = loadingContainer
-
         spawn(function()
             while true do
                 game:GetService("TweenService"):Create(
@@ -391,20 +336,15 @@ local function onValidKey()
                 wait(1)
             end
         end)
-
         return loadingContainer
     end
-
     local loadingAnim = createLoadingAnimation(G2L["1"])
     loadingAnim.Visible = false
-
     local function toggleLoading(visible)
         loadingAnim.Visible = visible
     end
-
     local function createNotification(title, message, duration)
         duration = duration or 3
-
         local notifFrame = Instance.new("Frame")
         notifFrame.Name = "Notification"
         notifFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
@@ -412,18 +352,15 @@ local function onValidKey()
         notifFrame.Size = UDim2.new(0, 250, 0, 80)
         notifFrame.ZIndex = 100
         notifFrame.Parent = G2L["1"]
-
         local notifGradient = Instance.new("UIGradient")
         notifGradient.Color = ColorSequence.new{
             ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 60)),
             ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 45))
         }
         notifGradient.Parent = notifFrame
-
         local notifCorner = Instance.new("UICorner")
         notifCorner.CornerRadius = UDim.new(0, 8)
         notifCorner.Parent = notifFrame
-
         local titleLabel = Instance.new("TextLabel")
         titleLabel.BackgroundTransparency = 1
         titleLabel.Position = UDim2.new(0, 10, 0, 5)
@@ -434,7 +371,6 @@ local function onValidKey()
         titleLabel.TextSize = 14
         titleLabel.TextXAlignment = Enum.TextXAlignment.Left
         titleLabel.Parent = notifFrame
-
         local messageLabel = Instance.new("TextLabel")
         messageLabel.BackgroundTransparency = 1
         messageLabel.Position = UDim2.new(0, 10, 0, 30)
@@ -447,19 +383,16 @@ local function onValidKey()
         messageLabel.TextYAlignment = Enum.TextYAlignment.Top
         messageLabel.TextWrapped = true
         messageLabel.Parent = notifFrame
-
         local line = Instance.new("Frame")
         line.BackgroundColor3 = Color3.fromRGB(60, 100, 255)
         line.Position = UDim2.new(0, 0, 0, 0)
         line.Size = UDim2.new(0, 4, 1, 0)
         line.Parent = notifFrame
-
         game:GetService("TweenService"):Create(
             notifFrame,
             TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
             {Position = UDim2.new(1, -270, 0.8, 0)}
         ):Play()
-
         spawn(function()
             wait(duration)
             game:GetService("TweenService"):Create(
@@ -467,40 +400,28 @@ local function onValidKey()
                 TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
                 {Position = UDim2.new(1, 20, 0.8, 0)}
             ):Play()
-
             wait(0.5)
             notifFrame:Destroy()
         end)
     end
-
-    local originalMouseButton1Click = G2L["10"].MouseButton1Click
     G2L["10"].MouseButton1Click:Connect(function()
         toggleLoading(true)
-
         local key = G2L["a"].Text
         local isValid, keyType = checkKey(key)
-
         wait(1)
-
         toggleLoading(false)
-
         if isValid then
             saveValidKey(key)
-
             createNotification("Успех", "Ключ принят! Запуск...", 2)
-
             game:GetService("TweenService"):Create(
                 G2L["3"],
                 TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
                 {Position = UDim2.new(0.11660274863243103, 0, -1, 0)}
             ):Play()
-
             wait(0.5)
             G2L["3"].Visible = false
-
             G2L["25"].Position = UDim2.new(0.17294080555438995, 0, -1, 0)
             G2L["25"].Visible = true
-
             game:GetService("TweenService"):Create(
                 G2L["25"],
                 TweenInfo.new(0.7, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out),
@@ -508,7 +429,6 @@ local function onValidKey()
             ):Play()
         else
             createNotification("Ошибка", "Неверный ключ! Пожалуйста, проверьте и попробуйте снова.", 3)
-
             for i = 1, 5 do
                 game:GetService("TweenService"):Create(
                     G2L["a"],
@@ -517,7 +437,6 @@ local function onValidKey()
                 ):Play()
                 wait(0.05)
             end
-
             game:GetService("TweenService"):Create(
                 G2L["a"],
                 TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
@@ -525,13 +444,11 @@ local function onValidKey()
             ):Play()
         end
     end)
-
     local savedKey = readValidKeyFromFile()
     if savedKey then
         local isValid, keyType = checkKey(savedKey)
         if isValid then
             G2L["a"].Text = savedKey
-
             wait(1)
             G2L["10"].MouseButton1Click:Fire()
         else
@@ -548,7 +465,5 @@ if savedKey then
     local isValid, keyType = checkKey(savedKey)
     if isValid then
         onValidKey()
-    else
     end
-else
 end
