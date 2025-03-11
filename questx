@@ -11,7 +11,7 @@ local Colors = {
     Secondary = Color3.fromRGB(232, 66, 102),  -- Вторичный акцент
     Success = Color3.fromRGB(46, 213, 115),    -- Цвет успеха
     Text = Color3.fromRGB(235, 235, 245),      -- Основной текст
-    TextDimmed = Color3.fromRGB(180, 180, 190) -- Приглушенный текст
+    TextDimmed = Color3.fromRGB(180, 180, 190)   -- Приглушенный текст
 }
 
 -- Анимационные параметры
@@ -543,7 +543,7 @@ verifyButton.MouseButton1Up:Connect(function()
         )
         fadeTween:Play()
         
-        -- Скрытие всех элементов
+        -- Скрытие всех элементов внутри карточки
         for _, child in pairs(centerCard:GetChildren()) do
             if child:IsA("GuiObject") and child.Name ~= "Shadow" then
                 local childTween = TweenService:Create(
@@ -589,6 +589,10 @@ verifyButton.MouseButton1Up:Connect(function()
         )
         frameTween:Play()
         
+        -- После завершения всех анимаций уничтожаем весь GUI
+        delay(1.5, function()
+            screenGui:Destroy()
+        end)
     else
         status3.complete(false)
         
@@ -824,7 +828,7 @@ shadow.ImageTransparency = 1
 -- Скрыть все элементы перед анимацией
 for _, child in pairs(centerCard:GetChildren()) do
     if child:IsA("GuiObject") and child ~= centerCard and child.Name ~= "Shadow" then
-        if child:IsA("TextLabel") or child:IsA("TextButton") or child:IsA("TextBox") then
+        if child:IsA("TextLabel") or child:IsA("TextButton") then
             child.TextTransparency = 1
         end
         
