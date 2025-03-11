@@ -338,7 +338,7 @@ end
 local infoContainer = Instance.new("Frame")
 infoContainer.Name = "InfoContainer"
 infoContainer.Size = UDim2.new(0, adaptiveSize.centerWidth * 0.7, 0, adaptiveSize.centerHeight * 0.3)
-infoContainer.Position = UDim2.new(0.5, -adaptiveSize.centerWidth * 0.7/2, 0.75, -20 * adaptiveSize.scale)
+infoContainer.Position = UDim2.new(0.5, -adaptiveSize.centerWidth * 0.7/2, 0.67, -20 * adaptiveSize.scale)
 infoContainer.BackgroundTransparency = 1
 infoContainer.ZIndex = 3
 infoContainer.Parent = centerFrame
@@ -505,12 +505,31 @@ keyInput.TextTransparency = 1
 keyInput.ZIndex = 4
 keyInput.Parent = keyInputContainer
 
+local keyIcon = Instance.new("ImageLabel")
+keyIcon.Image = "rbxassetid://3926307971"
+keyIcon.ImageRectOffset = Vector2.new(364, 324)
+keyIcon.ImageRectSize = Vector2.new(36, 36)
+keyIcon.Size = UDim2.new(0, 20 * adaptiveSize.scale, 0, 20 * adaptiveSize.scale)
+keyIcon.Position = UDim2.new(0.05, -25 * adaptiveSize.scale, 0.5, -10 * adaptiveSize.scale)
+keyIcon.BackgroundTransparency = 1
+keyIcon.ImageColor3 = Color3.fromRGB(180, 190, 210)
+keyIcon.ImageTransparency = 1
+keyIcon.ZIndex = 4
+keyIcon.Parent = keyInputContainer
+
 local keyInputTween = TweenService:Create(
 keyInput,
 TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out, 0, false, 0.2),
 {TextTransparency = 0}
 )
 keyInputTween:Play()
+
+local keyIconTween = TweenService:Create(
+keyIcon,
+TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out, 0, false, 0.2),
+{ImageTransparency = 0.2}
+)
+keyIconTween:Play()
 
 -- Кнопка проверки ключа
 local verifyButton = Instance.new("TextButton")
@@ -792,7 +811,7 @@ centerFrame.Size = UDim2.new(0, newAdaptiveSize.centerWidth, 0, newAdaptiveSize.
 centerFrame.Position = UDim2.new(0.5, -newAdaptiveSize.centerWidth/2, 0.5, -newAdaptiveSize.centerHeight/2)
 
 infoContainer.Size = UDim2.new(0, newAdaptiveSize.centerWidth * 0.7, 0, newAdaptiveSize.centerHeight * 0.3)
-infoContainer.Position = UDim2.new(0.5, -newAdaptiveSize.centerWidth * 0.7/2, 0.75, -20 * newAdaptiveSize.scale)
+infoContainer.Position = UDim2.new(0.5, -newAdaptiveSize.centerWidth * 0.7/2, 0.67, -10 * newAdaptiveSize.scale)
 
 titleLabel.TextSize = 28 * newAdaptiveSize.scale
 titleShadow.TextSize = 28 * newAdaptiveSize.scale
