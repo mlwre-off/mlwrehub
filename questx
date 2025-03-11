@@ -1,700 +1,236 @@
--- Инициализация KeyGuardLibrary
-local KeyGuardLibrary = loadstring(game:HttpGet("https://cdn.keyguardian.org/library/v1.0.0.lua"))()
-local trueData = "96627c7378614919b519349b7daf25dc"
-local falseData = "760bca684ec74b28ac97d6a4025670c2"
+-- GUI Module: создание интерфейса аутентификации ключа
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
-KeyGuardLibrary.Set({
-    publicToken = "ae076278268b43fdaac771ee939354b1",  
-    privateToken = "28712e64120246d09e58b4ebfd538d24",
-    trueData = trueData,
-    falseData = falseData,
-})
+-- Создание ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "QUESTXGUI"
+screenGui.IgnoreGuiInset = true
+screenGui.ResetOnSpawn = false
+screenGui.DisplayOrder = 999999
+screenGui.ScreenInsets = Enum.ScreenInsets.None
+screenGui.Parent = game.CoreGui
 
-local function saveValidKey(key)
-    writefile("keyguard.txt", key)
+-- Фон (подложка)
+local frame = Instance.new("Frame")
+frame.Name = "MainFrame"
+frame.Size = UDim2.fromScale(2, 2)
+frame.Position = UDim2.fromScale(-0.5, -0.5)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BackgroundTransparency = 0.3
+frame.BorderSizePixel = 0
+frame.ZIndex = 1
+frame.Parent = screenGui
+
+-- Центрированный контейнер для элементов GUI
+local centerFrame = Instance.new("Frame")
+centerFrame.Name = "CenterFrame"
+centerFrame.Size = UDim2.new(0, 400, 0, 300)
+centerFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+centerFrame.BackgroundTransparency = 1
+centerFrame.ZIndex = 2
+centerFrame.Parent = screenGui
+
+-- Функция для создания текстовой метки
+local function createTextLabel(parent, text, position)
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(0, 200, 0, 30)
+    textLabel.Position = position
+    textLabel.Text = text
+    textLabel.Font = Enum.Font.SourceSansBold
+    textLabel.TextSize = 20
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextXAlignment = Enum.TextXAlignment.Left
+    textLabel.Parent = parent
+    return textLabel
 end
 
-local function readValidKeyFromFile()
-    local success, key = pcall(function()
-        return readfile("keyguard.txt")
-    end)
-
-    if success then
-        return key
-    else
-        return nil
-    end
-end
-
-local function checkKey(key)
-    local premiumResponse = KeyGuardLibrary.validatePremiumKey(key)
-    if premiumResponse == trueData then
-        return true, "premium"
-    end
-    
-    local defaultResponse = KeyGuardLibrary.validateDefaultKey(key)
-    if defaultResponse == trueData then
-        return true, "default"
-    end
-    
-    return false, nil
-end
-
-local function onValidKey()
-    --[=[
-        d888b  db    db d888888b      .d888b.      db      db    db  .d8b.  
-        88' Y8b 88    88   `88'        VP  `8D      88      88    88 d8' `8b 
-        88      88    88    88            odD'      88      88    88 88ooo88 
-        88  ooo 88    88    88          .88'        88      88    88 88~~~88 
-        88. ~8~ 88b  d88   .88.        j88.         88booo. 88b  d88 88   88 
-        Y888P  ~Y8888P' Y888888P      888888D      Y88888P ~Y8888P' YP   YP  CONVERTER
-    ]=]
-    makefolder("Questxscript")
-
-    if _G.is_deltaandroid_loaded then
-        print("already running")
-        return
-    end
-
-    _G.is_deltaandroid_loaded = true
-
-    local G2L = {};
-
-    -- StarterGui.DeltaGui
-    G2L["1"] = Instance.new("ScreenGui", gethui());
-    G2L["1"]["Name"] = [[DeltaGui]];
-    G2L["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
-
-    -- StarterGui.DeltaGui.KeySystem
-    G2L["2"] = Instance.new("Folder", G2L["1"]);
-    G2L["2"]["Name"] = [[KeySystem]];
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame
-    G2L["3"] = Instance.new("Frame", G2L["2"]);
-    G2L["3"]["BackgroundColor3"] = Color3.fromRGB(20, 20, 23);
-    G2L["3"]["Size"] = UDim2.new(0.76389479637146, 0, 0.4519544541835785, 0);
-    G2L["3"]["Position"] = UDim2.new(0.11660274863243103, 0, 0.275360107421875, 0);
-    G2L["3"]["Visible"] = false;
-    G2L["3"]["Name"] = [[MainKeyFrame]];
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideFrame
-    G2L["4"] = Instance.new("Frame", G2L["3"]);
-    G2L["4"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-    G2L["4"]["BackgroundTransparency"] = 1;
-    G2L["4"]["Size"] = UDim2.new(0.11645293235778809, 0, 1.0000001192092896, 0);
-    G2L["4"]["Name"] = [[SideFrame]];
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideFrame.Logo
-    G2L["5"] = Instance.new("ImageLabel", G2L["4"]);
-    G2L["5"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0);
-    G2L["5"]["Image"] = [[rbxassetid://117511501336791]];
-    G2L["5"]["Size"] = UDim2.new(1.0185703039169312, 0, 0.3629874587059021, 0);
-    G2L["5"]["Name"] = [[Logo]];
-    G2L["5"]["BackgroundTransparency"] = 1;
-    G2L["5"]["Position"] = UDim2.new(-0.018570121377706528, 0, 0.06093369424343109, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideFrame.Logo.UIAspectRatioConstraint
-    G2L["6"] = Instance.new("UIAspectRatioConstraint", G2L["5"]);
-    G2L["6"]["AspectRatio"] = 0.9946909546852112;
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideFrame.Frame
-    G2L["7"] = Instance.new("Frame", G2L["4"]);
-    G2L["7"]["BackgroundColor3"] = Color3.fromRGB(72, 72, 72);
-    G2L["7"]["Size"] = UDim2.new(0, 0, 0.9890000224113464, 0);
-    G2L["7"]["BorderColor3"] = Color3.fromRGB(72, 72, 72);
-    G2L["7"]["Position"] = UDim2.new(1, 0, 0.004999999888241291, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideFrame.Frame.UICorner
-    G2L["8"] = Instance.new("UICorner", G2L["7"]);
-    G2L["8"]["CornerRadius"] = UDim.new(0.09000000357627869, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideTextbox
-    G2L["9"] = Instance.new("Frame", G2L["3"]);
-    G2L["9"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-    G2L["9"]["BackgroundTransparency"] = 0.33329999446868896;
-    G2L["9"]["Size"] = UDim2.new(0.8421385884284973, 0, 0.5559701919555664, 0);
-    G2L["9"]["BorderColor3"] = Color3.fromRGB(16, 16, 16);
-    G2L["9"]["Position"] = UDim2.new(0.13729187846183777, 0, 0.11194030940532684, 0);
-    G2L["9"]["Name"] = [[SideTextbox]];
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideTextbox.MainTextBox
-    G2L["a"] = Instance.new("TextBox", G2L["9"]);
-    G2L["a"]["TextSize"] = 13;
-    G2L["a"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-    G2L["a"]["TextYAlignment"] = Enum.TextYAlignment.Top;
-    G2L["a"]["BackgroundColor3"] = Color3.fromRGB(16, 16, 16);
-    G2L["a"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-    G2L["a"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-    G2L["a"]["BackgroundTransparency"] = 1;
-    G2L["a"]["PlaceholderText"] = [[Enter Your Key Here]];
-    G2L["a"]["Size"] = UDim2.new(0.9665210843086243, 0, 0.8322147727012634, 0);
-    G2L["a"]["BorderColor3"] = Color3.fromRGB(16, 16, 16);
-    G2L["a"]["Text"] = [[]];
-    G2L["a"]["Position"] = UDim2.new(0.020378457382321358, 0, 0.08053690940141678, 0);
-    G2L["a"]["Name"] = [[MainTextBox]];
-    G2L["a"]["ClearTextOnFocus"] = false;
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideTextbox.MainTextBox.UICorner
-    G2L["b"] = Instance.new("UICorner", G2L["a"]);
-    G2L["b"]["CornerRadius"] = UDim.new(0.09000000357627869, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideTextbox.UICorner
-    G2L["c"] = Instance.new("UICorner", G2L["9"]);
-    G2L["c"]["CornerRadius"] = UDim.new(0.09000000357627869, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.UICorner
-    G2L["d"] = Instance.new("UICorner", G2L["3"]);
-    G2L["d"]["CornerRadius"] = UDim.new(0.09000000357627869, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.UIAspectRatioConstraint
-    G2L["e"] = Instance.new("UIAspectRatioConstraint", G2L["3"]);
-    G2L["e"]["AspectRatio"] = 3.0439562797546387;
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.Continue
-    G2L["f"] = Instance.new("Frame", G2L["3"]);
-    G2L["f"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0);
-    G2L["f"]["Size"] = UDim2.new(0.19932664930820465, 0, 0.1760299652814865, 0);
-    G2L["f"]["Position"] = UDim2.new(0.13534526526927948, 0, 0.7490636706352234, 0);
-    G2L["f"]["Name"] = [[Continue]];
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.Continue.TextButton
-    G2L["10"] = Instance.new("TextButton", G2L["f"]);
-    G2L["10"]["TextWrapped"] = true;
-    G2L["10"]["TextScaled"] = true;
-    G2L["10"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0);
-    G2L["10"]["TextSize"] = 14;
-    G2L["10"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-    G2L["10"]["TextColor3"] = Color3.fromRGB(252, 252, 252);
-    G2L["10"]["Size"] = UDim2.new(0.8136826753616333, 0, 1, 0);
-    G2L["10"]["Text"] = [[Continue]];
-    G2L["10"]["Position"] = UDim2.new(-0.004637444857507944, 0, 0, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.Continue.TextButton.UICorner
-    G2L["11"] = Instance.new("UICorner", G2L["10"]);
-    G2L["11"]["CornerRadius"] = UDim.new(0.4300000071525574, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.Continue.TextButton.LocalScript
-    G2L["12"] = Instance.new("LocalScript", G2L["10"]);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.Continue.TextButton.UITextSizeConstraint
-    G2L["13"] = Instance.new("UITextSizeConstraint", G2L["10"]);
-    G2L["13"]["MaxTextSize"] = 14;
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.Continue.UICorner
-    G2L["14"] = Instance.new("UICorner", G2L["f"]);
-    G2L["14"]["CornerRadius"] = UDim.new(0.4300000071525574, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.Continue.ImageLabel
-    G2L["15"] = Instance.new("ImageLabel", G2L["f"]);
-    G2L["15"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0);
-    G2L["15"]["Image"] = [[rbxassetid://125787475899820]];
-    G2L["15"]["Size"] = UDim2.new(0.1541670262813568, 0, 0.5313842296600342, 0);
-    G2L["15"]["BackgroundTransparency"] = 1;
-    G2L["15"]["Position"] = UDim2.new(0.6577792763710022, 0, 0.2479792982339859, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.GetKey
-    G2L["16"] = Instance.new("Frame", G2L["3"]);
-    G2L["16"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0);
-    G2L["16"]["Size"] = UDim2.new(0.19932664930820465, 0, 0.1760299652814865, 0);
-    G2L["16"]["Position"] = UDim2.new(0.34697607159614563, 0, 0.7490636706352234, 0);
-    G2L["16"]["Name"] = [[GetKey]];
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.GetKey.TextButton
-    G2L["17"] = Instance.new("TextButton", G2L["16"]);
-    G2L["17"]["TextWrapped"] = true;
-    G2L["17"]["TextScaled"] = true;
-    G2L["17"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0);
-    G2L["17"]["TextSize"] = 14;
-    G2L["17"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-    G2L["17"]["TextColor3"] = Color3.fromRGB(252, 252, 252);
-    G2L["17"]["Size"] = UDim2.new(0.8136826753616333, 0, 1, 0);
-    G2L["17"]["Text"] = [[Get Key]];
-    G2L["17"]["Position"] = UDim2.new(-0.004637444857507944, 0, 0, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.GetKey.TextButton.UICorner
-    G2L["18"] = Instance.new("UICorner", G2L["17"]);
-    G2L["18"]["CornerRadius"] = UDim.new(0.4300000071525574, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.GetKey.TextButton.LocalScript
-    G2L["19"] = Instance.new("LocalScript", G2L["17"]);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.GetKey.TextButton.UITextSizeConstraint
-    G2L["1a"] = Instance.new("UITextSizeConstraint", G2L["17"]);
-    G2L["1a"]["MaxTextSize"] = 14;
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.GetKey.UICorner
-    G2L["1b"] = Instance.new("UICorner", G2L["16"]);
-    G2L["1b"]["CornerRadius"] = UDim.new(0.4300000071525574, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.GetKey.ImageLabel
-    G2L["1c"] = Instance.new("ImageLabel", G2L["16"]);
-    G2L["1c"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0);
-    G2L["1c"]["Image"] = [[rbxassetid://12730592157]];
-    G2L["1c"]["Size"] = UDim2.new(0.14388921856880188, 0, 0.4959585964679718, 0);
-    G2L["1c"]["BackgroundTransparency"] = 1;
-    G2L["1c"]["Position"] = UDim2.new(0.6577792763710022, 0, 0.2479792982339859, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.JoinServer
-    G2L["1d"] = Instance.new("Frame", G2L["3"]);
-    G2L["1d"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0);
-    G2L["1d"]["Size"] = UDim2.new(0.23844483494758606, 0, 0.1760299652814865, 0);
-    G2L["1d"]["Position"] = UDim2.new(0.5598372220993042, 0, 0.7490636706352234, 0);
-    G2L["1d"]["Name"] = [[JoinServer]];
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.JoinServer.TextButton
-    G2L["1e"] = Instance.new("TextButton", G2L["1d"]);
-    G2L["1e"]["TextWrapped"] = true;
-    G2L["1e"]["TextScaled"] = true;
-    G2L["1e"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0);
-    G2L["1e"]["TextSize"] = 14;
-    G2L["1e"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-    G2L["1e"]["TextColor3"] = Color3.fromRGB(252, 252, 252);
-    G2L["1e"]["Size"] = UDim2.new(0.8136826753616333, 0, 1, 0);
-    G2L["1e"]["Text"] = [[Join Discord]];
-    G2L["1e"]["Position"] = UDim2.new(-0.004637444857507944, 0, 0, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.JoinServer.TextButton.UICorner
-    G2L["1f"] = Instance.new("UICorner", G2L["1e"]);
-    G2L["1f"]["CornerRadius"] = UDim.new(0.4300000071525574, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.JoinServer.TextButton.LocalScript
-    G2L["20"] = Instance.new("LocalScript", G2L["1e"]);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.JoinServer.TextButton.UITextSizeConstraint
-    G2L["21"] = Instance.new("UITextSizeConstraint", G2L["1e"]);
-    G2L["21"]["MaxTextSize"] = 14;
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.JoinServer.UICorner
-    G2L["22"] = Instance.new("UICorner", G2L["1d"]);
-    G2L["22"]["CornerRadius"] = UDim.new(0.4300000071525574, 0);
-
-    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.JoinServer.ImageLabel
-    G2L["23"] = Instance.new("ImageLabel", G2L["1d"]);
-    G2L["23"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0);
-    G2L["23"]["Image"] = [[rbxassetid://12730595164]];
-    G2L["23"]["Size"] = UDim2.new(0.11047418415546417, 0, 0.4959585964679718, 0);
-    G2L["23"]["BackgroundTransparency"] = 1;
-    G2L["23"]["Position"] = UDim2.new(0.6944091320037842, 0, 0.2479792982339859, 0);
-
-    -- (далее следует остальной код для создания элементов UI, настройки анимаций, функционала кнопок, загрузки/сохранения скриптов и т.д.)
-    -- Код полностью соответствует рабочему примеру, который вы предоставили ранее.
-
-    -- Require G2L wrapper и настройка модулей:
-    local G2L_REQUIRE = require;
-    local G2L_MODULES = {};
-    local function require(Module:ModuleScript)
-        local ModuleState = G2L_MODULES[Module];
-        if ModuleState then
-            if not ModuleState.Required then
-                ModuleState.Required = true;
-                ModuleState.Value = ModuleState.Closure();
-            end
-            return ModuleState.Value;
-        end;
-        return G2L_REQUIRE(Module);
-    end
-
-    -- (Далее следуют определения модулей: для ScriptEditor, Lexer, Theme, GetLines, FakeEditor, GetLine, TweenLibrary, GetWord, Lexer, Suggestions, Words, TextFixer и прочих,
-    -- а также настройка локальных скриптов для кнопок и элементов интерфейса.)
-    -- Этот блок точно соответствует вашему предоставленному рабочему примеру.
-
-    -- В самом конце выполняются действия по проверке ключа:
-    local keyles = game:HttpGet("https://raw.githubusercontent.com/Wepogpemv/code-quest-/refs/heads/main/key%20system.txt")
-    if string.match(keyles, "false") then
-        onValidKey()
-        return
-    end
-
-    local storedKey = readValidKeyFromFile()
-    if storedKey then
-        local isValid, keyType = checkKey(storedKey)
-        if isValid then
-            print("Found Keys from File Keyguard.txt")
-            onValidKey()
-            return
-        end
-    end
-
-    -- Создание GUI для ввода ключа:
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "QUESTXGUI"
-    screenGui.IgnoreGuiInset = true
-    screenGui.ResetOnSpawn = false
-    screenGui.DisplayOrder = 999999
-    screenGui.ScreenInsets = Enum.ScreenInsets.None
-    screenGui.Parent = game.CoreGui
-
-    local frame = Instance.new("Frame")
-    frame.Name = "MainFrame"
-    frame.Size = UDim2.fromScale(2, 2)
-    frame.Position = UDim2.fromScale(-0.5, -0.5)
-    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    frame.BackgroundTransparency = 0.3
-    frame.BorderSizePixel = 0
-    frame.ZIndex = 1
-    frame.Parent = screenGui
-
-    local centerFrame = Instance.new("Frame")
-    centerFrame.Name = "CenterFrame"
-    centerFrame.Size = UDim2.new(0, 400, 0, 300)
-    centerFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
-    centerFrame.BackgroundTransparency = 1
-    centerFrame.ZIndex = 2
-    centerFrame.Parent = screenGui
-
-    local TweenService = game:GetService("TweenService")
-
-    -- Функции для создания текстовых меток, загрузчиков, анимаций и прочего:
-    local function createTextLabel(parent, text, position)
-        local textLabel = Instance.new("TextLabel")
-        textLabel.Size = UDim2.new(0, 200, 0, 30)
-        textLabel.Position = position
-        textLabel.Text = text
-        textLabel.Font = Enum.Font.SourceSansBold
-        textLabel.TextSize = 20
-        textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-        textLabel.BackgroundTransparency = 1
-        textLabel.TextXAlignment = Enum.TextXAlignment.Left
-        textLabel.Parent = parent
-        return textLabel
-    end
-
-    local function createRadialLoader(parent, targetTextLabel, offsetX, offsetY)
-        local frame = Instance.new("Frame")
-        frame.Size = UDim2.new(0, 20, 0, 20)
-        frame.BackgroundTransparency = 1
-        frame.Parent = parent
-
-        local loader = Instance.new("ImageLabel")
-        loader.Image = "rbxassetid://128475940557433"
-        loader.Size = UDim2.new(1, 0, 1, 0)
-        loader.BackgroundTransparency = 1
-        loader.ImageColor3 = Color3.fromRGB(255, 255, 255)
-        loader.ImageTransparency = 0
-        loader.Parent = frame
-
-        frame.Position = UDim2.new(
-            targetTextLabel.Position.X.Scale,
-            targetTextLabel.Position.X.Offset + offsetX,
-            targetTextLabel.Position.Y.Scale,
-            targetTextLabel.Position.Y.Offset + offsetY
-        )
-
-        local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1)
-        local tween = TweenService:Create(loader, tweenInfo, {Rotation = 360})
-        tween:Play()
-
-        return frame
-    end
-
-    local function creategalka(parent, targetTextLabel, offsetX, offsetY)
-        local frame = Instance.new("Frame")
-        frame.Size = UDim2.new(0, 20, 0, 20)
-        frame.BackgroundTransparency = 1
-        frame.Parent = parent
-
-        local loader = Instance.new("ImageLabel")
-        loader.Image = "rbxassetid://134087386267100"
-        loader.Size = UDim2.new(1, 0, 1, 0)
-        loader.BackgroundTransparency = 1
-        loader.ImageColor3 = Color3.fromRGB(255, 255, 255)
-        loader.ImageTransparency = 0
-        loader.Parent = frame
-
-        frame.Position = UDim2.new(
-            targetTextLabel.Position.X.Scale,
-            targetTextLabel.Position.X.Offset + offsetX,
-            targetTextLabel.Position.Y.Scale,
-            targetTextLabel.Position.Y.Offset + offsetY
-        )
-
-        return frame
-    end
-
-    local text1 = createTextLabel(screenGui, "Data fetching", UDim2.new(0.5, -60, 0.5, -45))
-    local loader1 = createRadialLoader(screenGui, text1, -30, 5)
-    task.wait(1.5)
-    loader1:Destroy()
-    text1.Text = "Data fetched!"
-    local galka1 = creategalka(screenGui, text1, -30, 5)
-
-    local text2 = createTextLabel(screenGui, "Loading Key System", UDim2.new(0.5, -60, 0.5, -25))
-    local loader2 = createRadialLoader(screenGui, text2, -30, 5)
-    task.wait(1.5)
-    loader2:Destroy()
-    text2.Text = "Loaded Key System!"
-    local galka2 = creategalka(screenGui, text2, -30, 5)
-
-    local text3 = createTextLabel(screenGui, "Waiting for you to key...", UDim2.new(0.5, -60, 0.5, -5))
-    local loader3 = createRadialLoader(screenGui, text3, -30, 5)
-    task.wait(3)
-    loader3:Destroy()
-    text3.Text = "Found your key!"
-    local galka3 = creategalka(screenGui, text3, -30, 5)
-
-    local function fadeOutText(label)
-        if label:IsA("Frame") then
-            local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-            local tween = TweenService:Create(label, tweenInfo, {Transparency = 1})
-            tween:Play()
-            tween.Completed:Connect(function()
-                label:Destroy() 
-            end)
-        else
-            local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-            local tween = TweenService:Create(label, tweenInfo, {TextTransparency = 1})
-            tween:Play()
-            tween.Completed:Connect(function()
-                label:Destroy() 
-            end)
-        end
-    end
-
-    fadeOutText(text1)
-    fadeOutText(galka1)
-    fadeOutText(text2)
-    fadeOutText(galka2)
-    fadeOutText(text3)
-    fadeOutText(galka3)
-    wait(1)
-
-    local titleLabel = Instance.new("TextLabel")
-    titleLabel.Text = "Quest X Key Authentication"
-    titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextSize = 36
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.Size = UDim2.new(1, 0, 0.2, 0)
-    titleLabel.Parent = centerFrame
-    titleLabel.TextTransparency = 1
-    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-    local tween = TweenService:Create(titleLabel, tweenInfo, {TextTransparency = 0})
-    tween:Play()
-
-    local subtitleLabel = Instance.new("TextLabel")
-    subtitleLabel.Text = "Enter your key below to gain access:"
-    subtitleLabel.Font = Enum.Font.Gotham
-    subtitleLabel.TextSize = 20
-    subtitleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    subtitleLabel.BackgroundTransparency = 1
-    subtitleLabel.Size = UDim2.new(1, 0, 0.1, 0)
-    subtitleLabel.Position = UDim2.new(0, 0, 0.2, 0)
-    subtitleLabel.Parent = centerFrame
-    subtitleLabel.TextTransparency = 1
-    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-    local tween = TweenService:Create(subtitleLabel, tweenInfo, {TextTransparency = 0})
-    tween:Play()
-    task.wait(0.5)
-
-    local keyInput = Instance.new("TextBox")
-    keyInput.PlaceholderText = "Enter your key here"
-    keyInput.Font = Enum.Font.Gotham
-    keyInput.TextSize = 18
-    keyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-    keyInput.BackgroundColor3 = Color3.fromRGB(199, 10, 10)
-    keyInput.BackgroundTransparency = 0.3
-    keyInput.Transparency = 1
-    keyInput.Size = UDim2.new(1, 0, 0.15, 0)
-    keyInput.Position = UDim2.new(0, 0, 0.35, 0)
-    keyInput.BorderSizePixel = 1
-    keyInput.Text = "Enter your key here"
-    keyInput.BorderColor3 = Color3.fromRGB(50, 50, 50)
-    keyInput.Parent = centerFrame
-    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-    local tween = TweenService:Create(keyInput, tweenInfo, {Transparency = 0})
-    tween:Play()
-    local inputCorner = Instance.new("UICorner")
-    inputCorner.CornerRadius = UDim.new(0, 10)
-    inputCorner.Parent = keyInput
-
-    local verifyButton = Instance.new("TextButton")
-    verifyButton.Text = "Verify Key"
-    verifyButton.Font = Enum.Font.GothamBold
-    verifyButton.TextSize = 20
-    verifyButton.Transparency = 1
-    verifyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    verifyButton.BackgroundColor3 = Color3.fromRGB(227, 16, 16)
-    verifyButton.BackgroundTransparency = 0.3
-    verifyButton.Size = UDim2.new(1, 0, 0.15, 0)
-    verifyButton.Position = UDim2.new(0, 0, 0.55, 0)
-    verifyButton.BorderSizePixel = 1
-    verifyButton.BorderColor3 = Color3.fromRGB(50, 50, 50)
-    verifyButton.Parent = centerFrame
-    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-    local tween = TweenService:Create(verifyButton, tweenInfo, {Transparency = 0})
-    tween:Play()
-    local verifyCorner = Instance.new("UICorner")
-    verifyCorner.CornerRadius = UDim.new(0, 10)
-    verifyCorner.Parent = verifyButton
-
-    local getKeyButton = Instance.new("TextButton")
-    getKeyButton.Text = "Get Key"
-    getKeyButton.Font = Enum.Font.GothamBold
-    getKeyButton.TextSize = 20
-    getKeyButton.Transparency = 1
-    getKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    getKeyButton.BackgroundColor3 = Color3.fromRGB(227, 16, 16)
-    getKeyButton.BackgroundTransparency = 0.3
-    getKeyButton.Size = UDim2.new(0.5, 0, 0.15, 0)
-    getKeyButton.Position = UDim2.new(0.25, 0, 0.75, 10)
-    getKeyButton.BorderSizePixel = 2
-    getKeyButton.BorderColor3 = Color3.fromRGB(199, 10, 10)
-    getKeyButton.Parent = centerFrame
-
-    getKeyButton.MouseButton1Click:Connect(function()
-        setclipboard(KeyGuardLibrary.getLink())
-    end)
-
-    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-    local tween = TweenService:Create(getKeyButton, tweenInfo, {Transparency = 0})
-    tween:Play()
-    local getKeyCorner = Instance.new("UICorner")
-    getKeyCorner.CornerRadius = UDim.new(0, 10)
-    getKeyCorner.Parent = getKeyButton
-
-    local statusLabel = Instance.new("TextLabel")
-    statusLabel.Text = ""
-    statusLabel.Font = Enum.Font.Gotham
-    statusLabel.TextSize = 16
-    statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    statusLabel.BackgroundTransparency = 1
-    statusLabel.Size = UDim2.new(1, 0, 0.1, 0)
-    statusLabel.Position = UDim2.new(0, 0, 0.95, 0)
-    statusLabel.Parent = centerFrame
-
-    local imageButton = Instance.new("ImageButton")
-    imageButton.Name = "Close"
-    imageButton.Size = UDim2.new(0, 30, 0, 30)
-    imageButton.Position = UDim2.new(
-        centerFrame.Position.X.Scale,
-        centerFrame.Position.X.Offset - 150,
-        centerFrame.Position.Y.Scale,
-        centerFrame.Position.Y.Offset - 35
+-- Функция для создания радиального загрузчика (loader)
+local function createRadialLoader(parent, targetTextLabel, offsetX, offsetY)
+    local loaderFrame = Instance.new("Frame")
+    loaderFrame.Size = UDim2.new(0, 20, 0, 20)
+    loaderFrame.BackgroundTransparency = 1
+    loaderFrame.Parent = parent
+
+    local loader = Instance.new("ImageLabel")
+    loader.Image = "rbxassetid://128475940557433"
+    loader.Size = UDim2.new(1, 0, 1, 0)
+    loader.BackgroundTransparency = 1
+    loader.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    loader.ImageTransparency = 0
+    loader.Parent = loaderFrame
+
+    loaderFrame.Position = UDim2.new(
+        targetTextLabel.Position.X.Scale,
+        targetTextLabel.Position.X.Offset + offsetX,
+        targetTextLabel.Position.Y.Scale,
+        targetTextLabel.Position.Y.Offset + offsetY
     )
-    imageButton.BackgroundTransparency = 1
-    imageButton.Image = "rbxassetid://76797312599260"
-    imageButton.Parent = centerFrame
 
-    local floatingIcon = Instance.new("ImageButton", screenGui)
-    floatingIcon.BackgroundColor3 = Color3.fromRGB(20, 20, 23)
-    floatingIcon.Image = "rbxassetid://117511501336791"
-    floatingIcon.Size = UDim2.new(0.07388234883546829, 0, 0.1319999247789383, 0)
-    floatingIcon.Name = "FloatingIcon"
-    floatingIcon.Visible = false
-    floatingIcon.Position = UDim2.new(0.09859155118465424, 0, 0.01671314239501953, 0)
-    floatingIcon.Draggable = true
-    local corner = Instance.new("UICorner", floatingIcon)
-    corner.CornerRadius = UDim.new(0.25, 0)
-    local aspectRatioConstraint = Instance.new("UIAspectRatioConstraint", floatingIcon)
-    aspectRatioConstraint.AspectRatio = 0.9962615966796875
+    -- Запуск анимации вращения (бесконечная петля)
+    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1)
+    local tween = TweenService:Create(loader, tweenInfo, {Rotation = 360})
+    tween:Play()
 
-    imageButton.MouseButton1Click:Connect(function()
-        floatingIcon.Visible = not floatingIcon.Visible
-        centerFrame.Visible = not centerFrame.Visible
-        frame.Visible = not frame.Visible
-    end)
-    floatingIcon.MouseButton1Click:Connect(function()
-        floatingIcon.Visible = not floatingIcon.Visible
-        centerFrame.Visible = not centerFrame.Visible
-        frame.Visible = not frame.Visible
-    end)
-
-    local function playSuccessAnimation()
-        local flash = Instance.new("Frame")
-        flash.Size = UDim2.fromScale(2, 2)
-        flash.Position = UDim2.fromScale(-0.5, -0.5)
-        flash.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        flash.BackgroundTransparency = 0.50
-        flash.ZIndex = 10
-        flash.Parent = screenGui
-        
-        for i = 1, 0, -0.1 do
-            flash.BackgroundTransparency = i
-            wait(0.02)
-        end
-        
-        local elementsToFade = {titleLabel, subtitleLabel, keyInput, verifyButton, statusLabel, getKeyButton, imageButton}
-        for _, element in ipairs(elementsToFade) do
-            local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            local tweenProperties = {
-                Transparency = 1,
-                BackgroundTransparency = 1
-            }
-            if element:IsA("TextLabel") or element:IsA("TextButton") then
-                element.Text = ""
-                tweenProperties.TextTransparency = 1
-            end
-            local tween = TweenService:Create(element, tweenInfo, tweenProperties)
-            tween:Play()
-        end
-        
-        for i = 0.3, 1, 0.05 do
-            frame.BackgroundTransparency = i
-            flash.BackgroundTransparency = i
-            wait(0.02)
-        end
-        
-        wait(0.5)
-        screenGui:Destroy()
-    end
-
-    verifyButton.MouseButton1Click:Connect(function()
-        local enteredKey = keyInput.Text
-        local isValid, keyType = checkKey(enteredKey)
-        
-        if isValid then
-            saveValidKey(enteredKey)
-            
-            keyInput.TextEditable = false
-            verifyButton.AutoButtonColor = false
-            verifyButton.Active = false
-            
-            if keyType == "premium" then
-                statusLabel.Text = "Premium key verified! ✨"
-                statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-            else
-                statusLabel.Text = "Key verified! ✅"
-                statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-            end
-            keyInput.Text = ""
-            keyInput.PlaceholderText = ""
-            imageButton:Destroy()
-            wait(0.5)
-            playSuccessAnimation()
-            onValidKey()
-            screenGui:Destroy()
-        else
-            statusLabel.Text = "Invalid key! ❌"
-            statusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-            
-            keyInput.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-            wait(0.5)
-            keyInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-            
-            wait(2)
-            statusLabel.Text = ""
-        end
-    end)
-
-    game:GetService("RunService").RenderStepped:Connect(function()
-        local viewportSize = workspace.CurrentCamera.ViewportSize
-        frame.Size = UDim2.new(0, viewportSize.X * 2, 0, viewportSize.Y * 2)
-        frame.Position = UDim2.new(0.5, -viewportSize.X, 0.5, -viewportSize.Y)
-    end)
+    return loaderFrame
 end
 
-local keyles = game:HttpGet("https://raw.githubusercontent.com/Wepogpemv/code-quest-/refs/heads/main/key%20system.txt")
-if string.match(keyles, "false") then
-    onValidKey()
-    return
+-- Функция для создания галочки (иконки подтверждения)
+local function createGalka(parent, targetTextLabel, offsetX, offsetY)
+    local galkaFrame = Instance.new("Frame")
+    galkaFrame.Size = UDim2.new(0, 20, 0, 20)
+    galkaFrame.BackgroundTransparency = 1
+    galkaFrame.Parent = parent
+
+    local galka = Instance.new("ImageLabel")
+    galka.Image = "rbxassetid://134087386267100"
+    galka.Size = UDim2.new(1, 0, 1, 0)
+    galka.BackgroundTransparency = 1
+    galka.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    galka.ImageTransparency = 0
+    galka.Parent = galkaFrame
+
+    galkaFrame.Position = UDim2.new(
+        targetTextLabel.Position.X.Scale,
+        targetTextLabel.Position.X.Offset + offsetX,
+        targetTextLabel.Position.Y.Scale,
+        targetTextLabel.Position.Y.Offset + offsetY
+    )
+
+    return galkaFrame
 end
 
-local storedKey = readValidKeyFromFile()
-if storedKey then
-    local isValid, keyType = checkKey(storedKey)
-    if isValid then
-        print("Found Keys from File Keyguard.txt")
-        onValidKey()
-        return
-    end
-end
+-- Пример создания временных текстовых меток и загрузчиков
+local text1 = createTextLabel(screenGui, "Data fetching", UDim2.new(0.5, -60, 0.5, -45))
+local loader1 = createRadialLoader(screenGui, text1, -30, 5)
+text1.Text = "Data fetched!"
+local galka1 = createGalka(screenGui, text1, -30, 5)
+
+local text2 = createTextLabel(screenGui, "Loading Key System", UDim2.new(0.5, -60, 0.5, -25))
+local loader2 = createRadialLoader(screenGui, text2, -30, 5)
+text2.Text = "Loaded Key System!"
+local galka2 = createGalka(screenGui, text2, -30, 5)
+
+local text3 = createTextLabel(screenGui, "Waiting for you to key...", UDim2.new(0.5, -60, 0.5, -5))
+local loader3 = createRadialLoader(screenGui, text3, -30, 5)
+text3.Text = "Found your key!"
+local galka3 = createGalka(screenGui, text3, -30, 5)
+
+-- Создание заголовка и подзаголовка интерфейса
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Text = "Quest X Key Authentication"
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextSize = 36
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Size = UDim2.new(1, 0, 0.2, 0)
+titleLabel.Parent = centerFrame
+titleLabel.TextTransparency = 0
+
+local subtitleLabel = Instance.new("TextLabel")
+subtitleLabel.Text = "Enter your key below to gain access:"
+subtitleLabel.Font = Enum.Font.Gotham
+subtitleLabel.TextSize = 20
+subtitleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+subtitleLabel.BackgroundTransparency = 1
+subtitleLabel.Size = UDim2.new(1, 0, 0.1, 0)
+subtitleLabel.Position = UDim2.new(0, 0, 0.2, 0)
+subtitleLabel.Parent = centerFrame
+subtitleLabel.TextTransparency = 0
+
+-- Поле ввода ключа
+local keyInput = Instance.new("TextBox")
+keyInput.PlaceholderText = "Enter your key here"
+keyInput.Font = Enum.Font.Gotham
+keyInput.TextSize = 18
+keyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+keyInput.BackgroundColor3 = Color3.fromRGB(199, 10, 10)
+keyInput.BackgroundTransparency = 0.3
+keyInput.Size = UDim2.new(1, 0, 0.15, 0)
+keyInput.Position = UDim2.new(0, 0, 0.35, 0)
+keyInput.BorderSizePixel = 1
+keyInput.Text = "Enter your key here"
+keyInput.BorderColor3 = Color3.fromRGB(50, 50, 50)
+keyInput.Parent = centerFrame
+local inputCorner = Instance.new("UICorner")
+inputCorner.CornerRadius = UDim.new(0, 10)
+inputCorner.Parent = keyInput
+
+-- Кнопка проверки ключа (без обработчика событий)
+local verifyButton = Instance.new("TextButton")
+verifyButton.Text = "Verify Key"
+verifyButton.Font = Enum.Font.GothamBold
+verifyButton.TextSize = 20
+verifyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+verifyButton.BackgroundColor3 = Color3.fromRGB(227, 16, 16)
+verifyButton.BackgroundTransparency = 0.3
+verifyButton.Size = UDim2.new(1, 0, 0.15, 0)
+verifyButton.Position = UDim2.new(0, 0, 0.55, 0)
+verifyButton.BorderSizePixel = 1
+verifyButton.BorderColor3 = Color3.fromRGB(50, 50, 50)
+verifyButton.Parent = centerFrame
+local verifyCorner = Instance.new("UICorner")
+verifyCorner.CornerRadius = UDim.new(0, 10)
+verifyCorner.Parent = verifyButton
+
+-- Кнопка "Get Key" (без обработчика событий)
+local getKeyButton = Instance.new("TextButton")
+getKeyButton.Text = "Get Key"
+getKeyButton.Font = Enum.Font.GothamBold
+getKeyButton.TextSize = 20
+getKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+getKeyButton.BackgroundColor3 = Color3.fromRGB(227, 16, 16)
+getKeyButton.BackgroundTransparency = 0.3
+getKeyButton.Size = UDim2.new(0.5, 0, 0.15, 0)
+getKeyButton.Position = UDim2.new(0.25, 0, 0.75, 10)
+getKeyButton.BorderSizePixel = 2
+getKeyButton.BorderColor3 = Color3.fromRGB(199, 10, 10)
+getKeyButton.Parent = centerFrame
+local getKeyCorner = Instance.new("UICorner")
+getKeyCorner.CornerRadius = UDim.new(0, 10)
+getKeyCorner.Parent = getKeyButton
+
+-- Метка статуса (для вывода сообщений)
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Text = ""
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.TextSize = 16
+statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Size = UDim2.new(1, 0, 0.1, 0)
+statusLabel.Position = UDim2.new(0, 0, 0.95, 0)
+statusLabel.Parent = centerFrame
+
+-- Кнопка закрытия (без обработчика)
+local imageButton = Instance.new("ImageButton")
+imageButton.Name = "Close"
+imageButton.Size = UDim2.new(0, 30, 0, 30)
+imageButton.Position = UDim2.new(0.5, -150, 0.5, -35)
+imageButton.BackgroundTransparency = 1
+imageButton.Image = "rbxassetid://76797312599260"
+imageButton.Parent = centerFrame
+
+-- Плавающая иконка (без обработчиков)
+local floatingIcon = Instance.new("ImageButton", screenGui)
+floatingIcon.BackgroundColor3 = Color3.fromRGB(20, 20, 23)
+floatingIcon.Image = "rbxassetid://117511501336791"
+floatingIcon.Size = UDim2.new(0.07388234883546829, 0, 0.1319999247789383, 0)
+floatingIcon.Name = "FloatingIcon"
+floatingIcon.Visible = false
+floatingIcon.Position = UDim2.new(0.09859155118465424, 0, 0.01671314239501953, 0)
+floatingIcon.Draggable = true
+local floatCorner = Instance.new("UICorner", floatingIcon)
+floatCorner.CornerRadius = UDim.new(0.25, 0)
+local aspectRatioConstraint = Instance.new("UIAspectRatioConstraint", floatingIcon)
+aspectRatioConstraint.AspectRatio = 0.9962615966796875
+
+-- Обновление размеров фона по размеру камеры (GUI адаптивность)
+RunService.RenderStepped:Connect(function()
+    local viewportSize = workspace.CurrentCamera.ViewportSize
+    frame.Size = UDim2.new(0, viewportSize.X * 2, 0, viewportSize.Y * 2)
+    frame.Position = UDim2.new(0.5, -viewportSize.X, 0.5, -viewportSize.Y)
+end)
+
+-- Возвращаем созданный GUI (при необходимости можно использовать как модуль)
+return screenGui
