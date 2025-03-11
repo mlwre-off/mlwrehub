@@ -344,7 +344,7 @@ infoContainer.ZIndex = 3
 infoContainer.Parent = centerFrame
 
 -- Изменены отступы по оси Y для уменьшения расстояния между метками
-local text1 = createTextLabel(infoContainer, "Data fetching", UDim2.new(0, 50 * adaptiveSize.scale, 0, 20 * adaptiveSize.scale), UDim2.new(0, 200 * adaptiveSize.scale, 0, 26 * adaptiveSize.scale), 20)
+local text1 = createTextLabel(infoContainer, "Data fetching", UDim2.new(0, 50 * adaptiveSize.scale, 0, 35 * adaptiveSize.scale), UDim2.new(0, 200 * adaptiveSize.scale, 0, 26 * adaptiveSize.scale), 20)
 local loader1 = createRadialLoader(infoContainer, text1, -30, 3)
 task.wait(0.6)
 text1.Text = "Data fetched!"
@@ -352,7 +352,7 @@ local galka1 = createGalka(infoContainer, text1, -30, 3)
 loader1.Visible = false
 
 task.wait(0.3)
-local text2 = createTextLabel(infoContainer, "Loading Key System", UDim2.new(0, 50 * adaptiveSize.scale, 0, 50 * adaptiveSize.scale), UDim2.new(0, 200 * adaptiveSize.scale, 0, 26 * adaptiveSize.scale), 20)
+local text2 = createTextLabel(infoContainer, "Loading Key System", UDim2.new(0, 50 * adaptiveSize.scale, 0, 65 * adaptiveSize.scale), UDim2.new(0, 200 * adaptiveSize.scale, 0, 26 * adaptiveSize.scale), 20)
 local loader2 = createRadialLoader(infoContainer, text2, -30, 3)
 task.wait(0.8)
 text2.Text = "Loaded Key System!"
@@ -360,7 +360,7 @@ local galka2 = createGalka(infoContainer, text2, -30, 3)
 loader2.Visible = false
 
 task.wait(0.3)
-local text3 = createTextLabel(infoContainer, "Waiting for key...", UDim2.new(0, 50 * adaptiveSize.scale, 0, 80 * adaptiveSize.scale), UDim2.new(0, 200 * adaptiveSize.scale, 0, 26 * adaptiveSize.scale), 20)
+local text3 = createTextLabel(infoContainer, "Waiting for key...", UDim2.new(0, 50 * adaptiveSize.scale, 0, 95 * adaptiveSize.scale), UDim2.new(0, 200 * adaptiveSize.scale, 0, 26 * adaptiveSize.scale), 20)
 local loader3 = createRadialLoader(infoContainer, text3, -30, 3)
 
 -- Заголовок с 3D эффектом
