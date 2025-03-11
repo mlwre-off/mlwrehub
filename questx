@@ -338,7 +338,7 @@ end
 local infoContainer = Instance.new("Frame")
 infoContainer.Name = "InfoContainer"
 infoContainer.Size = UDim2.new(0, adaptiveSize.centerWidth * 0.7, 0, adaptiveSize.centerHeight * 0.3)
-infoContainer.Position = UDim2.new(0.5, -adaptiveSize.centerWidth * 0.7/2, 0.67, -50 * adaptiveSize.scale)
+infoContainer.Position = UDim2.new(0.5, -adaptiveSize.centerWidth * 0.7/2, 0.67, -10 * adaptiveSize.scale)
 infoContainer.BackgroundTransparency = 1
 infoContainer.ZIndex = 3
 infoContainer.Parent = centerFrame
@@ -636,19 +636,6 @@ TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out, 0, false, 0
 {ImageTransparency = 0.6}
 )
 getKeyShadowTween:Play()
-
--- Метка статуса
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Text = ""
-statusLabel.Font = Enum.Font.GothamMedium
-statusLabel.TextSize = 16 * adaptiveSize.scale
-statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-statusLabel.BackgroundTransparency = 1
-statusLabel.Size = UDim2.new(0.8, 0, 0, 30 * adaptiveSize.scale)
-statusLabel.Position = UDim2.new(0.1, 0, 0, 290 * adaptiveSize.scale)
-statusLabel.TextTransparency = 1
-statusLabel.ZIndex = 4
-statusLabel.Parent = centerFrame
 
 -- Кнопка закрытия
 local closeButton = Instance.new("ImageButton")
