@@ -336,30 +336,30 @@ end
 -- Создание информационных текстовых меток с анимацией
 local infoContainer = Instance.new("Frame")
 infoContainer.Name = "InfoContainer"
-infoContainer.Size = UDim2.new(0, adaptiveSize.centerWidth * 0.7, 0, adaptiveSize.centerHeight * 0.3) -- Увеличена высота infoContainer
-infoContainer.Position = UDim2.new(0.5, -adaptiveSize.centerWidth * 0.7/2, 0.84, -10 * adaptiveSize.scale)
+infoContainer.Size = UDim2.new(0, adaptiveSize.centerWidth * 0.7, 0, adaptiveSize.centerHeight * 0.25)
+infoContainer.Position = UDim2.new(0.5, -adaptiveSize.centerWidth * 0.7/2, 0.82, -10 * adaptiveSize.scale) -- Подвинул контейнер чуть выше
 infoContainer.BackgroundTransparency = 1
 infoContainer.ZIndex = 3
 infoContainer.Parent = centerFrame
 
 local text1 = createTextLabel(infoContainer, "Data fetching", UDim2.new(0, 50 * adaptiveSize.scale, 0, 0), UDim2.new(0, 200 * adaptiveSize.scale, 0, 26 * adaptiveSize.scale), 16)
-local loader1 = createRadialLoader(infoContainer, text1, -30, 3)
+local loader1 = createRadialLoader(infoContainer, text1, -30, 0) -- Поднял загрузчик
 task.wait(0.6)
 text1.Text = "Data fetched!"
-local galka1 = createGalka(infoContainer, text1, -30, 3)
+local galka1 = createGalka(infoContainer, text1, -30, 0) -- Поднял галочку
 loader1.Visible = false
 
 task.wait(0.3)
-local text2 = createTextLabel(infoContainer, "Loading Key System", UDim2.new(0, 50 * adaptiveSize.scale, 0, 32 * adaptiveSize.scale), UDim2.new(0, 200 * adaptiveSize.scale, 0, 26 * adaptiveSize.scale), 16)
-local loader2 = createRadialLoader(infoContainer, text2, -30, 3)
+local text2 = createTextLabel(infoContainer, "Loading Key System", UDim2.new(0, 50 * adaptiveSize.scale, 0, 30 * adaptiveSize.scale), UDim2.new(0, 200 * adaptiveSize.scale, 0, 26 * adaptiveSize.scale), 16) -- Сдвинул текст выше
+local loader2 = createRadialLoader(infoContainer, text2, -30, 30) -- Поднял загрузчик
 task.wait(0.8)
 text2.Text = "Loaded Key System!"
-local galka2 = createGalka(infoContainer, text2, -30, 3)
+local galka2 = createGalka(infoContainer, text2, -30, 30) -- Поднял галочку
 loader2.Visible = false
 
 task.wait(0.3)
-local text3 = createTextLabel(infoContainer, "Waiting for key...", UDim2.new(0, 50 * adaptiveSize.scale, 0, 64 * adaptiveSize.scale), UDim2.new(0, 200 * adaptiveSize.scale, 0, 26 * adaptiveSize.scale), 16)
-local loader3 = createRadialLoader(infoContainer, text3, -30, 3)
+local text3 = createTextLabel(infoContainer, "Waiting for key...", UDim2.new(0, 50 * adaptiveSize.scale, 0, 60 * adaptiveSize.scale), UDim2.new(0, 200 * adaptiveSize.scale, 0, 26 * adaptiveSize.scale), 16) -- Сдвинул текст выше
+local loader3 = createRadialLoader(infoContainer, text3, -30, 60) -- Поднял загрузчик
 
 -- Заголовок с 3D эффектом
 local titleContainer = Instance.new("Frame")
@@ -504,17 +504,6 @@ keyInput.TextTransparency = 1
 keyInput.ZIndex = 4
 keyInput.Parent = keyInputContainer
 
-local keyIcon = Instance.new("ImageLabel")
-keyIcon.Image = "rbxassetid://3926307971"
-keyIcon.ImageRectOffset = Vector2.new(364, 324)
-keyIcon.ImageRectSize = Vector2.new(36, 36)
-keyIcon.Size = UDim2.new(0, 20 * adaptiveSize.scale, 0, 20 * adaptiveSize.scale)
-keyIcon.Position = UDim2.new(0.05, -25 * adaptiveSize.scale, 0.5, -10 * adaptiveSize.scale)
-keyIcon.BackgroundTransparency = 1
-keyIcon.ImageColor3 = Color3.fromRGB(180, 190, 210)
-keyIcon.ImageTransparency = 1
-keyIcon.ZIndex = 4
-keyIcon.Parent = keyInputContainer
 
 local keyInputTween = TweenService:Create(
     keyInput,
@@ -523,12 +512,7 @@ local keyInputTween = TweenService:Create(
 )
 keyInputTween:Play()
 
-local keyIconTween = TweenService:Create(
-    keyIcon,
-    TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out, 0, false, 0.2),
-    {ImageTransparency = 0.2}
-)
-keyIconTween:Play()
+
 
 -- Кнопка проверки ключа
 local verifyButton = Instance.new("TextButton")
@@ -688,6 +672,40 @@ local closeBackgroundTween = TweenService:Create(
 )
 closeBackgroundTween:Play()
 
+local floatingIcon = Instance.new("ImageButton", screenGui)
+floatingIcon.BackgroundColor3 = Color3.fromRGB(50, 55, 75)
+floatingIcon.Image = "rbxassetid://117511501336791"
+floatingIcon.Size = UDim2.new(0, 44 * adaptiveSize.scale, 0, 44 * adaptiveSize.scale)
+floatingIcon.Name = "FloatingIcon"
+floatingIcon.Visible = false
+floatingIcon.Position = UDim2.new(0.09, 0, 0.016, 0)
+floatingIcon.Draggable = true
+floatingIcon.ZIndex = 6
+floatingIcon.ImageTransparency = 1
+floatingIcon.BackgroundTransparency = 1
+
+local floatCorner = Instance.new("UICorner", floatingIcon)
+floatCorner.CornerRadius = UDim.new(0.25, 0)
+
+local floatStroke = Instance.new("UIStroke", floatingIcon)
+floatStroke.Color = Color3.fromRGB(110, 140, 255)
+floatStroke.Thickness = 2
+floatStroke.Transparency = 1
+
+local aspectRatioConstraint = Instance.new("UIAspectRatioConstraint", floatingIcon)
+aspectRatioConstraint.AspectRatio = 1
+
+local floatingGlow = Instance.new("ImageLabel")
+floatingGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+floatingGlow.BackgroundTransparency = 1
+floatingGlow.Position = UDim2.new(0.5, 0, 0.5, 0)
+floatingGlow.Size = UDim2.new(1.5, 0, 1.5, 0)
+floatingGlow.ZIndex = 5
+floatingGlow.Image = "rbxassetid://5554236805"
+floatingGlow.ImageColor3 = Color3.fromRGB(100, 130, 255)
+floatingGlow.ImageTransparency = 0.8
+floatingGlow.Parent = floatingIcon
+
 local function setupButtonHoverEffect(button, originalColor, hoverColor, shadowObj)
     button.MouseEnter:Connect(function()
         local scaleTween = TweenService:Create(
@@ -809,8 +827,13 @@ workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(functio
     centerFrame.Size = UDim2.new(0, newAdaptiveSize.centerWidth, 0, newAdaptiveSize.centerHeight)
     centerFrame.Position = UDim2.new(0.5, -newAdaptiveSize.centerWidth/2, 0.5, -newAdaptiveSize.centerHeight/2)
 
-    infoContainer.Size = UDim2.new(0, newAdaptiveSize.centerWidth * 0.7, 0, adaptiveSize.centerHeight * 0.3) -- Обновление высоты infoContainer
-    infoContainer.Position = UDim2.new(0.5, -newAdaptiveSize.centerWidth * 0.7/2, 0.84, -10 * newAdaptiveSize.scale)
+    infoContainer.Size = UDim2.new(0, newAdaptiveSize.centerWidth * 0.7, 0, adaptiveSize.centerHeight * 0.25)
+    infoContainer.Position = UDim2.new(0.5, -newAdaptiveSize.centerWidth * 0.7/2, 0.82, -10 * newAdaptiveSize.scale) -- Обновили позицию контейнера
+
+    text1.Position = UDim2.new(0, 50 * adaptiveSize.scale, 0, 0) -- Обновили позицию текста 1
+    text2.Position = UDim2.new(0, 50 * adaptiveSize.scale, 0, 30 * adaptiveSize.scale) -- Обновили позицию текста 2
+    text3.Position = UDim2.new(0, 50 * adaptiveSize.scale, 0, 60 * adaptiveSize.scale) -- Обновили позицию текста 3
+
 
     titleLabel.TextSize = 28 * newAdaptiveSize.scale
     titleShadow.TextSize = 28 * newAdaptiveSize.scale
@@ -851,7 +874,7 @@ verifyButton.MouseButton1Click:Connect(function()
     text3.Text = "Key verification..."
 
     task.wait(1)
-    local galka3 = createGalka(infoContainer, text3, -30, 3)
+    local galka3 = createGalka(infoContainer, text3, -30, 60)
     text3.Text = "Key verified successfully!"
 end)
 
