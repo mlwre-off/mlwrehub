@@ -1,4 +1,3 @@
--- GUI Module: современный адаптивный интерфейс аутентификации 
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -346,7 +345,7 @@ local text1 = createTextLabel(infoContainer, "Data fetching", UDim2.new(0, 50 * 
 local loader1 = createRadialLoader(infoContainer, text1, -30, 3)
 task.wait(0.6)
 text1.Text = "Data fetched!"
-local galka1 = createGalka(infoContainer, text1, -30, 3)
+local galka1 = createGalka(infoContainer, text1, -30, 0)
 loader1.Visible = false
 
 task.wait(0.3)
@@ -354,7 +353,7 @@ local text2 = createTextLabel(infoContainer, "Loading Key System", UDim2.new(0, 
 local loader2 = createRadialLoader(infoContainer, text2, -30, 3)
 task.wait(0.8)
 text2.Text = "Loaded Key System!"
-local galka2 = createGalka(infoContainer, text2, -30, 3)
+local galka2 = createGalka(infoContainer, text2, -30, 0)
 loader2.Visible = false
 
 task.wait(0.3)
@@ -688,40 +687,6 @@ local closeBackgroundTween = TweenService:Create(
 )
 closeBackgroundTween:Play()
 
-local floatingIcon = Instance.new("ImageButton", screenGui)
-floatingIcon.BackgroundColor3 = Color3.fromRGB(50, 55, 75)
-floatingIcon.Image = "rbxassetid://117511501336791"
-floatingIcon.Size = UDim2.new(0, 44 * adaptiveSize.scale, 0, 44 * adaptiveSize.scale)
-floatingIcon.Name = "FloatingIcon"
-floatingIcon.Visible = false
-floatingIcon.Position = UDim2.new(0.09, 0, 0.016, 0)
-floatingIcon.Draggable = true
-floatingIcon.ZIndex = 6
-floatingIcon.ImageTransparency = 1
-floatingIcon.BackgroundTransparency = 1
-
-local floatCorner = Instance.new("UICorner", floatingIcon)
-floatCorner.CornerRadius = UDim.new(0.25, 0)
-
-local floatStroke = Instance.new("UIStroke", floatingIcon)
-floatStroke.Color = Color3.fromRGB(110, 140, 255)
-floatStroke.Thickness = 2
-floatStroke.Transparency = 1
-
-local aspectRatioConstraint = Instance.new("UIAspectRatioConstraint", floatingIcon)
-aspectRatioConstraint.AspectRatio = 1
-
-local floatingGlow = Instance.new("ImageLabel")
-floatingGlow.AnchorPoint = Vector2.new(0.5, 0.5)
-floatingGlow.BackgroundTransparency = 1
-floatingGlow.Position = UDim2.new(0.5, 0, 0.5, 0)
-floatingGlow.Size = UDim2.new(1.5, 0, 1.5, 0)
-floatingGlow.ZIndex = 5
-floatingGlow.Image = "rbxassetid://5554236805"
-floatingGlow.ImageColor3 = Color3.fromRGB(100, 130, 255)
-floatingGlow.ImageTransparency = 0.8
-floatingGlow.Parent = floatingIcon
-
 local function setupButtonHoverEffect(button, originalColor, hoverColor, shadowObj)
     button.MouseEnter:Connect(function()
         local scaleTween = TweenService:Create(
@@ -857,8 +822,6 @@ workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(functio
     verifyButton.Size = UDim2.new(0.85, 0, 0, 48 * newAdaptiveSize.scale)
     getKeyButton.Size = UDim2.new(0.85, 0, 0, 48 * newAdaptiveSize.scale)
     closeButton.Size = UDim2.new(0, 32 * newAdaptiveSize.scale, 0, 32 * newAdaptiveSize.scale)
-    
-    floatingIcon.Size = UDim2.new(0, 44 * newAdaptiveSize.scale, 0, 44 * newAdaptiveSize.scale)
 end)
 
 RunService.RenderStepped:Connect(function()
@@ -887,7 +850,7 @@ verifyButton.MouseButton1Click:Connect(function()
     text3.Text = "Key verification..."
     
     task.wait(1)
-    local galka3 = createGalka(infoContainer, text3, -30, 3)
+    local galka3 = createGalka(infoContainer, text3, -30, 0)
     text3.Text = "Key verified successfully!"
 end)
 
