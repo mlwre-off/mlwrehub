@@ -343,7 +343,7 @@ infoContainer.BackgroundTransparency = 1
 infoContainer.ZIndex = 3
 infoContainer.Parent = centerFrame
 
-local text1 = createTextLabel(infoContainer, "Data fetching", UDim2.new(0, 50 * adaptiveSize.scale, 0, 20 * adaptiveSize.scale), UDim2.new(0, 200 * adaptiveSize.scale, 0, 26 * adaptiveSize.scale), 20)
+local text1 = createTextLabel(infoContainer, "Data fetching", UDim2.new(0, 50 * adaptiveSize.scale, 0, 50 * adaptiveSize.scale), UDim2.new(0, 200 * adaptiveSize.scale, 0, 26 * adaptiveSize.scale), 20)
 local loader1 = createRadialLoader(infoContainer, text1, -30, 3)
 task.wait(0.6)
 text1.Text = "Data fetched!"
