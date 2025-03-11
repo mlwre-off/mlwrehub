@@ -1,30 +1,9 @@
--- GUI Module: Улучшенный интерфейс аутентификации ключа
+-- GUI Module: улучшенный интерфейс аутентификации ключа
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
--- Современная цветовая палитра
-local Colors = {
-    Background = Color3.fromRGB(18, 18, 24),
-    CardBackground = Color3.fromRGB(30, 30, 38),
-    Primary = Color3.fromRGB(86, 96, 222),     -- Основной акцент
-    Secondary = Color3.fromRGB(232, 66, 102),  -- Вторичный акцент
-    Success = Color3.fromRGB(46, 213, 115),    -- Цвет успеха
-    Text = Color3.fromRGB(235, 235, 245),      -- Основной текст
-    TextDimmed = Color3.fromRGB(180, 180, 190)   -- Приглушенный текст
-}
-
--- Анимационные параметры
-local AnimParams = {
-    Short = 0.2,
-    Medium = 0.3,
-    Long = 0.5,
-    EaseIn = Enum.EasingStyle.Sine,
-    EaseOut = Enum.EasingStyle.Back,
-    EaseBounce = Enum.EasingStyle.Bounce
-}
-
--- Создание ScreenGui
+-- Создание ScreenGui с улучшенным дизайном
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "QUESTXGUI"
 screenGui.IgnoreGuiInset = true
@@ -33,784 +12,537 @@ screenGui.DisplayOrder = 999999
 screenGui.ScreenInsets = Enum.ScreenInsets.None
 screenGui.Parent = game.CoreGui
 
--- Главный фон (с эффектом градиента)
+-- Фон с градиентом
 local frame = Instance.new("Frame")
 frame.Name = "MainFrame"
 frame.Size = UDim2.fromScale(2, 2)
 frame.Position = UDim2.fromScale(-0.5, -0.5)
-frame.BackgroundColor3 = Colors.Background
-frame.BackgroundTransparency = 0
+frame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+frame.BackgroundTransparency = 0.1
 frame.BorderSizePixel = 0
 frame.ZIndex = 1
 frame.Parent = screenGui
 
--- Градиентная подсветка фона
+-- Добавление градиента для фона
 local gradient = Instance.new("UIGradient")
 gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 40)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(18, 18, 24)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 25, 35))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 30)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(30, 30, 45)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 30))
 })
 gradient.Rotation = 45
 gradient.Parent = frame
 
 -- Анимация градиента
-spawn(function()
-    local rotation = 0
-    while true do
-        rotation = (rotation + 0.1) % 360
-        gradient.Rotation = rotation
-        wait(0.03)
-    end
-end)
+local gradientTween = TweenService:Create(
+    gradient, 
+    TweenInfo.new(15, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), 
+    {Rotation = 225}
+)
+gradientTween:Play()
 
--- Декоративные элементы (частицы на фоне)
-for i = 1, 15 do
-    local particle = Instance.new("Frame")
-    particle.BackgroundColor3 = Colors.Primary
-    particle.BackgroundTransparency = math.random(60, 90)/100
-    local size = math.random(2, 8)
-    particle.Size = UDim2.new(0, size, 0, size)
-    particle.Position = UDim2.new(math.random(0, 100)/100, 0, math.random(0, 100)/100, 0)
-    particle.BorderSizePixel = 0
-    particle.ZIndex = 2
-    
-    -- Скругление для частиц
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(1, 0)
-    corner.Parent = particle
-    
-    particle.Parent = frame
-    
-    -- Анимация плавания частиц
-    spawn(function()
-        while true do
-            local duration = math.random(3, 8)
-            local targetX = math.random(-100, 100)/1000
-            local targetY = math.random(-100, 100)/1000
-            
-            local tween = TweenService:Create(
-                particle, 
-                TweenInfo.new(duration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), 
-                {Position = UDim2.new(particle.Position.X.Scale + targetX, 0, particle.Position.Y.Scale + targetY, 0)}
-            )
-            tween:Play()
-            wait(duration)
-        end
-    end)
-end
+-- Центрированный контейнер для элементов GUI
+local centerFrame = Instance.new("Frame")
+centerFrame.Name = "CenterFrame"
+centerFrame.Size = UDim2.new(0, 450, 0, 380)
+centerFrame.Position = UDim2.new(0.5, -225, 0.5, -190)
+centerFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+centerFrame.BackgroundTransparency = 0.2
+centerFrame.ZIndex = 2
+centerFrame.Parent = screenGui
 
--- Центральная карточка для элементов GUI
-local centerCard = Instance.new("Frame")
-centerCard.Name = "CenterCard"
-centerCard.Size = UDim2.new(0, 400, 0, 450)
-centerCard.Position = UDim2.new(0.5, -200, 0.5, -225)
-centerCard.BackgroundColor3 = Colors.CardBackground
-centerCard.BackgroundTransparency = 0.1
-centerCard.BorderSizePixel = 0
-centerCard.ZIndex = 10
-centerCard.Parent = screenGui
+-- Добавление углов для контейнера
+local cornerRadius = Instance.new("UICorner")
+cornerRadius.CornerRadius = UDim.new(0, 15)
+cornerRadius.Parent = centerFrame
 
--- Скругление углов карточки
-local cardCorner = Instance.new("UICorner")
-cardCorner.CornerRadius = UDim.new(0, 16)
-cardCorner.Parent = centerCard
-
--- Тень для карточки
+-- Добавление эффекта тени
 local shadow = Instance.new("ImageLabel")
 shadow.Name = "Shadow"
-shadow.Size = UDim2.new(1, 40, 1, 40)
-shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
 shadow.AnchorPoint = Vector2.new(0.5, 0.5)
 shadow.BackgroundTransparency = 1
-shadow.Image = "rbxassetid://6014261993"
+shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+shadow.Size = UDim2.new(1, 35, 1, 35)
+shadow.ZIndex = 1
+shadow.Image = "rbxassetid://5554236805"
 shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-shadow.ImageTransparency = 0.6
-shadow.ScaleType = Enum.ScaleType.Slice
-shadow.SliceCenter = Rect.new(49, 49, 450, 450)
-shadow.ZIndex = 9
-shadow.Parent = centerCard
+shadow.ImageTransparency = 0.4
+shadow.Parent = centerFrame
 
--- Декоративная линия в карточке
-local decorLine = Instance.new("Frame")
-decorLine.BackgroundColor3 = Colors.Primary
-decorLine.BackgroundTransparency = 0.7
-decorLine.BorderSizePixel = 0
-decorLine.Size = UDim2.new(0.8, 0, 0, 2)
-decorLine.Position = UDim2.new(0.1, 0, 0.26, 0)
-decorLine.ZIndex = 11
-decorLine.Parent = centerCard
-
--- Декоративный элемент (логотип)
-local logo = Instance.new("ImageLabel")
-logo.Size = UDim2.new(0, 60, 0, 60)
-logo.Position = UDim2.new(0.5, -30, 0.07, 0)
-logo.BackgroundTransparency = 1
-logo.Image = "rbxassetid://117511501336791" -- Заменить на реальный ID логотипа
-logo.ImageColor3 = Colors.Primary
-logo.ZIndex = 11
-logo.Parent = centerCard
-
--- Анимация пульсации логотипа
-spawn(function()
-    while true do
-        local tween1 = TweenService:Create(
-            logo, 
-            TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), 
-            {ImageColor3 = Colors.Secondary}
-        )
-        tween1:Play()
-        wait(1.5)
-        
-        local tween2 = TweenService:Create(
-            logo, 
-            TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), 
-            {ImageColor3 = Colors.Primary}
-        )
-        tween2:Play()
-        wait(1.5)
-    end
-end)
-
--- Функция для создания текстовой метки
-local function createTextLabel(parent, text, position, size, textSize, textColor, font)
+-- Функция для создания текстовой метки с анимацией
+local function createTextLabel(parent, text, position, size, fontSize)
     local textLabel = Instance.new("TextLabel")
     textLabel.Size = size or UDim2.new(0, 200, 0, 30)
     textLabel.Position = position
     textLabel.Text = text
-    textLabel.Font = font or Enum.Font.GothamSemibold
-    textLabel.TextSize = textSize or 16
-    textLabel.TextColor3 = textColor or Colors.Text
+    textLabel.Font = Enum.Font.GothamSemibold
+    textLabel.TextSize = fontSize or 20
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     textLabel.BackgroundTransparency = 1
     textLabel.TextXAlignment = Enum.TextXAlignment.Left
-    textLabel.ZIndex = 11
+    textLabel.ZIndex = 3
     textLabel.Parent = parent
+    
+    -- Добавление анимации появления
+    textLabel.TextTransparency = 1
+    local tweenAppear = TweenService:Create(
+        textLabel,
+        TweenInfo.new(0.6, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+        {TextTransparency = 0}
+    )
+    tweenAppear:Play()
+    
     return textLabel
 end
 
--- Создание заголовка
-local titleLabel = createTextLabel(
-    centerCard, 
-    "Quest X Key Authentication", 
-    UDim2.new(0, 0, 0.16, 0), 
-    UDim2.new(1, 0, 0, 36), 
-    28, 
-    Colors.Text, 
-    Enum.Font.GothamBold
-)
-titleLabel.TextXAlignment = Enum.TextXAlignment.Center
+-- Функция для создания улучшенного радиального загрузчика
+local function createRadialLoader(parent, targetTextLabel, offsetX, offsetY)
+    local loaderFrame = Instance.new("Frame")
+    loaderFrame.Size = UDim2.new(0, 24, 0, 24)
+    loaderFrame.BackgroundTransparency = 1
+    loaderFrame.ZIndex = 4
+    loaderFrame.Parent = parent
 
--- Подзаголовок
-local subtitleLabel = createTextLabel(
-    centerCard, 
-    "Enter your key below to gain access:", 
-    UDim2.new(0, 0, 0.23, 0), 
-    UDim2.new(1, 0, 0, 24), 
-    16, 
-    Colors.TextDimmed, 
-    Enum.Font.Gotham
-)
-subtitleLabel.TextXAlignment = Enum.TextXAlignment.Center
-
--- Поле ввода ключа
-local inputContainer = Instance.new("Frame")
-inputContainer.Size = UDim2.new(0.8, 0, 0, 50)
-inputContainer.Position = UDim2.new(0.1, 0, 0.34, 0)
-inputContainer.BackgroundColor3 = Colors.Background
-inputContainer.BackgroundTransparency = 0.5
-inputContainer.BorderSizePixel = 0
-inputContainer.ZIndex = 11
-inputContainer.Parent = centerCard
-
--- Скругление углов контейнера ввода
-local inputCorner = Instance.new("UICorner")
-inputCorner.CornerRadius = UDim.new(0, 10)
-inputCorner.Parent = inputContainer
-
--- Подсветка контейнера ввода
-local inputStroke = Instance.new("UIStroke")
-inputStroke.Color = Colors.Primary
-inputStroke.Transparency = 0.7
-inputStroke.Thickness = 1.5
-inputStroke.Parent = inputContainer
-
--- Текстовое поле ввода
-local keyInput = Instance.new("TextBox")
-keyInput.Size = UDim2.new(0.95, 0, 0.8, 0)
-keyInput.Position = UDim2.new(0.025, 0, 0.1, 0)
-keyInput.PlaceholderText = "Enter your key here..."
-keyInput.PlaceholderColor3 = Colors.TextDimmed
-keyInput.Text = ""
-keyInput.Font = Enum.Font.Gotham
-keyInput.TextSize = 16
-keyInput.TextColor3 = Colors.Text
-keyInput.BackgroundTransparency = 1
-keyInput.BorderSizePixel = 0
-keyInput.ClearTextOnFocus = false
-keyInput.ZIndex = 12
-keyInput.Parent = inputContainer
-
--- Иконка ключа в поле ввода
-local keyIcon = Instance.new("ImageLabel")
-keyIcon.Size = UDim2.new(0, 20, 0, 20)
-keyIcon.Position = UDim2.new(0.025, 0, 0.5, -10)
-keyIcon.BackgroundTransparency = 1
-keyIcon.Image = "rbxassetid://9425523712" -- Заменить на реальный ID иконки ключа
-keyIcon.ImageColor3 = Colors.TextDimmed
-keyIcon.ZIndex = 12
-keyIcon.Visible = false -- Будем показывать при фокусе
-keyIcon.Parent = inputContainer
-
--- Эффекты фокуса для поля ввода
-keyInput.Focused:Connect(function()
-    keyIcon.Visible = true
-    keyInput.Position = UDim2.new(0.075, 0, 0.1, 0) 
-    keyInput.Size = UDim2.new(0.9, 0, 0.8, 0)
+    -- Фон загрузчика
+    local loaderBg = Instance.new("Frame")
+    loaderBg.Size = UDim2.new(1, 0, 1, 0)
+    loaderBg.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    loaderBg.ZIndex = 3
+    loaderBg.Parent = loaderFrame
     
-    local tween = TweenService:Create(
-        inputStroke, 
-        TweenInfo.new(AnimParams.Short, AnimParams.EaseOut), 
-        {Color = Colors.Secondary, Transparency = 0, Thickness = 2}
+    local cornerLoader = Instance.new("UICorner")
+    cornerLoader.CornerRadius = UDim.new(1, 0)
+    cornerLoader.Parent = loaderBg
+
+    -- Анимированная часть загрузчика
+    local loader = Instance.new("ImageLabel")
+    loader.Image = "rbxassetid://3926305904"
+    loader.ImageRectOffset = Vector2.new(124, 124)
+    loader.ImageRectSize = Vector2.new(36, 36)
+    loader.Size = UDim2.new(0.8, 0, 0.8, 0)
+    loader.Position = UDim2.new(0.1, 0, 0.1, 0)
+    loader.BackgroundTransparency = 1
+    loader.ImageColor3 = Color3.fromRGB(80, 170, 255)
+    loader.ZIndex = 4
+    loader.Parent = loaderFrame
+
+    loaderFrame.Position = UDim2.new(
+        targetTextLabel.Position.X.Scale,
+        targetTextLabel.Position.X.Offset + offsetX,
+        targetTextLabel.Position.Y.Scale,
+        targetTextLabel.Position.Y.Offset + offsetY
     )
+
+    -- Запуск анимации вращения с плавным появлением
+    loader.ImageTransparency = 1
+    local tweenAppear = TweenService:Create(
+        loader,
+        TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+        {ImageTransparency = 0}
+    )
+    tweenAppear:Play()
+    
+    -- Анимация вращения
+    local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1)
+    local tween = TweenService:Create(loader, tweenInfo, {Rotation = 360})
     tween:Play()
-end)
 
-keyInput.FocusLost:Connect(function()
-    if keyInput.Text == "" then
-        keyIcon.Visible = false
-        keyInput.Position = UDim2.new(0.025, 0, 0.1, 0)
-        keyInput.Size = UDim2.new(0.95, 0, 0.8, 0)
-    end
-    
-    local tween = TweenService:Create(
-        inputStroke, 
-        TweenInfo.new(AnimParams.Short, AnimParams.EaseIn), 
-        {Color = Colors.Primary, Transparency = 0.7, Thickness = 1.5}
-    )
-    tween:Play()
-end)
-
--- Создание контейнера для статусов
-local statusContainer = Instance.new("Frame")
-statusContainer.Size = UDim2.new(0.8, 0, 0.15, 0)
-statusContainer.Position = UDim2.new(0.1, 0, 0.45, 0)
-statusContainer.BackgroundTransparency = 1
-statusContainer.ZIndex = 11
-statusContainer.Parent = centerCard
-
--- Функция для создания индикаторов статуса с анимациями
-local function createStatusItem(index, text)
-    local itemHeight = 0.3
-    local spacing = 0.05
-    local yPos = (itemHeight + spacing) * (index - 1)
-    
-    local statusItem = Instance.new("Frame")
-    statusItem.Size = UDim2.new(1, 0, itemHeight, 0)
-    statusItem.Position = UDim2.new(0, 0, yPos, 0)
-    statusItem.BackgroundTransparency = 1
-    statusItem.ZIndex = 11
-    statusItem.Parent = statusContainer
-    
-    -- Иконка индикатора
-    local statusIcon = Instance.new("Frame")
-    statusIcon.Size = UDim2.new(0, 16, 0, 16)
-    statusIcon.Position = UDim2.new(0, 0, 0.5, -8)
-    statusIcon.BackgroundColor3 = Colors.Primary
-    statusIcon.BackgroundTransparency = 0.3
-    statusIcon.ZIndex = 12
-    statusIcon.Parent = statusItem
-    
-    -- Скругление иконки
-    local iconCorner = Instance.new("UICorner")
-    iconCorner.CornerRadius = UDim.new(0, 8)
-    iconCorner.Parent = statusIcon
-    
-    -- Текст статуса
-    local statusText = createTextLabel(
-        statusItem, 
-        text, 
-        UDim2.new(0, 24, 0, 0),
-        UDim2.new(0.9, 0, 1, 0),
-        14,
-        Colors.TextDimmed
-    )
-    
-    return {
-        item = statusItem,
-        icon = statusIcon,
-        text = statusText,
-        -- Функция для анимации завершения
-        complete = function(success)
-            local targetColor = success and Colors.Success or Colors.Secondary
-            
-            -- Анимация пульсации при завершении
-            local pulseTween = TweenService:Create(
-                statusIcon, 
-                TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-                {Size = UDim2.new(0, 24, 0, 24), Position = UDim2.new(0, -4, 0.5, -12), BackgroundTransparency = 0.1}
-            )
-            pulseTween:Play()
-            
-            wait(0.3)
-            
-            local normalTween = TweenService:Create(
-                statusIcon, 
-                TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), 
-                {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8)}
-            )
-            normalTween:Play()
-            
-            -- Изменение цвета и добавление галочки
-            local colorTween = TweenService:Create(
-                statusIcon, 
-                TweenInfo.new(0.3, Enum.EasingStyle.Quad), 
-                {BackgroundColor3 = targetColor, BackgroundTransparency = 0}
-            )
-            colorTween:Play()
-            
-            -- Изменение текста
-            local textTween = TweenService:Create(
-                statusText, 
-                TweenInfo.new(0.3, Enum.EasingStyle.Quad), 
-                {TextColor3 = targetColor}
-            )
-            textTween:Play()
-            
-            -- Создаем галочку или крестик внутри иконки
-            local checkmark = Instance.new("ImageLabel")
-            checkmark.Size = UDim2.new(0, 12, 0, 12)
-            checkmark.Position = UDim2.new(0.5, -6, 0.5, -6)
-            checkmark.BackgroundTransparency = 1
-            checkmark.Image = success and "rbxassetid://9801471432" or "rbxassetid://9801486541" -- Заменить на ID галочки/крестика
-            checkmark.ImageColor3 = Color3.fromRGB(255, 255, 255)
-            checkmark.ZIndex = 13
-            checkmark.Parent = statusIcon
-            
-            -- Анимация появления галочки
-            checkmark.ImageTransparency = 1
-            local checkTween = TweenService:Create(
-                checkmark, 
-                TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), 
-                {ImageTransparency = 0}
-            )
-            checkTween:Play()
-        end,
-        -- Функция для анимации загрузки
-        loading = function()
-            -- Анимация пульсации при загрузке
-            spawn(function()
-                while statusIcon.BackgroundColor3 ~= Colors.Success and statusIcon.BackgroundColor3 ~= Colors.Secondary do
-                    local pulse1 = TweenService:Create(
-                        statusIcon, 
-                        TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), 
-                        {BackgroundTransparency = 0.7}
-                    )
-                    pulse1:Play()
-                    wait(0.8)
-                    
-                    local pulse2 = TweenService:Create(
-                        statusIcon, 
-                        TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), 
-                        {BackgroundTransparency = 0.3}
-                    )
-                    pulse2:Play()
-                    wait(0.8)
-                end
-            end)
-        end
-    }
+    return loaderFrame
 end
 
--- Создание индикаторов статуса
-local status1 = createStatusItem(1, "Connecting to server...")
-local status2 = createStatusItem(2, "Loading key system...")
-local status3 = createStatusItem(3, "Waiting for key verification...")
+-- Функция для создания улучшенной галочки с анимацией
+local function createGalka(parent, targetTextLabel, offsetX, offsetY)
+    local galkaFrame = Instance.new("Frame")
+    galkaFrame.Size = UDim2.new(0, 24, 0, 24)
+    galkaFrame.BackgroundTransparency = 1
+    galkaFrame.ZIndex = 4
+    galkaFrame.Parent = parent
 
--- Анимация загрузки для первого статуса (для примера)
-status1.loading()
-wait(1)
-status1.complete(true)
+    -- Фон галочки
+    local galkaBg = Instance.new("Frame")
+    galkaBg.Size = UDim2.new(1, 0, 1, 0)
+    galkaBg.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    galkaBg.ZIndex = 3
+    galkaBg.Parent = galkaFrame
+    
+    local cornerGalka = Instance.new("UICorner")
+    cornerGalka.CornerRadius = UDim.new(1, 0)
+    cornerGalka.Parent = galkaBg
 
--- Кнопка проверки ключа
+    local galka = Instance.new("ImageLabel")
+    galka.Image = "rbxassetid://3926305904"
+    galka.ImageRectOffset = Vector2.new(312, 4)
+    galka.ImageRectSize = Vector2.new(24, 24)
+    galka.Size = UDim2.new(0.7, 0, 0.7, 0)
+    galka.Position = UDim2.new(0.15, 0, 0.15, 0)
+    galka.BackgroundTransparency = 1
+    galka.ImageColor3 = Color3.fromRGB(80, 220, 120)
+    galka.ZIndex = 4
+    galka.Parent = galkaFrame
+
+    galkaFrame.Position = UDim2.new(
+        targetTextLabel.Position.X.Scale,
+        targetTextLabel.Position.X.Offset + offsetX,
+        targetTextLabel.Position.Y.Scale,
+        targetTextLabel.Position.Y.Offset + offsetY
+    )
+    
+    -- Анимация появления
+    galka.ImageTransparency = 1
+    galkaBg.BackgroundTransparency = 1
+    
+    local tweenBg = TweenService:Create(
+        galkaBg,
+        TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+        {BackgroundTransparency = 0}
+    )
+    
+    local tweenGalka = TweenService:Create(
+        galka,
+        TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+        {ImageTransparency = 0, Size = UDim2.new(0.7, 0, 0.7, 0)}
+    )
+    
+    tweenBg:Play()
+    task.wait(0.2)
+    tweenGalka:Play()
+
+    return galkaFrame
+end
+
+-- Создание информационных текстовых меток с анимацией
+local infoContainer = Instance.new("Frame")
+infoContainer.Name = "InfoContainer"
+infoContainer.Size = UDim2.new(0, 300, 0, 130)
+infoContainer.Position = UDim2.new(0.5, -150, 0.85, -10)
+infoContainer.BackgroundTransparency = 1
+infoContainer.ZIndex = 3
+infoContainer.Parent = centerFrame
+
+-- Улучшенные информационные метки
+local text1 = createTextLabel(infoContainer, "Data fetching", UDim2.new(0, 60, 0, 0), UDim2.new(0, 240, 0, 30), 18)
+local loader1 = createRadialLoader(infoContainer, text1, -35, 3)
+task.wait(0.6)
+text1.Text = "Data fetched!"
+local galka1 = createGalka(infoContainer, text1, -35, 3)
+loader1.Visible = false
+
+task.wait(0.3)
+local text2 = createTextLabel(infoContainer, "Loading Key System", UDim2.new(0, 60, 0, 40), UDim2.new(0, 240, 0, 30), 18)
+local loader2 = createRadialLoader(infoContainer, text2, -35, 3)
+task.wait(0.8)
+text2.Text = "Loaded Key System!"
+local galka2 = createGalka(infoContainer, text2, -35, 3)
+loader2.Visible = false
+
+task.wait(0.3)
+local text3 = createTextLabel(infoContainer, "Waiting for you to enter key...", UDim2.new(0, 60, 0, 80), UDim2.new(0, 240, 0, 30), 18)
+local loader3 = createRadialLoader(infoContainer, text3, -35, 3)
+
+-- Создание заголовка интерфейса с анимацией
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Text = "Quest X Authentication"
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextSize = 36
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Size = UDim2.new(1, 0, 0, 50)
+titleLabel.Position = UDim2.new(0, 0, 0, 20)
+titleLabel.TextTransparency = 1
+titleLabel.ZIndex = 3
+titleLabel.Parent = centerFrame
+
+-- Подсветка заголовка
+local titleGlow = Instance.new("ImageLabel")
+titleGlow.Size = UDim2.new(1.2, 0, 1.5, 0)
+titleGlow.Position = UDim2.new(-0.1, 0, -0.25, 0)
+titleGlow.BackgroundTransparency = 1
+titleGlow.Image = "rbxassetid://5554236805"
+titleGlow.ImageColor3 = Color3.fromRGB(80, 120, 255)
+titleGlow.ImageTransparency = 0.9
+titleGlow.ZIndex = 2
+titleGlow.Parent = titleLabel
+
+-- Анимация заголовка
+local titleTween = TweenService:Create(
+    titleLabel, 
+    TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), 
+    {TextTransparency = 0}
+)
+titleTween:Play()
+
+-- Пульсация подсветки заголовка
+local function pulseGlow()
+    while true do
+        local tweenDown = TweenService:Create(
+            titleGlow, 
+            TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), 
+            {ImageTransparency = 0.95}
+        )
+        tweenDown:Play()
+        task.wait(2)
+        
+        local tweenUp = TweenService:Create(
+            titleGlow, 
+            TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), 
+            {ImageTransparency = 0.85}
+        )
+        tweenUp:Play()
+        task.wait(2)
+    end
+end
+task.spawn(pulseGlow)
+
+-- Подзаголовок с анимацией
+local subtitleLabel = Instance.new("TextLabel")
+subtitleLabel.Text = "Enter your key below to gain access:"
+subtitleLabel.Font = Enum.Font.GothamMedium
+subtitleLabel.TextSize = 20
+subtitleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+subtitleLabel.BackgroundTransparency = 1
+subtitleLabel.Size = UDim2.new(1, 0, 0, 30)
+subtitleLabel.Position = UDim2.new(0, 0, 0, 75)
+subtitleLabel.TextTransparency = 1
+subtitleLabel.ZIndex = 3
+subtitleLabel.Parent = centerFrame
+
+-- Анимация подзаголовка
+local subtitleTween = TweenService:Create(
+    subtitleLabel, 
+    TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out, 0, false, 0.1), 
+    {TextTransparency = 0}
+)
+subtitleTween:Play()
+
+-- Улучшенное поле ввода ключа
+local keyInput = Instance.new("TextBox")
+keyInput.PlaceholderText = "Enter your key here"
+keyInput.Font = Enum.Font.GothamMedium
+keyInput.TextSize = 18
+keyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+keyInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+keyInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 170)
+keyInput.BackgroundTransparency = 0.3
+keyInput.Size = UDim2.new(0.8, 0, 0, 50)
+keyInput.Position = UDim2.new(0.1, 0, 0, 125)
+keyInput.BorderSizePixel = 0
+keyInput.Text = ""
+keyInput.ClearTextOnFocus = false
+keyInput.TextTransparency = 1
+keyInput.BackgroundTransparency = 1
+keyInput.ZIndex = 3
+keyInput.Parent = centerFrame
+
+-- Эффект рамки для TextBox
+local keyInputBorder = Instance.new("UIStroke")
+keyInputBorder.Color = Color3.fromRGB(80, 120, 255)
+keyInputBorder.Thickness = 2
+keyInputBorder.Transparency = 1
+keyInputBorder.Parent = keyInput
+
+-- Скругление углов поля ввода
+local inputCorner = Instance.new("UICorner")
+inputCorner.CornerRadius = UDim.new(0, 10)
+inputCorner.Parent = keyInput
+
+-- Анимация появления поля ввода
+local keyInputTween = TweenService:Create(
+    keyInput, 
+    TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out, 0, false, 0.2), 
+    {TextTransparency = 0, BackgroundTransparency = 0.3}
+)
+keyInputTween:Play()
+
+-- Анимация рамки поля ввода
+local keyInputBorderTween = TweenService:Create(
+    keyInputBorder, 
+    TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out, 0, false, 0.2), 
+    {Transparency = 0}
+)
+keyInputBorderTween:Play()
+
+-- Улучшенная кнопка проверки ключа
 local verifyButton = Instance.new("TextButton")
+verifyButton.Text = "Verify Key"
+verifyButton.Font = Enum.Font.GothamBold
+verifyButton.TextSize = 20
+verifyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+verifyButton.BackgroundColor3 = Color3.fromRGB(80, 120, 255)
+verifyButton.BackgroundTransparency = 1
 verifyButton.Size = UDim2.new(0.8, 0, 0, 50)
-verifyButton.Position = UDim2.new(0.1, 0, 0.63, 0)
-verifyButton.Text = ""
-verifyButton.BackgroundColor3 = Colors.Primary
-verifyButton.BackgroundTransparency = 0
+verifyButton.Position = UDim2.new(0.1, 0, 0, 195)
 verifyButton.BorderSizePixel = 0
-verifyButton.AutoButtonColor = false
-verifyButton.ZIndex = 11
-verifyButton.Parent = centerCard
+verifyButton.TextTransparency = 1
+verifyButton.ZIndex = 3
+verifyButton.Parent = centerFrame
 
 -- Скругление углов кнопки
-local buttonCorner = Instance.new("UICorner")
-buttonCorner.CornerRadius = UDim.new(0, 10)
-buttonCorner.Parent = verifyButton
+local verifyCorner = Instance.new("UICorner")
+verifyCorner.CornerRadius = UDim.new(0, 10)
+verifyCorner.Parent = verifyButton
 
--- Текст кнопки
-local buttonText = createTextLabel(
+-- Анимация появления кнопки проверки
+local verifyTween = TweenService:Create(
     verifyButton, 
-    "Verify Key", 
-    UDim2.new(0, 0, 0, 0),
-    UDim2.new(1, 0, 1, 0),
-    16,
-    Color3.fromRGB(255, 255, 255),
-    Enum.Font.GothamBold
+    TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out, 0, false, 0.3), 
+    {TextTransparency = 0, BackgroundTransparency = 0}
 )
-buttonText.TextXAlignment = Enum.TextXAlignment.Center
+verifyTween:Play()
 
--- Эффекты кнопки при наведении и нажатии
-verifyButton.MouseEnter:Connect(function()
-    local tween = TweenService:Create(
-        verifyButton, 
-        TweenInfo.new(AnimParams.Short, AnimParams.EaseOut), 
-        {BackgroundColor3 = Colors.Secondary}
-    )
-    tween:Play()
-    
-    -- Эффект увеличения
-    local scaleTween = TweenService:Create(
-        verifyButton, 
-        TweenInfo.new(AnimParams.Short, AnimParams.EaseOut), 
-        {Size = UDim2.new(0.82, 0, 0, 52), Position = UDim2.new(0.09, 0, 0.63, -1)}
-    )
-    scaleTween:Play()
-end)
-
-verifyButton.MouseLeave:Connect(function()
-    local tween = TweenService:Create(
-        verifyButton, 
-        TweenInfo.new(AnimParams.Short, AnimParams.EaseIn), 
-        {BackgroundColor3 = Colors.Primary}
-    )
-    tween:Play()
-    
-    -- Возврат к исходному размеру
-    local scaleTween = TweenService:Create(
-        verifyButton, 
-        TweenInfo.new(AnimParams.Short, AnimParams.EaseIn), 
-        {Size = UDim2.new(0.8, 0, 0, 50), Position = UDim2.new(0.1, 0, 0.63, 0)}
-    )
-    scaleTween:Play()
-end)
-
-verifyButton.MouseButton1Down:Connect(function()
-    local tween = TweenService:Create(
-        verifyButton, 
-        TweenInfo.new(AnimParams.Short, AnimParams.EaseIn), 
-        {Size = UDim2.new(0.78, 0, 0, 48), Position = UDim2.new(0.11, 0, 0.63, 1)}
-    )
-    tween:Play()
-end)
-
-verifyButton.MouseButton1Up:Connect(function()
-    local tween = TweenService:Create(
-        verifyButton, 
-        TweenInfo.new(AnimParams.Short, AnimParams.EaseOut), 
-        {Size = UDim2.new(0.82, 0, 0, 52), Position = UDim2.new(0.09, 0, 0.63, -1)}
-    )
-    tween:Play()
-    
-    -- Имитация загрузки при клике (для примера)
-    status2.loading()
-    wait(1.2)
-    status2.complete(true)
-    
-    status3.loading()
-    wait(1.5)
-    
-    -- Проверка введенного ключа
-    if keyInput.Text ~= "" then
-        status3.complete(true)
-        
-        -- Анимация успешной авторизации
-        wait(0.5)
-        
-        local successTween = TweenService:Create(
-            centerCard, 
-            TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), 
-            {Size = UDim2.new(0, 420, 0, 470), Position = UDim2.new(0.5, -210, 0.5, -235)}
-        )
-        successTween:Play()
-        
-        wait(0.3)
-        
-        local fadeTween = TweenService:Create(
-            centerCard, 
-            TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-            {BackgroundTransparency = 1}
-        )
-        fadeTween:Play()
-        
-        -- Скрытие всех элементов внутри карточки
-        for _, child in pairs(centerCard:GetChildren()) do
-            if child:IsA("GuiObject") and child.Name ~= "Shadow" then
-                local childTween = TweenService:Create(
-                    child, 
-                    TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-                    {BackgroundTransparency = 1}
-                )
-                childTween:Play()
-                
-                if child:IsA("TextLabel") or child:IsA("TextButton") or child:IsA("TextBox") then
-                    local textTween = TweenService:Create(
-                        child, 
-                        TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-                        {TextTransparency = 1}
-                    )
-                    textTween:Play()
-                end
-                
-                if child:IsA("ImageLabel") or child:IsA("ImageButton") then
-                    local imageTween = TweenService:Create(
-                        child, 
-                        TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-                        {ImageTransparency = 1}
-                    )
-                    imageTween:Play()
-                end
-            end
-        end
-        
-        -- Скрытие тени
-        local shadowTween = TweenService:Create(
-            shadow, 
-            TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-            {ImageTransparency = 1}
-        )
-        shadowTween:Play()
-        
-        -- Затемнение фона
-        local frameTween = TweenService:Create(
-            frame, 
-            TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-            {BackgroundTransparency = 1}
-        )
-        frameTween:Play()
-        
-        -- После завершения всех анимаций уничтожаем весь GUI
-        delay(1.5, function()
-            screenGui:Destroy()
-        end)
-    else
-        status3.complete(false)
-        
-        -- Анимация ошибки ввода
-        local errorTween = TweenService:Create(
-            inputContainer, 
-            TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-            {Position = UDim2.new(0.13, 0, 0.34, 0)}
-        )
-        errorTween:Play()
-        
-        wait(0.1)
-        
-        local errorTween2 = TweenService:Create(
-            inputContainer, 
-            TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-            {Position = UDim2.new(0.07, 0, 0.34, 0)}
-        )
-        errorTween2:Play()
-        
-        wait(0.1)
-        
-        local errorTween3 = TweenService:Create(
-            inputContainer, 
-            TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-            {Position = UDim2.new(0.1, 0, 0.34, 0)}
-        )
-        errorTween3:Play()
-        
-        -- Изменение цвета рамки на ошибку
-        local strokeTween = TweenService:Create(
-            inputStroke, 
-            TweenInfo.new(0.3, Enum.EasingStyle.Quad), 
-            {Color = Colors.Secondary, Transparency = 0, Thickness = 2}
-        )
-        strokeTween:Play()
-    end
-end)
-
--- Кнопка "Get Key"
+-- Кнопка "Get Key" с улучшенным дизайном
 local getKeyButton = Instance.new("TextButton")
-getKeyButton.Size = UDim2.new(0.6, 0, 0, 40)
-getKeyButton.Position = UDim2.new(0.2, 0, 0.76, 0)
-getKeyButton.Text = ""
-getKeyButton.BackgroundColor3 = Colors.Background
-getKeyButton.BackgroundTransparency = 0.2
+getKeyButton.Text = "Get Key"
+getKeyButton.Font = Enum.Font.GothamBold
+getKeyButton.TextSize = 20
+getKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+getKeyButton.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+getKeyButton.BackgroundTransparency = 1
+getKeyButton.Size = UDim2.new(0.8, 0, 0, 50)
+getKeyButton.Position = UDim2.new(0.1, 0, 0, 265)
 getKeyButton.BorderSizePixel = 0
-getKeyButton.AutoButtonColor = false
-getKeyButton.ZIndex = 11
-getKeyButton.Parent = centerCard
+getKeyButton.TextTransparency = 1
+getKeyButton.ZIndex = 3
+getKeyButton.Parent = centerFrame
 
 -- Скругление углов кнопки
 local getKeyCorner = Instance.new("UICorner")
 getKeyCorner.CornerRadius = UDim.new(0, 10)
 getKeyCorner.Parent = getKeyButton
 
--- Обводка кнопки
-local getKeyStroke = Instance.new("UIStroke")
-getKeyStroke.Color = Colors.Primary
-getKeyStroke.Transparency = 0.3
-getKeyStroke.Thickness = 1.5
-getKeyStroke.Parent = getKeyButton
-
--- Текст кнопки
-local getKeyText = createTextLabel(
+-- Анимация появления кнопки Get Key
+local getKeyTween = TweenService:Create(
     getKeyButton, 
-    "Get Key", 
-    UDim2.new(0, 0, 0, 0),
-    UDim2.new(1, 0, 1, 0),
-    15,
-    Colors.Text,
-    Enum.Font.GothamSemibold
+    TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out, 0, false, 0.4), 
+    {TextTransparency = 0, BackgroundTransparency = 0}
 )
-getKeyText.TextXAlignment = Enum.TextXAlignment.Center
+getKeyTween:Play()
 
--- Эффекты кнопки при наведении и нажатии
-getKeyButton.MouseEnter:Connect(function()
-    local tween = TweenService:Create(
-        getKeyButton, 
-        TweenInfo.new(AnimParams.Short, AnimParams.EaseOut), 
-        {BackgroundTransparency = 0.1}
-    )
-    tween:Play()
-    
-    local strokeTween = TweenService:Create(
-        getKeyStroke, 
-        TweenInfo.new(AnimParams.Short, AnimParams.EaseOut), 
-        {Color = Colors.Secondary, Transparency = 0}
-    )
-    strokeTween:Play()
-end)
+-- Метка статуса с улучшенным дизайном
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Text = ""
+statusLabel.Font = Enum.Font.GothamMedium
+statusLabel.TextSize = 16
+statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Size = UDim2.new(0.8, 0, 0, 30)
+statusLabel.Position = UDim2.new(0.1, 0, 0, 330)
+statusLabel.TextTransparency = 1
+statusLabel.ZIndex = 3
+statusLabel.Parent = centerFrame
 
-getKeyButton.MouseLeave:Connect(function()
-    local tween = TweenService:Create(
-        getKeyButton, 
-        TweenInfo.new(AnimParams.Short, AnimParams.EaseIn), 
-        {BackgroundTransparency = 0.2}
-    )
-    tween:Play()
-    
-    local strokeTween = TweenService:Create(
-        getKeyStroke, 
-        TweenInfo.new(AnimParams.Short, AnimParams.EaseIn), 
-        {Color = Colors.Primary, Transparency = 0.3}
-    )
-    strokeTween:Play()
-end)
-
-getKeyButton.MouseButton1Down:Connect(function()
-    local tween = TweenService:Create(
-        getKeyButton, 
-        TweenInfo.new(0.1, Enum.EasingStyle.Quad), 
-        {Size = UDim2.new(0.58, 0, 0, 38), Position = UDim2.new(0.21, 0, 0.76, 1)}
-    )
-    tween:Play()
-end)
-
-getKeyButton.MouseButton1Up:Connect(function()
-    local tween = TweenService:Create(
-        getKeyButton, 
-        TweenInfo.new(0.2, AnimParams.EaseOut), 
-        {Size = UDim2.new(0.6, 0, 0, 40), Position = UDim2.new(0.2, 0, 0.76, 0)}
-    )
-    tween:Play()
-end)
-
--- Нижний текст
-local footerText = createTextLabel(
-    centerCard, 
-    "© 2025 Quest X - All Rights Reserved", 
-    UDim2.new(0, 0, 0.93, 0),
-    UDim2.new(1, 0, 0, 20),
-    12,
-    Colors.TextDimmed,
-    Enum.Font.Gotham
-)
-footerText.TextXAlignment = Enum.TextXAlignment.Center
-
--- Кнопка закрытия
+-- Кнопка закрытия с улучшенным дизайном
 local closeButton = Instance.new("ImageButton")
-closeButton.Size = UDim2.new(0, 24, 0, 24)
-closeButton.Position = UDim2.new(0.95, -24, 0.05, 0)
+closeButton.Name = "Close"
+closeButton.Size = UDim2.new(0, 35, 0, 35)
+closeButton.Position = UDim2.new(1, -45, 0, 10)
 closeButton.BackgroundTransparency = 1
-closeButton.Image = "rbxassetid://9801486541" -- Заменить на ID иконки закрытия
-closeButton.ImageColor3 = Colors.TextDimmed
-closeButton.ZIndex = 12
-closeButton.Parent = centerCard
+closeButton.Image = "rbxassetid://3926305904"
+closeButton.ImageRectOffset = Vector2.new(284, 4)
+closeButton.ImageRectSize = Vector2.new(24, 24)
+closeButton.ImageColor3 = Color3.fromRGB(200, 200, 200)
+closeButton.ImageTransparency = 1
+closeButton.ZIndex = 4
+closeButton.Parent = centerFrame
 
--- Эффекты кнопки закрытия
-closeButton.MouseEnter:Connect(function()
-    local tween = TweenService:Create(
-        closeButton, 
-        TweenInfo.new(AnimParams.Short, AnimParams.EaseOut), 
-        {ImageColor3 = Colors.Secondary}
+-- Анимация появления кнопки закрытия
+local closeTween = TweenService:Create(
+    closeButton, 
+    TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out, 0, false, 0.5), 
+    {ImageTransparency = 0}
+)
+closeTween:Play()
+
+-- Плавающая иконка с улучшенным дизайном
+local floatingIcon = Instance.new("ImageButton", screenGui)
+floatingIcon.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+floatingIcon.Image = "rbxassetid://117511501336791"
+floatingIcon.Size = UDim2.new(0.07, 0, 0.132, 0)
+floatingIcon.Name = "FloatingIcon"
+floatingIcon.Visible = false
+floatingIcon.Position = UDim2.new(0.09, 0, 0.016, 0)
+floatingIcon.Draggable = true
+floatingIcon.ZIndex = 5
+floatingIcon.ImageTransparency = 1
+floatingIcon.BackgroundTransparency = 1
+
+local floatCorner = Instance.new("UICorner", floatingIcon)
+floatCorner.CornerRadius = UDim.new(0.25, 0)
+
+local floatStroke = Instance.new("UIStroke", floatingIcon)
+floatStroke.Color = Color3.fromRGB(80, 120, 255)
+floatStroke.Thickness = 2
+floatStroke.Transparency = 1
+
+local aspectRatioConstraint = Instance.new("UIAspectRatioConstraint", floatingIcon)
+aspectRatioConstraint.AspectRatio = 1
+
+-- Эффекты наведения для кнопок
+local function setupButtonHoverEffect(button, originalColor, hoverColor)
+    button.MouseEnter:Connect(function()
+        local hoverTween = TweenService:Create(
+            button,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+            {BackgroundColor3 = hoverColor}
+        )
+        hoverTween:Play()
+    end)
+    
+    button.MouseLeave:Connect(function()
+        local leaveTween = TweenService:Create(
+            button,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+            {BackgroundColor3 = originalColor}
+        )
+        leaveTween:Play()
+    end)
+end
+
+-- Настройка эффектов наведения
+setupButtonHoverEffect(verifyButton, Color3.fromRGB(80, 120, 255), Color3.fromRGB(100, 140, 255))
+setupButtonHoverEffect(getKeyButton, Color3.fromRGB(60, 60, 80), Color3.fromRGB(80, 80, 100))
+
+-- Эффект фокуса для поля ввода
+keyInput.Focused:Connect(function()
+    local focusTween = TweenService:Create(
+        keyInputBorder,
+        TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+        {Color = Color3.fromRGB(100, 180, 255), Thickness = 3}
     )
-    tween:Play()
+    focusTween:Play()
 end)
 
-closeButton.MouseLeave:Connect(function()
-    local tween = TweenService:Create(
-        closeButton, 
-        TweenInfo.new(AnimParams.Short, AnimParams.EaseIn), 
-        {ImageColor3 = Colors.TextDimmed}
+keyInput.FocusLost:Connect(function()
+    local unfocusTween = TweenService:Create(
+        keyInputBorder,
+        TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+        {Color = Color3.fromRGB(80, 120, 255), Thickness = 2}
     )
-    tween:Play()
+    unfocusTween:Play()
 end)
 
-closeButton.MouseButton1Click:Connect(function()
-    -- Анимация закрытия
-    local fadeTween = TweenService:Create(
-        centerCard, 
-        TweenInfo.new(0.4, AnimParams.EaseIn), 
-        {Size = UDim2.new(0, 20, 0, 20), Position = UDim2.new(0.5, -10, 0.5, -10), BackgroundTransparency = 1}
-    )
-    fadeTween:Play()
+-- Эффект нажатия для кнопок
+local function setupButtonPressEffect(button)
+    button.MouseButton1Down:Connect(function()
+        local pressTween = TweenService:Create(
+            button,
+            TweenInfo.new(0.1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+            {Size = UDim2.new(button.Size.X.Scale * 0.97, button.Size.X.Offset, button.Size.Y.Scale * 0.97, button.Size.Y.Offset)}
+        )
+        pressTween:Play()
+    end)
     
-    local frameTween = TweenService:Create(
-        frame, 
-        TweenInfo.new(0.6, AnimParams.EaseIn), 
-        {BackgroundTransparency = 1}
-    )
-    frameTween:Play()
-    
-    -- Скрыть все элементы
-    for _, child in pairs(centerCard:GetChildren()) do
-        if child:IsA("GuiObject") and child ~= centerCard then
-            if child:IsA("TextLabel") or child:IsA("TextButton") or child:IsA("TextBox") then
-                local textTween = TweenService:Create(
-                    child, 
-                    TweenInfo.new(0.3, AnimParams.EaseIn), 
-                    {TextTransparency = 1}
-                )
-                textTween:Play()
-            end
-            
-            if child:IsA("ImageLabel") or child:IsA("ImageButton") then
-                local imageTween = TweenService:Create(
-                    child, 
-                    TweenInfo.new(0.3, AnimParams.EaseIn), 
-                    {ImageTransparency = 1}
-                )
-                imageTween:Play()
-            end
-            
-            if child:IsA("Frame") then
-                local frameTween = TweenService:Create(
-                    child, 
-                    TweenInfo.new(0.3, AnimParams.EaseIn), 
-                    {BackgroundTransparency = 1}
-                )
-                frameTween:Play()
-            end
-        end
-    end
-    
-    wait(0.6)
-    screenGui:Destroy()
-end)
+    button.MouseButton1Up:Connect(function()
+        local releaseTween = TweenService:Create(
+            button,
+            TweenInfo.new(0.1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+            {Size = UDim2.new(button.Size.X.Scale / 0.97, button.Size.X.Offset, button.Size.Y.Scale / 0.97, button.Size.Y.Offset)}
+        )
+        releaseTween:Play()
+    end)
+end
+
+setupButtonPressEffect(verifyButton)
+setupButtonPressEffect(getKeyButton)
 
 -- Обновление размеров фона по размеру камеры (GUI адаптивность)
 RunService.RenderStepped:Connect(function()
@@ -819,81 +551,5 @@ RunService.RenderStepped:Connect(function()
     frame.Position = UDim2.new(0.5, -viewportSize.X, 0.5, -viewportSize.Y)
 end)
 
--- Эффект появления интерфейса
-centerCard.Size = UDim2.new(0, 10, 0, 10)
-centerCard.Position = UDim2.new(0.5, -5, 0.5, -5)
-centerCard.BackgroundTransparency = 1
-shadow.ImageTransparency = 1
-
--- Скрыть все элементы перед анимацией
-for _, child in pairs(centerCard:GetChildren()) do
-    if child:IsA("GuiObject") and child ~= centerCard and child.Name ~= "Shadow" then
-        if child:IsA("TextLabel") or child:IsA("TextButton") then
-            child.TextTransparency = 1
-        end
-        
-        if child:IsA("ImageLabel") or child:IsA("ImageButton") then
-            child.ImageTransparency = 1
-        end
-        
-        if child:IsA("Frame") then
-            child.BackgroundTransparency = 1
-        end
-    end
-end
-
--- Анимация появления
-wait(0.2)
-
-local cardTween = TweenService:Create(
-    centerCard, 
-    TweenInfo.new(0.7, AnimParams.EaseOut), 
-    {Size = UDim2.new(0, 400, 0, 450), Position = UDim2.new(0.5, -200, 0.5, -225), BackgroundTransparency = 0.1}
-)
-cardTween:Play()
-
-local shadowTween = TweenService:Create(
-    shadow, 
-    TweenInfo.new(0.9, AnimParams.EaseOut), 
-    {ImageTransparency = 0.6}
-)
-shadowTween:Play()
-
-wait(0.4)
-
--- Появление элементов
-for _, child in pairs(centerCard:GetChildren()) do
-    if child:IsA("GuiObject") and child ~= centerCard and child.Name ~= "Shadow" then
-        if child:IsA("TextLabel") or child:IsA("TextButton") then
-            local textTween = TweenService:Create(
-                child, 
-                TweenInfo.new(0.5, AnimParams.EaseOut), 
-                {TextTransparency = 0}
-            )
-            textTween:Play()
-        end
-        
-        if child:IsA("ImageLabel") or child:IsA("ImageButton") then
-            local imageTween = TweenService:Create(
-                child, 
-                TweenInfo.new(0.5, AnimParams.EaseOut), 
-                {ImageTransparency = 0}
-            )
-            imageTween:Play()
-        end
-        
-        if child:IsA("Frame") and child.Name ~= "StatusContainer" then
-            local frameTween = TweenService:Create(
-                child, 
-                TweenInfo.new(0.5, AnimParams.EaseOut), 
-                {BackgroundTransparency = child.BackgroundTransparency > 0.9 and child.BackgroundTransparency or 0}
-            )
-            frameTween:Play()
-        end
-        
-        wait(0.05) -- Небольшая задержка для каскадного эффекта
-    end
-end
-
--- Возвращаем GUI
+-- Возвращаем созданный GUI
 return screenGui
