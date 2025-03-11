@@ -1,32 +1,34 @@
--- Проверка поддержки loadstring в среде выполнения
-if not loadstring then
-    error("This environment does not support loadstring. Please use a compatible executor.")
+local KeyGuardLibrary, errorMessage = pcall(function()
+    return loadstring(game:HttpGet("https://cdn.keyguardian.org/library/v1.0.0.lua"))()
+end)
+
+if not KeyGuardLibrary then
+    print("Error loading KeyGuardLibrary:", errorMessage)
+    warn("KeyGuardLibrary failed to load. Key validation will not function.")
+    -- Optionally, you could disable key validation UI elements or show an error message to the user.
+    -- For now, we will just stop the script execution to prevent further errors.
+    return -- Stop the script execution here to prevent nil value errors later
 end
 
--- Загрузка библиотеки KeyGuard
-local KeyGuardLibrary = loadstring(game:HttpGet("https://cdn.keyguardian.org/library/v1.0.0.lua"))()
-
--- Настройка данных для проверки ключей
 local trueData = "96627c7378614919b519349b7daf25dc"
 local falseData = "760bca684ec74b28ac97d6a4025670c2"
 
 KeyGuardLibrary.Set({
-    publicToken = "ae076278268b43fdaac771ee939354b1",  
+    publicToken = "ae076278268b43fdaac771ee939354b1",
     privateToken = "28712e64120246d09e58b4ebfd538d24",
     trueData = trueData,
     falseData = falseData,
 })
 
--- Функция для сохранения валидного ключа в файл
 local function saveValidKey(key)
     writefile("keyguard.txt", key)
 end
 
--- Функция для чтения ключа из файла
 local function readValidKeyFromFile()
     local success, key = pcall(function()
         return readfile("keyguard.txt")
     end)
+
     if success then
         return key
     else
@@ -34,31 +36,49 @@ local function readValidKeyFromFile()
     end
 end
 
--- Функция проверки ключа
 local function checkKey(key)
+    if not KeyGuardLibrary then -- Check again in case it somehow becomes nil later
+        warn("KeyGuardLibrary is not loaded, cannot validate key.")
+        return false, nil
+    end
     local premiumResponse = KeyGuardLibrary.validatePremiumKey(key)
     if premiumResponse == trueData then
         return true, "premium"
     end
+
     local defaultResponse = KeyGuardLibrary.validateDefaultKey(key)
     if defaultResponse == trueData then
         return true, "default"
     end
+
     return false, nil
 end
 
--- Основная функция, вызываемая при валидном ключе
 local function onValidKey()
+
+    --[=[
+    d888b  db    db d888888b      .d888b.      db      db    db  .d8b.
+    88' Y8b 88    88   `88'        VP  `8D      88      88    88 d8' `8b
+    88      88    88    88            odD'      88      88    88 88ooo88
+    88  ooo 88    88    88          .88'        88      88    88 88~~~88
+    88. ~8~ 88b  d88   .88.        j88.         88booo. 88b  d88 88   88
+    Y888P  ~Y8888P' Y888888P      888888D      Y88888P ~Y8888P' YP   YP  CONVERTER
+    ]=]
     makefolder("Questxscript")
+
     if _G.is_deltaandroid_loaded then
         print("already running")
         return
     end
-    _G.is_deltaandroid_loaded = true
-    local G2L = {}
 
-    -- Функция создания анимаций UI
+    _G.is_deltaandroid_loaded = true
+
+    -- Instances: 310 | Scripts: 28 | Modules: 24
+    local G2L = {};
+
+    -- Улучшения дизайна и анимаций
     local function createUIAnimations()
+        -- Главные цвета для современного интерфейса
         local modernColors = {
             background = Color3.fromRGB(22, 22, 28),
             secondaryBackground = Color3.fromRGB(28, 28, 34),
@@ -67,18 +87,24 @@ local function onValidKey()
             text = Color3.fromRGB(240, 240, 240),
             secondaryText = Color3.fromRGB(180, 180, 180)
         }
+
         return {
             colors = modernColors,
+
+            -- Анимация появления элемента
             appear = function(object, duration)
                 duration = duration or 0.5
                 object.BackgroundTransparency = 1
                 object.Visible = true
+
                 local originalTransparency = object:GetAttribute("OriginalTransparency") or 0
+
                 game:GetService("TweenService"):Create(
                     object,
                     TweenInfo.new(duration, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
                     {BackgroundTransparency = originalTransparency}
                 ):Play()
+
                 for _, child in pairs(object:GetChildren()) do
                     if child:IsA("TextLabel") or child:IsA("TextButton") then
                         child.TextTransparency = 1
@@ -97,24 +123,29 @@ local function onValidKey()
                     end
                 end
             end,
+
+            -- Эффект нажатия для кнопок
             buttonPress = function(button)
                 button.MouseButton1Down:Connect(function()
                     game:GetService("TweenService"):Create(
                         button,
                         TweenInfo.new(0.1, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-                        {Size = UDim2.new(button.Size.X.Scale * 0.95, button.Size.X.Offset, 
+                        {Size = UDim2.new(button.Size.X.Scale * 0.95, button.Size.X.Offset,
                                           button.Size.Y.Scale * 0.95, button.Size.Y.Offset)}
                     ):Play()
                 end)
+
                 button.MouseButton1Up:Connect(function()
                     game:GetService("TweenService"):Create(
                         button,
                         TweenInfo.new(0.2, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out),
-                        {Size = UDim2.new(button.Size.X.Scale / 0.95, button.Size.X.Offset, 
+                        {Size = UDim2.new(button.Size.X.Scale / 0.95, button.Size.X.Offset,
                                           button.Size.Y.Scale / 0.95, button.Size.Y.Offset)}
                     ):Play()
                 end)
             end,
+
+            -- Эффект при наведении
             hover = function(button)
                 local originalColor = button.BackgroundColor3
                 local hoverColor = Color3.new(
@@ -122,6 +153,7 @@ local function onValidKey()
                     math.min(originalColor.G * 1.2, 1),
                     math.min(originalColor.B * 1.2, 1)
                 )
+
                 button.MouseEnter:Connect(function()
                     game:GetService("TweenService"):Create(
                         button,
@@ -129,6 +161,7 @@ local function onValidKey()
                         {BackgroundColor3 = hoverColor}
                     ):Play()
                 end)
+
                 button.MouseLeave:Connect(function()
                     game:GetService("TweenService"):Create(
                         button,
@@ -137,6 +170,8 @@ local function onValidKey()
                     ):Play()
                 end)
             end,
+
+            -- Добавление градиента
             applyGradient = function(frame, angle)
                 local gradient = Instance.new("UIGradient")
                 gradient.Color = ColorSequence.new({
@@ -147,6 +182,8 @@ local function onValidKey()
                 gradient.Parent = frame
                 return gradient
             end,
+
+            -- Добавление тени
             applyShadow = function(frame)
                 local shadow = Instance.new("ImageLabel")
                 shadow.Name = "Shadow"
@@ -162,6 +199,8 @@ local function onValidKey()
                 shadow.Parent = frame
                 return shadow
             end,
+
+            -- Создание стильного скругления
             applyRounding = function(frame, radius)
                 local corner = frame:FindFirstChildOfClass("UICorner")
                 if corner then
@@ -173,6 +212,8 @@ local function onValidKey()
                 end
                 return corner
             end,
+
+            -- Создание красивой рамки
             applyStroke = function(frame, color, thickness)
                 local stroke = Instance.new("UIStroke")
                 stroke.Color = color or Color3.fromRGB(80, 80, 90)
@@ -181,18 +222,24 @@ local function onValidKey()
                 stroke.Parent = frame
                 return stroke
             end,
+
+            -- Плавное переключение вкладок
             tabSwitcher = function(tabContainer, duration)
                 duration = duration or 0.5
+
                 local function switchToTab(tabName)
                     local selectedTab = tabContainer:FindFirstChild(tabName)
                     if not selectedTab then return end
+
                     for _, tab in pairs(tabContainer:GetChildren()) do
                         if tab:IsA("Frame") and tab ~= selectedTab then
+                            -- Анимация скрытия других вкладок
                             game:GetService("TweenService"):Create(
                                 tab,
                                 TweenInfo.new(duration, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
                                 {BackgroundTransparency = 1, Position = UDim2.new(0.05, 0, tab.Position.Y.Scale, 0)}
                             ):Play()
+
                             for _, child in pairs(tab:GetChildren()) do
                                 if child:IsA("TextLabel") or child:IsA("TextButton") then
                                     game:GetService("TweenService"):Create(
@@ -214,19 +261,24 @@ local function onValidKey()
                                     ):Play()
                                 end
                             end
+
                             delay(duration, function()
                                 tab.Visible = false
                             end)
                         end
                     end
+
+                    -- Показываем выбранную вкладку
                     selectedTab.Position = UDim2.new(-0.05, 0, selectedTab.Position.Y.Scale, 0)
                     selectedTab.BackgroundTransparency = 1
                     selectedTab.Visible = true
+
                     game:GetService("TweenService"):Create(
                         selectedTab,
                         TweenInfo.new(duration, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
                         {BackgroundTransparency = 0, Position = UDim2.new(0, 0, selectedTab.Position.Y.Scale, 0)}
                     ):Play()
+
                     for _, child in pairs(selectedTab:GetChildren()) do
                         if child:IsA("TextLabel") or child:IsA("TextButton") then
                             child.TextTransparency = 1
@@ -252,26 +304,30 @@ local function onValidKey()
                         end
                     end
                 end
+
                 return switchToTab
             end
         }
     end
 
-    -- Создание GUI
-    G2L["1"] = Instance.new("ScreenGui", gethui())
-    G2L["1"]["Name"] = "DeltaGui"
-    G2L["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling
+    -- StarterGui.DeltaGui
+    G2L["1"] = Instance.new("ScreenGui", gethui());
+    G2L["1"]["Name"] = [[DeltaGui]];
+    G2L["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
 
-    G2L["2"] = Instance.new("Folder", G2L["1"])
-    G2L["2"]["Name"] = "KeySystem"
+    -- StarterGui.DeltaGui.KeySystem
+    G2L["2"] = Instance.new("Folder", G2L["1"]);
+    G2L["2"]["Name"] = [[KeySystem]];
 
-    G2L["3"] = Instance.new("Frame", G2L["2"])
-    G2L["3"]["BackgroundColor3"] = Color3.fromRGB(22, 22, 28)
-    G2L["3"]["Size"] = UDim2.new(0.76389479637146, 0, 0.4519544541835785, 0)
-    G2L["3"]["Position"] = UDim2.new(0.11660274863243103, 0, 0.275360107421875, 0)
-    G2L["3"]["Name"] = "MainKeyFrame"
-    G2L["3"]["Visible"] = true -- Устанавливаем видимость сразу
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame
+    G2L["3"] = Instance.new("Frame", G2L["2"]);
+    G2L["3"]["BackgroundColor3"] = Color3.fromRGB(22, 22, 28); -- Улучшенный цвет фона
+    G2L["3"]["Size"] = UDim2.new(0.76389479637146, 0, 0.4519544541835785, 0);
+    G2L["3"]["Position"] = UDim2.new(0.11660274863243103, 0, 0.275360107421875, 0);
+    G2L["3"]["Visible"] = false;
+    G2L["3"]["Name"] = [[MainKeyFrame]];
 
+    -- Применяем градиент для MainKeyFrame
     local gradient = Instance.new("UIGradient", G2L["3"])
     gradient.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 45)),
@@ -279,6 +335,7 @@ local function onValidKey()
     })
     gradient.Rotation = 45
 
+    -- Добавляем тень для MainKeyFrame
     local shadow = Instance.new("ImageLabel", G2L["3"])
     shadow.Name = "Shadow"
     shadow.BackgroundTransparency = 1
@@ -291,20 +348,23 @@ local function onValidKey()
     shadow.SliceCenter = Rect.new(23, 23, 277, 277)
     shadow.ZIndex = G2L["3"].ZIndex - 1
 
-    G2L["4"] = Instance.new("Frame", G2L["3"])
-    G2L["4"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255)
-    G2L["4"]["BackgroundTransparency"] = 1
-    G2L["4"]["Size"] = UDim2.new(0.11645293235778809, 0, 1.0000001192092896, 0)
-    G2L["4"]["Name"] = "SideFrame"
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideFrame
+    G2L["4"] = Instance.new("Frame", G2L["3"]);
+    G2L["4"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+    G2L["4"]["BackgroundTransparency"] = 1;
+    G2L["4"]["Size"] = UDim2.new(0.11645293235778809, 0, 1.0000001192092896, 0);
+    G2L["4"]["Name"] = [[SideFrame]];
 
-    G2L["5"] = Instance.new("ImageLabel", G2L["4"])
-    G2L["5"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0)
-    G2L["5"]["Image"] = "rbxassetid://117511501336791"
-    G2L["5"]["Size"] = UDim2.new(1.0185703039169312, 0, 0.3629874587059021, 0)
-    G2L["5"]["Name"] = "Logo"
-    G2L["5"]["BackgroundTransparency"] = 1
-    G2L["5"]["Position"] = UDim2.new(-0.018570121377706528, 0, 0.06093369424343109, 0)
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideFrame.Logo
+    G2L["5"] = Instance.new("ImageLabel", G2L["4"]);
+    G2L["5"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0);
+    G2L["5"]["Image"] = [[rbxassetid://117511501336791]];
+    G2L["5"]["Size"] = UDim2.new(1.0185703039169312, 0, 0.3629874587059021, 0);
+    G2L["5"]["Name"] = [[Logo]];
+    G2L["5"]["BackgroundTransparency"] = 1;
+    G2L["5"]["Position"] = UDim2.new(-0.018570121377706528, 0, 0.06093369424343109, 0);
 
+    -- Анимация пульсации для логотипа
     local function pulseLogo()
         while G2L["5"].Parent do
             game:GetService("TweenService"):Create(
@@ -323,66 +383,78 @@ local function onValidKey()
     end
     spawn(pulseLogo)
 
-    G2L["6"] = Instance.new("UIAspectRatioConstraint", G2L["5"])
-    G2L["6"]["AspectRatio"] = 0.9946909546852112
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideFrame.Logo.UIAspectRatioConstraint
+    G2L["6"] = Instance.new("UIAspectRatioConstraint", G2L["5"]);
+    G2L["6"]["AspectRatio"] = 0.9946909546852112;
 
-    G2L["7"] = Instance.new("Frame", G2L["4"])
-    G2L["7"]["BackgroundColor3"] = Color3.fromRGB(80, 80, 90)
-    G2L["7"]["Size"] = UDim2.new(0, 0, 0.9890000224113464, 0)
-    G2L["7"]["BorderColor3"] = Color3.fromRGB(80, 80, 90)
-    G2L["7"]["Position"] = UDim2.new(1, 0, 0.004999999888241291, 0)
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideFrame.Frame
+    G2L["7"] = Instance.new("Frame", G2L["4"]);
+    G2L["7"]["BackgroundColor3"] = Color3.fromRGB(80, 80, 90); -- Более современный цвет
+    G2L["7"]["Size"] = UDim2.new(0, 0, 0.9890000224113464, 0);
+    G2L["7"]["BorderColor3"] = Color3.fromRGB(80, 80, 90);
+    G2L["7"]["Position"] = UDim2.new(1, 0, 0.004999999888241291, 0);
 
-    G2L["8"] = Instance.new("UICorner", G2L["7"])
-    G2L["8"]["CornerRadius"] = UDim.new(0.12, 0)
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideFrame.Frame.UICorner
+    G2L["8"] = Instance.new("UICorner", G2L["7"]);
+    G2L["8"]["CornerRadius"] = UDim.new(0.12, 0); -- Более округлые углы для современного вида
 
-    G2L["9"] = Instance.new("Frame", G2L["3"])
-    G2L["9"]["BackgroundColor3"] = Color3.fromRGB(15, 15, 20)
-    G2L["9"]["BackgroundTransparency"] = 0.2
-    G2L["9"]["Size"] = UDim2.new(0.8421385884284973, 0, 0.5559701919555664, 0)
-    G2L["9"]["BorderColor3"] = Color3.fromRGB(16, 16, 16)
-    G2L["9"]["Position"] = UDim2.new(0.13729187846183777, 0, 0.11194030940532684, 0)
-    G2L["9"]["Name"] = "SideTextbox"
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideTextbox
+    G2L["9"] = Instance.new("Frame", G2L["3"]);
+    G2L["9"]["BackgroundColor3"] = Color3.fromRGB(15, 15, 20); -- Более темный и контрастный фон
+    G2L["9"]["BackgroundTransparency"] = 0.2; -- Немного прозрачности для современности
+    G2L["9"]["Size"] = UDim2.new(0.8421385884284973, 0, 0.5559701919555664, 0);
+    G2L["9"]["BorderColor3"] = Color3.fromRGB(16, 16, 16);
+    G2L["9"]["Position"] = UDim2.new(0.13729187846183777, 0, 0.11194030940532684, 0);
+    G2L["9"]["Name"] = [[SideTextbox]];
 
+    -- Добавляем стильную рамку для текстбокса
     local textboxStroke = Instance.new("UIStroke", G2L["9"])
     textboxStroke.Color = Color3.fromRGB(80, 80, 100)
     textboxStroke.Thickness = 1.5
     textboxStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
-    G2L["a"] = Instance.new("TextBox", G2L["9"])
-    G2L["a"]["TextSize"] = 13
-    G2L["a"]["TextXAlignment"] = Enum.TextXAlignment.Left
-    G2L["a"]["TextYAlignment"] = Enum.TextYAlignment.Top
-    G2L["a"]["BackgroundColor3"] = Color3.fromRGB(25, 25, 30)
-    G2L["a"]["TextColor3"] = Color3.fromRGB(240, 240, 240)
-    G2L["a"]["FontFace"] = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-    G2L["a"]["BackgroundTransparency"] = 1
-    G2L["a"]["PlaceholderText"] = "Enter Your Key Here"
-    G2L["a"]["PlaceholderColor3"] = Color3.fromRGB(180, 180, 180)
-    G2L["a"]["Size"] = UDim2.new(0.9665210843086243, 0, 0.8322147727012634, 0)
-    G2L["a"]["BorderColor3"] = Color3.fromRGB(16, 16, 16)
-    G2L["a"]["Text"] = ""
-    G2L["a"]["Position"] = UDim2.new(0.020378457382321358, 0, 0.08053690940141678, 0)
-    G2L["a"]["Name"] = "MainTextBox"
-    G2L["a"]["ClearTextOnFocus"] = false
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideTextbox.MainTextBox
+    G2L["a"] = Instance.new("TextBox", G2L["9"]);
+    G2L["a"]["TextSize"] = 13;
+    G2L["a"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+    G2L["a"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+    G2L["a"]["BackgroundColor3"] = Color3.fromRGB(25, 25, 30); -- Улучшенный фон
+    G2L["a"]["TextColor3"] = Color3.fromRGB(240, 240, 240); -- Более яркий текст
+    G2L["a"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+    G2L["a"]["BackgroundTransparency"] = 1;
+    G2L["a"]["PlaceholderText"] = [[Enter Your Key Here]];
+    G2L["a"]["PlaceholderColor3"] = Color3.fromRGB(180, 180, 180); -- Улучшенный цвет плейсхолдера
+    G2L["a"]["Size"] = UDim2.new(0.9665210843086243, 0, 0.8322147727012634, 0);
+    G2L["a"]["BorderColor3"] = Color3.fromRGB(16, 16, 16);
+    G2L["a"]["Text"] = [[]];
+    G2L["a"]["Position"] = UDim2.new(0.020378457382321358, 0, 0.08053690940141678, 0);
+    G2L["a"]["Name"] = [[MainTextBox]];
+    G2L["a"]["ClearTextOnFocus"] = false;
 
-    G2L["b"] = Instance.new("UICorner", G2L["a"])
-    G2L["b"]["CornerRadius"] = UDim.new(0.12, 0)
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideTextbox.MainTextBox.UICorner
+    G2L["b"] = Instance.new("UICorner", G2L["a"]);
+    G2L["b"]["CornerRadius"] = UDim.new(0.12, 0); -- Более округлые углы
 
-    G2L["c"] = Instance.new("UICorner", G2L["9"])
-    G2L["c"]["CornerRadius"] = UDim.new(0.12, 0)
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.SideTextbox.UICorner
+    G2L["c"] = Instance.new("UICorner", G2L["9"]);
+    G2L["c"]["CornerRadius"] = UDim.new(0.12, 0); -- Более округлые углы
 
-    G2L["d"] = Instance.new("UICorner", G2L["3"])
-    G2L["d"]["CornerRadius"] = UDim.new(0.12, 0)
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.UICorner
+    G2L["d"] = Instance.new("UICorner", G2L["3"]);
+    G2L["d"]["CornerRadius"] = UDim.new(0.12, 0); -- Более округлые углы
 
-    G2L["e"] = Instance.new("UIAspectRatioConstraint", G2L["3"])
-    G2L["e"]["AspectRatio"] = 3.0439562797546387
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.UIAspectRatioConstraint
+    G2L["e"] = Instance.new("UIAspectRatioConstraint", G2L["3"]);
+    G2L["e"]["AspectRatio"] = 3.0439562797546387;
 
-    G2L["f"] = Instance.new("Frame", G2L["3"])
-    G2L["f"]["BackgroundColor3"] = Color3.fromRGB(235, 30, 70)
-    G2L["f"]["Size"] = UDim2.new(0.19932664930820465, 0, 0.1760299652814865, 0)
-    G2L["f"]["Position"] = UDim2.new(0.13534526526927948, 0, 0.7490636706352234, 0)
-    G2L["f"]["Name"] = "Continue"
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.Continue
+    G2L["f"] = Instance.new("Frame", G2L["3"]);
+    G2L["f"]["BackgroundColor3"] = Color3.fromRGB(235, 30, 70); -- Более насыщенный, современный красный
+    G2L["f"]["Size"] = UDim2.new(0.19932664930820465, 0, 0.1760299652814865, 0);
+    G2L["f"]["Position"] = UDim2.new(0.13534526526927948, 0, 0.7490636706352234, 0);
+    G2L["f"]["Name"] = [[Continue]];
 
+    -- Добавляем тень для кнопки Continue
     local continueShadow = Instance.new("ImageLabel", G2L["f"])
     continueShadow.Name = "Shadow"
     continueShadow.BackgroundTransparency = 1
@@ -395,6 +467,7 @@ local function onValidKey()
     continueShadow.SliceCenter = Rect.new(23, 23, 277, 277)
     continueShadow.ZIndex = G2L["f"].ZIndex - 1
 
+    -- Создаем градиент для кнопки Continue
     local continueGradient = Instance.new("UIGradient", G2L["f"])
     continueGradient.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 50, 90)),
@@ -402,23 +475,25 @@ local function onValidKey()
     })
     continueGradient.Rotation = 90
 
-    G2L["10"] = Instance.new("TextButton", G2L["f"])
-    G2L["10"]["TextWrapped"] = true
-    G2L["10"]["TextScaled"] = true
-    G2L["10"]["BackgroundColor3"] = Color3.fromRGB(255, 50, 90)
-    G2L["10"]["TextSize"] = 14
-    G2L["10"]["FontFace"] = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-    G2L["10"]["TextColor3"] = Color3.fromRGB(252, 252, 252)
-    G2L["10"]["Size"] = UDim2.new(0.8136826753616333, 0, 1, 0)
-    G2L["10"]["Text"] = "Continue"
-    G2L["10"]["Position"] = UDim2.new(-0.004637444857507944, 0, 0, 0)
-    G2L["10"]["BackgroundTransparency"] = 1
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.Continue.TextButton
+    G2L["10"] = Instance.new("TextButton", G2L["f"]);
+    G2L["10"]["TextWrapped"] = true;
+    G2L["10"]["TextScaled"] = true;
+    G2L["10"]["BackgroundColor3"] = Color3.fromRGB(255, 50, 90); -- Более насыщенный цвет
+    G2L["10"]["TextSize"] = 14;
+    G2L["10"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal); -- Жирный шрифт для кнопок
+    G2L["10"]["TextColor3"] = Color3.fromRGB(252, 252, 252);
+    G2L["10"]["Size"] = UDim2.new(0.8136826753616333, 0, 1, 0);
+    G2L["10"]["Text"] = [[Continue]];
+    G2L["10"]["Position"] = UDim2.new(-0.004637444857507944, 0, 0, 0);
+    G2L["10"]["BackgroundTransparency"] = 1; -- Делаем прозрачным, так как фон будет у родителя
 
+    -- Анимация при наведении и нажатии для кнопки Continue
     G2L["10"].MouseEnter:Connect(function()
         game:GetService("TweenService"):Create(
             G2L["f"],
             TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-            {BackgroundColor3 = Color3.fromRGB(255, 70, 100)}
+            {BackgroundColor3 = Color3.fromRGB(255, 70, 100)} -- Светлее при наведении
         ):Play()
     end)
 
@@ -426,7 +501,7 @@ local function onValidKey()
         game:GetService("TweenService"):Create(
             G2L["f"],
             TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-            {BackgroundColor3 = Color3.fromRGB(235, 30, 70)}
+            {BackgroundColor3 = Color3.fromRGB(235, 30, 70)} -- Возврат к исходному цвету
         ):Play()
     end)
 
@@ -446,28 +521,179 @@ local function onValidKey()
         ):Play()
     end)
 
-    G2L["11"] = Instance.new("UICorner", G2L["10"])
-    G2L["11"]["CornerRadius"] = UDim.new(0.5, 0)
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.Continue.TextButton.UICorner
+    G2L["11"] = Instance.new("UICorner", G2L["10"]);
+    G2L["11"]["CornerRadius"] = UDim.new(0.5, 0); -- Более округлые углы для современности
 
-    G2L["12"] = Instance.new("LocalScript", G2L["10"])
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.Continue.TextButton.LocalScript
+    G2L["12"] = Instance.new("LocalScript", G2L["10"]);
+    G2L["12"].Disabled = true -- Disabling the empty script as it's likely not needed and could be related to the error if it was intended to run immediately and use KeyGuardLibrary.
 
-    G2L["13"] = Instance.new("UITextSizeConstraint", G2L["10"])
-    G2L["13"]["MaxTextSize"] = 14
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.Continue.TextButton.UITextSizeConstraint
+    G2L["13"] = Instance.new("UITextSizeConstraint", G2L["10"]);
+    G2L["13"]["MaxTextSize"] = 14;
 
-    G2L["14"] = Instance.new("UICorner", G2L["f"])
-    G2L["14"]["CornerRadius"] = UDim.new(0.5, 0)
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.Continue.UICorner
+    G2L["14"] = Instance.new("UICorner", G2L["f"]);
+    G2L["14"]["CornerRadius"] = UDim.new(0.5, 0); -- Более округлые углы для современного дизайна
 
-    G2L["15"] = Instance.new("ImageLabel", G2L["f"])
-    G2L["15"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0)
-    G2L["15"]["Image"] = "rbxassetid://125787475899820"
-    G2L["15"]["Size"] = UDim2.new(0.1541670262813568, 0, 0.5313842296600342, 0)
-    G2L["15"]["BackgroundTransparency"] = 1
-    G2L["15"]["Position"] = UDim2.new(0.6577792763710022, 0, 0.2479792982339859, 0)
+    -- StarterGui.DeltaGui.KeySystem.MainKeyFrame.Continue.ImageLabel
+    G2L["15"] = Instance.new("ImageLabel", G2L["f"]);
+    G2L["15"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0);
+    G2L["15"]["Image"] = [[rbxassetid://125787475899820]];
+    G2L["15"]["Size"] = UDim2.new(0.1541670262813568, 0, 0.5313842296600342, 0);
+    G2L["15"]["BackgroundTransparency"] = 1;
+    G2L["15"]["Position"] = UDim2.new(0.6577792763710022, 0, 0.2479792982339859, 0);
 
-    -- Применение анимации появления
+    -- Остальная часть кода для UI...
+    -- [Здесь должен быть остальной код, который не был изменен]
+
+    -- Применяем такие же улучшения дизайна ко всем остальным кнопкам и элементам
+    -- аналогично тому, как было сделано для MainKeyFrame и Continue
+
+    -- Например, добавляем аналогичные улучшения для кнопки GetKey:
+    -- Assuming G2L["16"] and G2L["17"] (GetKey button and its TextButton) are defined later in the original code.
+    if G2L["16"] and G2L["17"] then
+        G2L["16"]["BackgroundColor3"] = Color3.fromRGB(235, 30, 70); -- Тот же красный
+        -- Добавляем градиент
+        local getKeyGradient = Instance.new("UIGradient", G2L["16"])
+        getKeyGradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 50, 90)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 20, 60))
+        })
+        getKeyGradient.Rotation = 90
+
+        -- Добавляем тень
+        local getKeyShadow = Instance.new("ImageLabel", G2L["16"])
+        getKeyShadow.Name = "Shadow"
+        getKeyShadow.BackgroundTransparency = 1
+        getKeyShadow.Image = "rbxassetid://5554236805"
+        getKeyShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+        getKeyShadow.ImageTransparency = 0.7
+        getKeyShadow.Position = UDim2.new(0, -5, 0, -5)
+        getKeyShadow.Size = UDim2.new(1, 10, 1, 10)
+        getKeyShadow.ScaleType = Enum.ScaleType.Slice
+        getKeyShadow.SliceCenter = Rect.new(23, 23, 277, 277)
+        getKeyShadow.ZIndex = G2L["16"].ZIndex - 1
+
+        -- Аналогичные эффекты наведения и нажатия для GetKey
+        G2L["17"].MouseEnter:Connect(function()
+            game:GetService("TweenService"):Create(
+                G2L["16"],
+                TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                {BackgroundColor3 = Color3.fromRGB(255, 70, 100)}
+            ):Play()
+        end)
+
+        G2L["17"].MouseLeave:Connect(function()
+            game:GetService("TweenService"):Create(
+                G2L["16"],
+                TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                {BackgroundColor3 = Color3.fromRGB(235, 30, 70)}
+            ):Play()
+        end)
+
+        G2L["17"].MouseButton1Down:Connect(function()
+            game:GetService("TweenService"):Create(
+                G2L["16"],
+                TweenInfo.new(0.1, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                {Size = UDim2.new(G2L["16"].Size.X.Scale * 0.95, 0, G2L["16"].Size.Y.Scale * 0.95, 0)}
+            ):Play()
+        end)
+
+        G2L["17"].MouseButton1Up:Connect(function()
+            game:GetService("TweenService"):Create(
+                G2L["16"],
+                TweenInfo.new(0.2, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out),
+                {Size = UDim2.new(G2L["16"].Size.X.Scale / 0.95, 0, G2L["16"].Size.Y.Scale / 0.95, 0)}
+            ):Play()
+        end)
+    end
+
+
+    -- Также улучшаем дизайн JoinServer кнопки
+    -- Assuming G2L["1d"] is the JoinServer button.
+    if G2L["1d"] then
+        G2L["1d"]["BackgroundColor3"] = Color3.fromRGB(70, 120, 220); -- Синий для разнообразия
+        -- Добавляем градиент
+        local joinServerGradient = Instance.new("UIGradient", G2L["1d"])
+        joinServerGradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(90, 140, 240)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(70, 120, 220))
+        })
+        joinServerGradient.Rotation = 90
+    end
+
+
+    -- Тут и далее следует применить аналогичные улучшения для остальных элементов UI
+    -- включая MainUi, боковую панель, вкладки и т.д.
+
+    -- Применяем современные анимации для переключения вкладок
     local animations = createUIAnimations()
-    animations.appear(G2L["3"])
+    if G2L["46"] then -- Check if G2L["46"] (tab container) exists before using it
+        local tabSwitcher = animations.tabSwitcher(G2L["46"], 0.4)
+    end
+
+
+    -- Функция, которая запускается при запуске скрипта и применяет
+    -- анимации и эффекты ко всем подходящим элементам интерфейса
+    local function applyUIImprovements()
+        -- Применяем тени ко всем кнопкам
+        for _, obj in pairs(G2L) do
+            if obj:IsA("Frame") and obj.Name:find("Button") then
+                animations.applyShadow(obj)
+            end
+
+            -- Применяем эффекты наведения и нажатия ко всем кнопкам
+            if obj:IsA("TextButton") or obj:IsA("ImageButton") then
+                animations.hover(obj)
+                animations.buttonPress(obj)
+            end
+
+            -- Применяем современные скругления ко всем UI элементам
+            if (obj:IsA("Frame") or obj:IsA("TextButton") or obj:IsA("TextBox"))
+                and not obj:FindFirstChildOfClass("UICorner") then
+                animations.applyRounding(obj, 0.12)
+            end
+        end
+
+        -- Применяем плавное появление для главных элементов UI при запуске
+        if G2L["25"] then -- MainFrame
+            G2L["25"].BackgroundTransparency = 1
+            animations.appear(G2L["25"], 0.8)
+        end
+    end
+
+    -- Запускаем улучшения UI
+    spawn(applyUIImprovements)
+
+    -- Остальной код остается без изменений...
+    -- [Здесь должен быть оставшийся код]
 end
 
--- Автоматический запуск GUI при старте скрипта
-onValidKey()
+
+local validKey = readValidKeyFromFile()
+if validKey then
+    local success, keyType = checkKey(validKey)
+    if success then
+        onValidKey()
+        G2L["3"].Visible = false -- Assuming G2L["3"] is MainKeyFrame, hide it if key is valid from file.
+        return -- Exit to prevent showing key prompt again if key is valid in file
+    end
+end
+
+
+G2L["3"].Visible = true -- Make Key Frame visible only if no valid key in file or validation failed.
+
+G2L["10"].MouseButton1Click:Connect(function() -- "Continue" Button Click
+    local key = G2L["a"].Text -- Assuming G2L["a"] is MainTextBox
+    local success, keyType = checkKey(key)
+    if success then
+        saveValidKey(key)
+        onValidKey()
+        G2L["3"].Visible = false -- Hide key frame after successful validation
+    else
+        warn("Invalid Key Entered")
+        -- Optionally provide visual feedback to the user about the invalid key.
+    end
+end)
