@@ -1,7 +1,12 @@
+-- Проверка поддержки loadstring в среде выполнения
 if not loadstring then
     error("This environment does not support loadstring. Please use a compatible executor.")
 end
+
+-- Загрузка библиотеки KeyGuard
 local KeyGuardLibrary = loadstring(game:HttpGet("https://cdn.keyguardian.org/library/v1.0.0.lua"))()
+
+-- Настройка данных для проверки ключей
 local trueData = "96627c7378614919b519349b7daf25dc"
 local falseData = "760bca684ec74b28ac97d6a4025670c2"
 
@@ -12,10 +17,12 @@ KeyGuardLibrary.Set({
     falseData = falseData,
 })
 
+-- Функция для сохранения валидного ключа в файл
 local function saveValidKey(key)
     writefile("keyguard.txt", key)
 end
 
+-- Функция для чтения ключа из файла
 local function readValidKeyFromFile()
     local success, key = pcall(function()
         return readfile("keyguard.txt")
@@ -27,6 +34,7 @@ local function readValidKeyFromFile()
     end
 end
 
+-- Функция проверки ключа
 local function checkKey(key)
     local premiumResponse = KeyGuardLibrary.validatePremiumKey(key)
     if premiumResponse == trueData then
@@ -39,6 +47,7 @@ local function checkKey(key)
     return false, nil
 end
 
+-- Основная функция, вызываемая при валидном ключе
 local function onValidKey()
     makefolder("Questxscript")
     if _G.is_deltaandroid_loaded then
@@ -46,8 +55,9 @@ local function onValidKey()
         return
     end
     _G.is_deltaandroid_loaded = true
-    local G2L = {};
+    local G2L = {}
 
+    -- Функция создания анимаций UI
     local function createUIAnimations()
         local modernColors = {
             background = Color3.fromRGB(22, 22, 28),
@@ -247,6 +257,7 @@ local function onValidKey()
         }
     end
 
+    -- Создание GUI
     G2L["1"] = Instance.new("ScreenGui", gethui())
     G2L["1"]["Name"] = "DeltaGui"
     G2L["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling
@@ -258,8 +269,8 @@ local function onValidKey()
     G2L["3"]["BackgroundColor3"] = Color3.fromRGB(22, 22, 28)
     G2L["3"]["Size"] = UDim2.new(0.76389479637146, 0, 0.4519544541835785, 0)
     G2L["3"]["Position"] = UDim2.new(0.11660274863243103, 0, 0.275360107421875, 0)
-    G2L["3"]["Visible"] = false
     G2L["3"]["Name"] = "MainKeyFrame"
+    G2L["3"]["Visible"] = true -- Устанавливаем видимость сразу
 
     local gradient = Instance.new("UIGradient", G2L["3"])
     gradient.Color = ColorSequence.new({
@@ -453,27 +464,10 @@ local function onValidKey()
     G2L["15"]["BackgroundTransparency"] = 1
     G2L["15"]["Position"] = UDim2.new(0.6577792763710022, 0, 0.2479792982339859, 0)
 
+    -- Применение анимации появления
     local animations = createUIAnimations()
-    local tabSwitcher = animations.tabSwitcher(G2L["46"], 0.4)
-
-    local function applyUIImprovements()
-        for _, obj in pairs(G2L) do
-            if obj:IsA("Frame") and obj.Name:find("Button") then
-                animations.applyShadow(obj)
-            end
-            if obj:IsA("TextButton") or obj:IsA("ImageButton") then
-                animations.hover(obj)
-                animations.buttonPress(obj)
-            end
-            if (obj:IsA("Frame") or obj:IsA("TextButton") or obj:IsA("TextBox")) 
-                and not obj:FindFirstChildOfClass("UICorner") then
-                animations.applyRounding(obj, 0.12)
-            end
-        end
-        if G2L["25"] then
-            G2L["25"].BackgroundTransparency = 1
-            animations.appear(G2L["25"], 0.8)
-        end
-    end
-    spawn(applyUIImprovements)
+    animations.appear(G2L["3"])
 end
+
+-- Автоматический запуск GUI при старте скрипта
+onValidKey()
