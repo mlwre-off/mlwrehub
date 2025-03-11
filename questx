@@ -1,3 +1,4 @@
+-- GUI Module: современный адаптивный интерфейс аутентификации 
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -251,20 +252,14 @@ local function createRadialLoader(parent, targetTextLabel, offsetX, offsetY)
     return loaderFrame
 end
 
--- Изменённая функция для создания улучшенной галочки с анимацией
+-- Функция для создания улучшенной галочки с анимацией
 local function createGalka(parent, targetTextLabel, offsetX, offsetY)
-    offsetY = offsetY or 0
     local galkaFrame = Instance.new("Frame")
     galkaFrame.Size = UDim2.new(0, 24 * adaptiveSize.scale, 0, 24 * adaptiveSize.scale)
     galkaFrame.BackgroundTransparency = 1
     galkaFrame.ZIndex = 4
-    galkaFrame.AnchorPoint = Vector2.new(0, 0.5)  -- Центрирование по вертикали
     galkaFrame.Parent = parent
 
-    local posX = targetTextLabel.Position.X.Offset + offsetX * adaptiveSize.scale
-    local posY = targetTextLabel.Position.Y.Offset + (targetTextLabel.Size.Y.Offset / 2) + offsetY * adaptiveSize.scale
-    galkaFrame.Position = UDim2.new(0, posX, 0, posY)
-    
     local galkaBg = Instance.new("Frame")
     galkaBg.Size = UDim2.new(1, 0, 1, 0)
     galkaBg.BackgroundColor3 = Color3.fromRGB(40, 45, 60)
@@ -301,6 +296,13 @@ local function createGalka(parent, targetTextLabel, offsetX, offsetY)
     galka.ZIndex = 4
     galka.Parent = galkaFrame
 
+    galkaFrame.Position = UDim2.new(
+        targetTextLabel.Position.X.Scale,
+        targetTextLabel.Position.X.Offset + offsetX * adaptiveSize.scale,
+        targetTextLabel.Position.Y.Scale,
+        targetTextLabel.Position.Y.Offset + offsetY * adaptiveSize.scale
+    )
+    
     galka.ImageTransparency = 1
     galkaBg.BackgroundTransparency = 1
     
@@ -344,7 +346,7 @@ local text1 = createTextLabel(infoContainer, "Data fetching", UDim2.new(0, 50 * 
 local loader1 = createRadialLoader(infoContainer, text1, -30, 3)
 task.wait(0.6)
 text1.Text = "Data fetched!"
-local galka1 = createGalka(infoContainer, text1, -30, 0)
+local galka1 = createGalka(infoContainer, text1, -30, 3)
 loader1.Visible = false
 
 task.wait(0.3)
@@ -352,7 +354,7 @@ local text2 = createTextLabel(infoContainer, "Loading Key System", UDim2.new(0, 
 local loader2 = createRadialLoader(infoContainer, text2, -30, 3)
 task.wait(0.8)
 text2.Text = "Loaded Key System!"
-local galka2 = createGalka(infoContainer, text2, -30, 0)
+local galka2 = createGalka(infoContainer, text2, -30, 3)
 loader2.Visible = false
 
 task.wait(0.3)
@@ -686,6 +688,155 @@ local closeBackgroundTween = TweenService:Create(
 )
 closeBackgroundTween:Play()
 
+local floatingIcon = Instance.new("ImageButton", screenGui)
+floatingIcon.BackgroundColor3 = Color3.fromRGB(50, 55, 75)
+floatingIcon.Image = "rbxassetid://117511501336791"
+floatingIcon.Size = UDim2.new(0, 44 * adaptiveSize.scale, 0, 44 * adaptiveSize.scale)
+floatingIcon.Name = "FloatingIcon"
+floatingIcon.Visible = false
+floatingIcon.Position = UDim2.new(0.09, 0, 0.016, 0)
+floatingIcon.Draggable = true
+floatingIcon.ZIndex = 6
+floatingIcon.ImageTransparency = 1
+floatingIcon.BackgroundTransparency = 1
+
+local floatCorner = Instance.new("UICorner", floatingIcon)
+floatCorner.CornerRadius = UDim.new(0.25, 0)
+
+local floatStroke = Instance.new("UIStroke", floatingIcon)
+floatStroke.Color = Color3.fromRGB(110, 140, 255)
+floatStroke.Thickness = 2
+floatStroke.Transparency = 1
+
+local aspectRatioConstraint = Instance.new("UIAspectRatioConstraint", floatingIcon)
+aspectRatioConstraint.AspectRatio = 1
+
+local floatingGlow = Instance.new("ImageLabel")
+floatingGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+floatingGlow.BackgroundTransparency = 1
+floatingGlow.Position = UDim2.new(0.5, 0, 0.5, 0)
+floatingGlow.Size = UDim2.new(1.5, 0, 1.5, 0)
+floatingGlow.ZIndex = 5
+floatingGlow.Image = "rbxassetid://5554236805"
+floatingGlow.ImageColor3 = Color3.fromRGB(100, 130, 255)
+floatingGlow.ImageTransparency = 0.8
+floatingGlow.Parent = floatingIcon
+
+local function setupButtonHoverEffect(button, originalColor, hoverColor, shadowObj)
+    button.MouseEnter:Connect(function()
+        local scaleTween = TweenService:Create(
+            button,
+            TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+            {Size = UDim2.new(button.Size.X.Scale, button.Size.X.Offset, button.Size.Y.Scale, button.Size.Y.Offset + 3 * adaptiveSize.scale)}
+        )
+        
+        local colorTween = TweenService:Create(
+            button,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+            {BackgroundColor3 = hoverColor}
+        )
+        
+        if shadowObj then
+            local shadowTween = TweenService:Create(
+                shadowObj,
+                TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+                {ImageTransparency = 0.5, Position = UDim2.new(0.5, 0, 0.5, 8 * adaptiveSize.scale)}
+            )
+            shadowTween:Play()
+        end
+        
+        scaleTween:Play()
+        colorTween:Play()
+    end)
+    
+    button.MouseLeave:Connect(function()
+        local scaleTween = TweenService:Create(
+            button,
+            TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+            {Size = UDim2.new(button.Size.X.Scale, button.Size.X.Offset, button.Size.Y.Scale, button.Size.Y.Offset - 3 * adaptiveSize.scale)}
+        )
+        
+        local colorTween = TweenService:Create(
+            button,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+            {BackgroundColor3 = originalColor}
+        )
+        
+        if shadowObj then
+            local shadowTween = TweenService:Create(
+                shadowObj,
+                TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+                {ImageTransparency = 0.6, Position = UDim2.new(0.5, 0, 0.5, 6 * adaptiveSize.scale)}
+            )
+            shadowTween:Play()
+        end
+        
+        scaleTween:Play()
+        colorTween:Play()
+    end)
+end
+
+setupButtonHoverEffect(verifyButton, Color3.fromRGB(90, 130, 240), Color3.fromRGB(110, 150, 255), verifyShadow)
+setupButtonHoverEffect(getKeyButton, Color3.fromRGB(70, 75, 95), Color3.fromRGB(85, 90, 115), getKeyShadow)
+
+closeButton.MouseEnter:Connect(function()
+    local backgroundTween = TweenService:Create(
+        closeBackground,
+        TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+        {BackgroundColor3 = Color3.fromRGB(240, 100, 100), BackgroundTransparency = 0.5}
+    )
+    
+    local imageTween = TweenService:Create(
+        closeButton,
+        TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+        {ImageColor3 = Color3.fromRGB(255, 255, 255)}
+    )
+    
+    backgroundTween:Play()
+    imageTween:Play()
+end)
+
+closeButton.MouseLeave:Connect(function()
+    local backgroundTween = TweenService:Create(
+        closeBackground,
+        TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+        {BackgroundColor3 = Color3.fromRGB(70, 75, 95), BackgroundTransparency = 0.7}
+    )
+    
+    local imageTween = TweenService:Create(
+        closeButton,
+        TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+        {ImageColor3 = Color3.fromRGB(220, 220, 230)}
+    )
+    
+    backgroundTween:Play()
+    imageTween:Play()
+end)
+
+local function setupButtonPressEffect(button)
+    button.MouseButton1Down:Connect(function()
+        local pressTween = TweenService:Create(
+            button,
+            TweenInfo.new(0.1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+            {Size = UDim2.new(button.Size.X.Scale * 0.97, button.Size.X.Offset, button.Size.Y.Scale * 0.97, button.Size.Y.Offset * 0.97)}
+        )
+        pressTween:Play()
+    end)
+    
+    button.MouseButton1Up:Connect(function()
+        local releaseTween = TweenService:Create(
+            button,
+            TweenInfo.new(0.1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+            {Size = UDim2.new(button.Size.X.Scale / 0.97, button.Size.X.Offset, button.Size.Y.Scale / 0.97, button.Size.Y.Offset / 0.97)}
+        )
+        releaseTween:Play()
+    end)
+end
+
+setupButtonPressEffect(verifyButton)
+setupButtonPressEffect(getKeyButton)
+setupButtonPressEffect(closeButton)
+
 workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(function()
     local newAdaptiveSize = getAdaptiveSize()
     
@@ -706,6 +857,8 @@ workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(functio
     verifyButton.Size = UDim2.new(0.85, 0, 0, 48 * newAdaptiveSize.scale)
     getKeyButton.Size = UDim2.new(0.85, 0, 0, 48 * newAdaptiveSize.scale)
     closeButton.Size = UDim2.new(0, 32 * newAdaptiveSize.scale, 0, 32 * newAdaptiveSize.scale)
+    
+    floatingIcon.Size = UDim2.new(0, 44 * newAdaptiveSize.scale, 0, 44 * newAdaptiveSize.scale)
 end)
 
 RunService.RenderStepped:Connect(function()
@@ -734,7 +887,7 @@ verifyButton.MouseButton1Click:Connect(function()
     text3.Text = "Key verification..."
     
     task.wait(1)
-    local galka3 = createGalka(infoContainer, text3, -30, 0)
+    local galka3 = createGalka(infoContainer, text3, -30, 3)
     text3.Text = "Key verified successfully!"
 end)
 
