@@ -1,0 +1,116 @@
+local Players = game:GetService("Players")
+local RS = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local Lift = RS.Remotes:WaitForChild("LiftWeight")
+local Sell = RS.Remotes:WaitForChild("SellStrengthRequest")
+
+local gui = Instance.new("ScreenGui", playerGui)
+gui.Name = "AutoFarmGUI"
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 220, 0, 160)
+frame.Position = UDim2.new(0.5, -110, 0.5, -80)
+frame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Text = "Auto Farm"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+title.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+title.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
+
+local close = Instance.new("TextButton", frame)
+close.Size = UDim2.new(0, 30, 0, 30)
+close.Position = UDim2.new(1, -35, 0, 0)
+close.Text = "X"
+close.Font = Enum.Font.GothamBold
+close.TextSize = 20
+close.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+close.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", close).CornerRadius = UDim.new(0, 5)
+
+local btn = Instance.new("TextButton", frame)
+btn.Size = UDim2.new(1, -20, 0, 60)
+btn.Position = UDim2.new(0, 10, 0, 50)
+btn.Text = "Start Auto Farm"
+btn.Font = Enum.Font.Gotham
+btn.TextSize = 22
+btn.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+btn.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+Instance.new("UIGradient", btn).Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 130, 180)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 100, 150))
+}
+
+local author = Instance.new("TextLabel", frame)
+author.Size = UDim2.new(1, 0, 0, 20)
+author.Position = UDim2.new(0, 0, 1, -20)
+author.Text = "Author: mlwr.e"
+author.Font = Enum.Font.Gotham
+author.TextSize = 14
+author.BackgroundTransparency = 1
+author.TextColor3 = Color3.fromRGB(150, 150, 150)
+
+local farming = false
+
+local function hideMaxStrength()
+    local ui = playerGui:FindFirstChild("UI")
+    if ui then
+        local maxStrength = ui:FindFirstChild("MaxStrengthHit")
+        if maxStrength then
+            maxStrength.Visible = false
+        end
+    end
+end
+
+btn.MouseButton1Click:Connect(function()
+    farming = not farming
+    btn.Text = farming and "Stop Auto Farm" or "Start Auto Farm"
+    if farming then
+        local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+        local backpack = player:FindFirstChild("Backpack")
+        if humanoid and backpack then
+            local firstItem = backpack:GetChildren()[1]
+            if firstItem and firstItem:IsA("Tool") then
+                humanoid:EquipTool(firstItem)
+            end
+        end
+    else
+        hideMaxStrength()
+        local ui = playerGui:FindFirstChild("UI")
+        if ui then
+            local maxStrength = ui:FindFirstChild("MaxStrengthHit")
+            if maxStrength then
+                maxStrength.Visible = true
+            end
+        end
+    end
+    while farming do
+        hideMaxStrength()
+        Lift:FireServer()
+        wait(0.3)
+        Sell:FireServer()
+        wait(0.3)
+    end
+    hideMaxStrength()
+end)
+
+close.MouseButton1Click:Connect(function()
+    hideMaxStrength()
+    local ui = playerGui:FindFirstChild("UI")
+    if ui then
+        local maxStrength = ui:FindFirstChild("MaxStrengthHit")
+        if maxStrength then
+            maxStrength.Visible = true
+        end
+    end
+    gui:Destroy()
+end)
