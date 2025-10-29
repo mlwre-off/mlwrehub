@@ -7,6 +7,8 @@ local Title = Instance.new("TextLabel")
 local Credit = Instance.new("TextLabel")
 local DupeButton = Instance.new("TextButton")
 local UICorner_3 = Instance.new("UICorner")
+local OpenCaseButton = Instance.new("TextButton")
+local UICorner_4 = Instance.new("UICorner")
 
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -19,7 +21,7 @@ MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
 MainFrame.BorderSizePixel = 0
 MainFrame.Position = UDim2.new(0.4, 0, 0.35, 0)
-MainFrame.Size = UDim2.new(0, 280, 0, 140)
+MainFrame.Size = UDim2.new(0, 280, 0, 195)
 MainFrame.ZIndex = 999999
 
 UICorner.CornerRadius = UDim.new(0, 12)
@@ -71,6 +73,21 @@ DupeButton.ZIndex = 999999
 
 UICorner_3.CornerRadius = UDim.new(0, 8)
 UICorner_3.Parent = DupeButton
+
+OpenCaseButton.Name = "OpenCaseButton"
+OpenCaseButton.Parent = MainFrame
+OpenCaseButton.BackgroundColor3 = Color3.fromRGB(242, 101, 88)
+OpenCaseButton.BorderSizePixel = 0
+OpenCaseButton.Position = UDim2.new(0, 20, 0, 135)
+OpenCaseButton.Size = UDim2.new(1, -40, 0, 45)
+OpenCaseButton.Font = Enum.Font.GothamBold
+OpenCaseButton.Text = "OPEN CASE"
+OpenCaseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+OpenCaseButton.TextSize = 16
+OpenCaseButton.ZIndex = 999999
+
+UICorner_4.CornerRadius = UDim.new(0, 8)
+UICorner_4.Parent = OpenCaseButton
 
 local UserInputService = game:GetService("UserInputService")
 local dragging
@@ -130,5 +147,46 @@ DupeButton.MouseButton1Click:Connect(function()
     else
         DupeButton.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
         DupeButton.Text = "DUPE STARS"
+    end
+end)
+
+local opening = false
+
+OpenCaseButton.MouseButton1Click:Connect(function()
+    opening = not opening
+    if opening then
+        OpenCaseButton.BackgroundColor3 = Color3.fromRGB(67, 181, 129)
+        OpenCaseButton.Text = "STOP OPENING"
+        task.spawn(function()
+            while opening do
+                local args = {
+                    buffer.fromstring("\016\001\t\000Free Case\003\000\000\000")
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("ByteNetReliable"):FireServer(unpack(args))
+                task.wait(0.1)
+                local keepAllButton = game.Players.LocalPlayer.PlayerGui:WaitForChild("CasesFrame"):FindFirstChild("Frame")
+                if keepAllButton then
+                    keepAllButton = keepAllButton:FindFirstChild("Contain")
+                    if keepAllButton then
+                        keepAllButton = keepAllButton:FindFirstChild("Case")
+                        if keepAllButton then
+                            keepAllButton = keepAllButton:FindFirstChild("List")
+                            if keepAllButton then
+                                keepAllButton = keepAllButton:FindFirstChild("KeepAll")
+                                if keepAllButton then
+                                    for _, connection in pairs(getconnections(keepAllButton.MouseButton1Click)) do
+                                        connection:Fire()
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)
+    else
+        OpenCaseButton.BackgroundColor3 = Color3.fromRGB(242, 101, 88)
+        OpenCaseButton.Text = "OPEN CASE"
     end
 end)
