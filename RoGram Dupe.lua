@@ -160,7 +160,7 @@ OpenCaseButton.MouseButton1Click:Connect(function()
         task.spawn(function()
             while opening do
                 local args = {
-                    buffer.fromstring("\016\001\t\000Free Case\003\000\000\000")
+                    buffer.fromstring("\020\001\t\000Free Case\003\000\000\000")
                 }
                 game:GetService("ReplicatedStorage"):WaitForChild("ByteNetReliable"):FireServer(unpack(args))
                 task.wait(0.1)
