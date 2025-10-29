@@ -120,7 +120,7 @@ DupeButton.MouseButton1Click:Connect(function()
             task.spawn(function()
                 while duping do
                     local args = {
-                        buffer.fromstring("\f\099")
+                        buffer.fromstring("\r\001")
                     }
                     game:GetService("ReplicatedStorage"):WaitForChild("ByteNetUnreliable"):FireServer(unpack(args))
                     task.wait(0)
