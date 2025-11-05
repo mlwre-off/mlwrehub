@@ -1,5 +1,5 @@
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "Farm Money by mlwr.e"
+screenGui.Name = "Farm Money by @script_robloxx"
 screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.ResetOnSpawn = false
